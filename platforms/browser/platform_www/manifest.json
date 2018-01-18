@@ -1,6 +1,6 @@
 {
-  "name": "HelloCordova",
-  "short_name": "HelloCordova",
+  "name": "CFA",
+  "short_name": "CFA",
   "description": "Description of your app from template",
   "start_url": "index.html",
   "scope": "index.html",
