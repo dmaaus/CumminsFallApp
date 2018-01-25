@@ -1,0 +1,30 @@
+[
+    {
+        "ranger_id" : 1,
+        "first_name" : "Bob",
+        "last_name" : "Joe",
+        "username" : "bjoe345",
+        "password" : "bobsPassword"
+    },
+    {
+        "ranger_id" : 2,
+        "first_name" : "Will",
+        "last_name" : "Chaefer",
+        "username" : "wchaefer485",
+        "password" : "willsPassword"
+    },
+    {
+        "ranger_id" : 3,
+        "first_name" : "James",
+        "last_name" : "Stone",
+        "username" : "jstone285",
+        "password" : "jamesPassword"
+    },
+    {
+        "ranger_id" : 4,
+        "first_name" : "Luke",
+        "last_name" : "Daniel",
+        "username" : "ldaniel954",
+        "password" : "lukesPassword"
+    }
+]
