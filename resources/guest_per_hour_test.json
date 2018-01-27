@@ -1,0 +1,68 @@
+[
+    {
+        "date" : "2017-09-23",
+        "hour" : 8,
+        "num_arrived" : 3,
+        "num_departed" : 3
+    },
+    {
+        "date" : "2017-09-23",
+        "hour" : 12,
+        "num_arrived" : 2,
+        "num_departed" : 1
+    },
+    {
+        "date" : "2017-09-23",
+        "hour" : 15,
+        "num_arrived" : 4,
+        "num_departed" : 5
+    },
+    {
+        "date" : "2017-09-24",
+        "hour" : 10,
+        "num_arrived" : 6,
+        "num_departed" : 2
+    },
+    {
+        "date" : "2017-09-24",
+        "hour" : 12,
+        "num_arrived" : 1,
+        "num_departed" : 4
+    },
+    {
+        "date" : "2017-09-24",
+        "hour" : 14,
+        "num_arrived" : 0,
+        "num_departed" : 1
+    },
+    {
+        "date" : "2017-09-26",
+        "hour" : 9,
+        "num_arrived" : 8,
+        "num_departed" : 3
+    },
+    {
+        "date" : "2017-09-26",
+        "hour" : 11,
+        "num_arrived" : 2,
+        "num_departed" : 4
+    },
+    {
+        "date" : "2017-09-26",
+        "hour" : 13,
+        "num_arrived" : 0,
+        "num_departed" : 2
+    },
+    {
+        "date" : "2017-09-26",
+        "hour" : 16,
+        "num_arrived" : 4,
+        "num_departed" : 5
+    },
+    {
+        "date" : "2017-09-28",
+        "hour" : 10,
+        "num_arrived" : 4,
+        "num_departed" : 4
+    }
+]

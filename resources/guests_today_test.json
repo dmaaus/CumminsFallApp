@@ -1,0 +1,62 @@
+[
+    {
+        "guest_id" : 0,
+        "time_arrived" : "2017-09-23T08:41"
+    },
+    {
+        "guest_id" : 1,
+        "time_arrived" : "2017-09-23T09:14"
+    },
+    {
+        "guest_id" : 2,
+        "time_arrived" : "2017-09-23T11:20"
+    },
+    {
+        "guest_id" : 3,
+        "time_arrived" : "2017-09-23T13:43"
+    },
+    {
+        "guest_id" : 4,
+        "time_arrived" : "2017-09-24T09:50"
+    },
+    {
+        "guest_id" : 5,
+        "time_arrived" : "2017-09-24T10:32"
+    },
+    {
+        "guest_id" : 6,
+        "time_arrived" : "2017-09-24T15:21"
+    },
+    {
+        "guest_id" : 7,
+        "time_arrived" : "2017-09-26T08:02"
+    },
+    {
+        "guest_id" : 8,
+        "time_arrived" : "2017-09-26T10:16"
+    },
+    {
+        "guest_id" : 9,
+        "time_arrived" : "2017-09-26T12:53"
+    },
+    {
+        "guest_id" : 10,
+        "time_arrived" : "2017-09-26T14:35"
+    },
+    {
+        "guest_id" : 11,
+        "time_arrived" : "2017-09-26T17:29"
+    },
+    {
+        "guest_id" : 12,
+        "time_arrived" : "2017-09-28T10:29"
+    },
+    {
+        "guest_id" : 13,
+        "time_arrived" : "2017-09-28T12:48"
+    },
+    {
+        "guest_id" : 14,
+        "time_arrived" : "2017-09-28T13:45"
+    }
+]
