@@ -18,8 +18,8 @@ export class RangerAlertCreatorPage {
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad RangerAlertCreatorPage');
+  closePark() {
+    // TODO send a push notification to all users saying the park is closed.
   }
 
 }

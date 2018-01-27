@@ -16,6 +16,7 @@ import {RangerRegisterPage} from "../pages/ranger-register/ranger-register";
 import {AuthProvider} from '../providers/auth/auth';
 import {HttpClientModule} from "@angular/common/http";
 import {RangerAlertCreatorPage} from "../pages/ranger-alert-creator/ranger-alert-creator";
+import {SQLite} from '@ionic-native/sqlite'
 
 @NgModule({
   declarations: [
@@ -51,7 +52,8 @@ import {RangerAlertCreatorPage} from "../pages/ranger-alert-creator/ranger-alert
     DatabaseProvider,
     AlertController,
     AuthProvider,
-    HttpClientModule
+    HttpClientModule,
+    SQLite
   ]
 })
 export class AppModule {

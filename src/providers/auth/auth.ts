@@ -16,14 +16,14 @@ export class AuthProvider {
   }
 
   login(username: string, password: string): Promise<boolean> {
-    let db = this.db;
+    let self = this;
     return new Promise<boolean>(function (resolve, reject) {
-      db.authenticateUser(username, password).then(valid => {
-        this.username = valid ? username : '';
+      self.db.authenticateUser(username, password).then(valid => {
+        self.username = valid ? username : '';
         resolve(valid);
       })
         .catch(msg => {
-          this.username = '';
+          self.username = '';
           reject(msg);
         });
     });

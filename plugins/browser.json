@@ -22,7 +22,7 @@
     "cordova-plugin-ionic-webview": {
       "PACKAGE_NAME": "io.ionic.starter"
     },
-    "cordova-sqlite-ext": {
+    "cordova-sqlite-storage": {
       "PACKAGE_NAME": "io.ionic.starter"
     }
   },

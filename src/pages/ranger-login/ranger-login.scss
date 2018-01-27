@@ -8,5 +8,10 @@ page-ranger-login {
 
   #errorString {
     color: #ff3139;
+    text-align: center;
+  }
+
+  #errorString:empty {
+    display: none;
   }
 }
