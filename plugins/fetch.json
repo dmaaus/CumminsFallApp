@@ -2,7 +2,7 @@
   "ionic-plugin-keyboard": {
     "source": {
       "type": "registry",
-      "id": "ionic-plugin-keyboard@~2.2.1"
+      "id": "ionic-plugin-keyboard@^2.2.1"
     },
     "is_top_level": true,
     "variables": {}
@@ -18,7 +18,7 @@
   "cordova-plugin-device": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-device@1.1.4"
+      "id": "cordova-plugin-device@^1.1.4"
     },
     "is_top_level": true,
     "variables": {}
@@ -26,7 +26,7 @@
   "cordova-plugin-splashscreen": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-splashscreen@~4.0.1"
+      "id": "cordova-plugin-splashscreen@^4.0.3"
     },
     "is_top_level": true,
     "variables": {}
@@ -34,7 +34,7 @@
   "cordova-plugin-ionic-webview": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-ionic-webview@^1.1.11"
+      "id": "cordova-plugin-ionic-webview@^1.1.16"
     },
     "is_top_level": true,
     "variables": {}
@@ -42,9 +42,20 @@
   "cordova-sqlite-storage": {
     "source": {
       "type": "registry",
-      "id": "cordova-sqlite-storage"
+      "id": "cordova-sqlite-storage@^2.2.0"
     },
     "is_top_level": true,
     "variables": {}
+  },
+  "cordova-plugin-googlemaps": {
+    "source": {
+      "type": "registry",
+      "id": "cordova-plugin-googlemaps"
+    },
+    "is_top_level": true,
+    "variables": {
+      "API_KEY_FOR_IOS": "AIzaSyA5N7nKml-g0F13nqjQKXdzEe69ZwlV9BM",
+      "API_KEY_FOR_ANDROID": "AIzaSyDvMsh0FE5u6bTQt_CEhWJVg_IP7V4FUO4"
+    }
   }
 }
