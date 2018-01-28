@@ -35,9 +35,6 @@
     },
     "cordova-sqlite-storage": {
       "PACKAGE_NAME": "io.ionic.starter"
-    },
-    "onesignal-cordova-plugin": {
-      "PACKAGE_NAME": "io.ionic.starter"
     }
   },
   "dependent_plugins": {},
@@ -86,14 +83,6 @@
       "clobbers": [
         "SQLitePlugin"
       ]
-    },
-    {
-      "file": "plugins/onesignal-cordova-plugin/www/OneSignal.js",
-      "id": "onesignal-cordova-plugin.OneSignal",
-      "pluginId": "onesignal-cordova-plugin",
-      "clobbers": [
-        "OneSignal"
-      ]
     }
   ],
   "plugin_metadata": {
@@ -102,7 +91,6 @@
     "cordova-plugin-device": "1.1.4",
     "cordova-plugin-splashscreen": "4.0.3",
     "cordova-plugin-ionic-webview": "1.1.16",
-    "cordova-sqlite-storage": "2.2.0",
-    "onesignal-cordova-plugin": "2.2.5"
+    "cordova-sqlite-storage": "2.2.0"
   }
 }

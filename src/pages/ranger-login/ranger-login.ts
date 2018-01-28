@@ -26,9 +26,9 @@ export class RangerLoginPage {
   }
 
   login() {
-    console.log(`login... username: ${this.username.toLowerCase()}, password: ${this.password}`);
+    console.log(`login... username: ${this.username}, password: ${this.password}`);
     let self = this;
-    this.auth.login(this.username.toLowerCase(), this.password).then((valid) => {
+    this.auth.login(this.username, this.password).then((valid) => {
       if (valid) {
         console.log('valid user');
         self.continue();
@@ -55,7 +55,7 @@ export class RangerLoginPage {
       return;
     }
     let self = this;
-    this.auth.register(this.username.toLowerCase(), this.password).then((valid) => {
+    this.auth.register(this.username, this.password).then((valid) => {
       if (valid) {
         console.log('registered');
         self.alertCtrl.create({
