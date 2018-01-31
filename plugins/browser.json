@@ -25,7 +25,7 @@
     "cordova-sqlite-storage": {
       "PACKAGE_NAME": "io.ionic.starter"
     },
-    "cordova-plugin-googlemaps": {
+    "onesignal-cordova-plugin": {
       "PACKAGE_NAME": "io.ionic.starter"
     }
   },

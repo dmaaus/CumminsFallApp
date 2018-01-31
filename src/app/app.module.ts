@@ -17,44 +17,48 @@ import {AuthProvider} from '../providers/auth/auth';
 import {HttpClientModule} from "@angular/common/http";
 import {RangerAlertCreatorPage} from "../pages/ranger-alert-creator/ranger-alert-creator";
 import {SQLite} from '@ionic-native/sqlite'
+import {OneSignal} from "@ionic-native/onesignal";
+import { NotificationProvider } from '../providers/notification/notification';
 
 @NgModule({
-  declarations: [
-    MyApp,
-    AboutPage,
-    HomePage,
-    TabsPage,
-    SettingsPage,
-    RangerLoginPage,
-    RangerRegisterPage,
-    RangerAlertCreatorPage
-  ],
-  imports: [
-    BrowserModule,
-    IonicModule.forRoot(MyApp),
-    HttpClientModule
-  ],
-  bootstrap: [IonicApp],
-  entryComponents: [
-    MyApp,
-    AboutPage,
-    HomePage,
-    TabsPage,
-    SettingsPage,
-    RangerLoginPage,
-    RangerRegisterPage,
-    RangerAlertCreatorPage
-  ],
-  providers: [
-    StatusBar,
-    SplashScreen,
-    {provide: ErrorHandler, useClass: IonicErrorHandler},
-    DatabaseProvider,
-    AlertController,
-    AuthProvider,
-    HttpClientModule,
-    SQLite
-  ]
+    declarations: [
+        MyApp,
+        AboutPage,
+        HomePage,
+        TabsPage,
+        SettingsPage,
+        RangerLoginPage,
+        RangerRegisterPage,
+        RangerAlertCreatorPage
+    ],
+    imports: [
+        BrowserModule,
+        IonicModule.forRoot(MyApp),
+        HttpClientModule
+    ],
+    bootstrap: [IonicApp],
+    entryComponents: [
+        MyApp,
+        AboutPage,
+        HomePage,
+        TabsPage,
+        SettingsPage,
+        RangerLoginPage,
+        RangerRegisterPage,
+        RangerAlertCreatorPage
+    ],
+    providers: [
+        StatusBar,
+        SplashScreen,
+        {provide: ErrorHandler, useClass: IonicErrorHandler},
+        DatabaseProvider,
+        AlertController,
+        AuthProvider,
+        HttpClientModule,
+        SQLite,
+        OneSignal,
+        NotificationProvider
+    ]
 })
 export class AppModule {
 }

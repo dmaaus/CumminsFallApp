@@ -47,15 +47,12 @@
     "is_top_level": true,
     "variables": {}
   },
-  "cordova-plugin-googlemaps": {
+  "onesignal-cordova-plugin": {
     "source": {
       "type": "registry",
-      "id": "cordova-plugin-googlemaps"
+      "id": "onesignal-cordova-plugin@^2.2.5"
     },
     "is_top_level": true,
-    "variables": {
-      "API_KEY_FOR_IOS": "AIzaSyA5N7nKml-g0F13nqjQKXdzEe69ZwlV9BM",
-      "API_KEY_FOR_ANDROID": "AIzaSyDvMsh0FE5u6bTQt_CEhWJVg_IP7V4FUO4"
-    }
+    "variables": {}
   }
 }
