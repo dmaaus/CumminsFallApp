@@ -18,7 +18,9 @@ import {HttpClientModule} from "@angular/common/http";
 import {RangerAlertCreatorPage} from "../pages/ranger-alert-creator/ranger-alert-creator";
 import {SQLite} from '@ionic-native/sqlite'
 import {OneSignal} from "@ionic-native/onesignal";
-import { NotificationProvider } from '../providers/notification/notification';
+import {NotificationProvider} from '../providers/notification/notification';
+import {AndroidPermissions} from '@ionic-native/android-permissions';
+import {IonicStorageModule} from "@ionic/storage";
 
 @NgModule({
     declarations: [
@@ -34,7 +36,8 @@ import { NotificationProvider } from '../providers/notification/notification';
     imports: [
         BrowserModule,
         IonicModule.forRoot(MyApp),
-        HttpClientModule
+        HttpClientModule,
+        IonicStorageModule.forRoot()
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -57,7 +60,8 @@ import { NotificationProvider } from '../providers/notification/notification';
         HttpClientModule,
         SQLite,
         OneSignal,
-        NotificationProvider
+        NotificationProvider,
+        AndroidPermissions
     ]
 })
 export class AppModule {

@@ -5,6 +5,7 @@ import {SplashScreen} from '@ionic-native/splash-screen';
 
 import {TabsPage} from '../pages/tabs/tabs';
 import {NotificationProvider} from "../providers/notification/notification";
+import {AndroidPermissions} from "@ionic-native/android-permissions";
 
 @Component({
   templateUrl: 'app.html',

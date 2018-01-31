@@ -23,7 +23,7 @@ export class RangerAlertCreatorPage {
     closePark() {
         // TODO notification only sends to people in the area
         let date = dateformat(Date.now(), 'mmm dS');
-        this.notification.post('Park Closing', `Cummins Falls is closed for the remainder of today, ${date}`, [NotificationProvider.WITHIN_50_MILES]);
+        this.notification.postToLocal('Park Closing', `Cummins Falls is closed for the remainder of today, ${date}`);
     }
 
 }

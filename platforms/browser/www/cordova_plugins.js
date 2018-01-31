@@ -52,6 +52,14 @@ module.exports = [
         "clobbers": [
             "OneSignal"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-android-permissions/www/permissions-dummy.js",
+        "id": "cordova-plugin-android-permissions.Permissions",
+        "pluginId": "cordova-plugin-android-permissions",
+        "clobbers": [
+            "cordova.plugins.permissions"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -64,7 +72,8 @@ module.exports.metadata =
     "cordova-plugin-ionic-webview": "1.1.16",
     "cordova-sqlite-storage": "2.2.0",
     "cordova-custom-config": "5.0.2",
-    "onesignal-cordova-plugin": "2.2.5"
+    "onesignal-cordova-plugin": "2.2.5",
+    "cordova-plugin-android-permissions": "1.0.0"
 }
 // BOTTOM OF METADATA
 });

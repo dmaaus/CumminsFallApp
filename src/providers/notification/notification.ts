@@ -1,7 +1,9 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {AlertController} from "ionic-angular";
+import {AlertController, Platform} from "ionic-angular";
 import {OneSignal} from "@ionic-native/onesignal";
+import {AndroidPermissions} from "@ionic-native/android-permissions";
+import {Storage} from '@ionic/storage'
 
 /*
   Generated class for the NotificationProvider provider.
@@ -19,8 +21,12 @@ export class NotificationProvider {
     static readonly WITHIN_50_MILES: string = "Within_50_Miles_Of_Park";
     static readonly WITHIN_10_MILES: string = "Within_10_Miles_Of_Park";
     static readonly WITHIN_5_MILES: string = "Within_5_Miles_Of_Park";
+    static readonly ALL: string = "All";
+    private static readonly LOCATION_KNOWN: string = "Location_Allowed";
+    private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = "times_asked_for_location";
 
-    constructor(public http: HttpClient, private oneSignal: OneSignal, private alertCtrl: AlertController) {
+
+    constructor(public http: HttpClient, private oneSignal: OneSignal, private alertCtrl: AlertController, private permissions: AndroidPermissions, private platform: Platform, private storage: Storage) {
         this.oneSignal.startInit(
             this.appId,
             this.googleProjectNumber)
@@ -34,30 +40,39 @@ export class NotificationProvider {
     /**
      * @param title The title of the notification
      * @param message The message of the notification
-     * @param {string[]} included_segments should only include static readonly members of NotificationProvider (e.g.,
-     * NotificationProvider.WITHIN_50_MILES)
+     * Sends the message to everyone within a certain radius of Cummins Falls, as well as those whose location we don't
+     * know.
      */
-    post(title: string, message: string, included_segments: string[] = ['All']) {
+    postToLocal(title: string, message: string) {
         let body = {
             app_id: this.appId,
             contents: {'en': message},
             headings: {'en': title},
-            included_segments: included_segments
+            // TODO make within 5 miles for production
+            included_segments: [NotificationProvider.WITHIN_10_MILES]
         };
 
         let headers = new HttpHeaders()
             .append('Content-Type', 'application/json; charset=utf-8')
             .append('Authorization', 'Basic ' + this.apiKey);
 
+        this._post(body, headers, false);
+        body.included_segments = [NotificationProvider.ALL];
+        body['excluded_segments'] = [NotificationProvider.LOCATION_KNOWN];
+        this._post(body, headers);
+    }
 
+    _post(body, headers: HttpHeaders, notify: boolean = true) {
         this.http.post(
             'https://onesignal.com:443/api/v1/notifications', body, {headers: headers})
             .subscribe(() => {
-                this.alertCtrl.create({
-                    title: 'Alert Sent',
-                    message: 'The alert was successfully sent out to people in the area',
-                    buttons: ['OK']
-                }).present();
+                if (notify) {
+                    this.alertCtrl.create({
+                        title: 'Alert Sent',
+                        message: 'The alert was successfully sent out to people in the area',
+                        buttons: ['OK']
+                    }).present();
+                }
             }, err => {
                 console.log(err);
                 let message = err.message;
@@ -72,10 +87,62 @@ export class NotificationProvider {
             });
     }
 
+    _shouldRequestLocation(): Promise<boolean> {
+        let self = this;
+        return new Promise<boolean>((resolve, reject) => {
+            self.storage.get(NotificationProvider.TIMES_CONSIDERED_ASKING_FOR_LOCATION).then((value) => {
+                if (value === null) {
+                    self.storage.set(NotificationProvider.TIMES_CONSIDERED_ASKING_FOR_LOCATION, 1).catch(reject);
+                    resolve(true);
+                }
+                else {
+                    self.storage.set(NotificationProvider.TIMES_CONSIDERED_ASKING_FOR_LOCATION, value + 1).catch(reject);
+                    console.log(value);
+                    resolve(false);
+                }
+            }).catch(reject);
+        });
+    }
+
+    _requestLocation() {
+        this._shouldRequestLocation().then((should) => {
+            if (should) {
+                this.alertCtrl.create({
+                        title: 'Location',
+                        message: 'Cummins Falls sends notifications through this app about park closings and flash floods at the park. We would like permission to access your location so we can avoid sending you these notifications when you are not near the park.',
+                        buttons: [{
+                            text: 'Sure',
+                            handler: () => {
+                                this.oneSignal.promptLocation();
+                            }
+                        }, {
+                            text: 'No Thanks',
+                            role: 'cancel'
+                        }]
+                    }
+                ).present();
+            }
+        }).catch(console.error);
+    }
+
     /**
      * must be called before user can receive location-based notifications.
      */
     promptLocation() {
-        this.oneSignal.promptLocation();
+        if (this.platform.is('android')) {
+            this.permissions.checkPermission(this.permissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+                result => {
+                    if (!result.hasPermission) {
+                        this._requestLocation();
+                    }
+                },
+                err => {
+                    console.error(err.message);
+                }
+            )
+        }
+        else {
+            this._requestLocation();
+        }
     }
 }
