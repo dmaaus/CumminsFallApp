@@ -10,16 +10,16 @@ import {IonicPage, NavController, NavParams} from 'ionic-angular';
 
 @IonicPage()
 @Component({
-  selector: 'page-ranger-register',
-  templateUrl: 'ranger-register.html',
+    selector: 'page-ranger-register',
+    templateUrl: 'ranger-register.html',
 })
 export class RangerRegisterPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
-  }
+    constructor(public navCtrl: NavController, public navParams: NavParams) {
+    }
 
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad RangerRegisterPage');
-  }
+    ionViewDidLoad() {
+        console.log('ionViewDidLoad RangerRegisterPage');
+    }
 
 }

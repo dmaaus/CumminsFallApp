@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="edu.tntech.CSC4620.CumminsFalls" version="0.0.1" xmlns="http://www.w3.org/ns/widgets">
+<widget id="edu.tntech.CSC4620.CumminsFalls" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Cummins Falls</name>
     <description>An app for Cummins Falls.</description>
     <author email="hi@ionicframework" href="http://ionicframework.com/">Ionic Framework Team</author>
@@ -39,6 +39,9 @@
         <splash density="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
         <splash density="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
+        <custom-config-file mode="merge" parent="/*" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+        </custom-config-file>
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
@@ -83,8 +86,10 @@
     <plugin name="cordova-plugin-ionic-webview" spec="^1.1.11" />
     <plugin name="cordova-sqlite-storage" spec="^2.2.0" />
     <allow-navigation href="http://:8100" />
-    <engine name="browser" spec="5.0.3" />
-    <engine name="android" spec="~7.0.0" />
-    <engine name="ios" spec="^4.5.4" />
     <plugin name="onesignal-cordova-plugin" spec="^2.2.5" />
+    <plugin name="cordova-custom-config" spec="^5.0.2" />
+    <engine name="browser" spec="5.0.3" />
+    <engine name="android" spec="^7.0.0" />
+    <engine name="ios" spec="^4.5.4" />
+    <plugin name="cordova-plugin-android-permissions" spec="^1.0.0" />
 </widget>

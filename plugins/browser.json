@@ -27,6 +27,12 @@
     },
     "onesignal-cordova-plugin": {
       "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-custom-config": {
+      "PACKAGE_NAME": "io.ionic.starter"
+    },
+    "cordova-plugin-android-permissions": {
+      "PACKAGE_NAME": "edu.tntech.CSC4620.CumminsFalls"
     }
   },
   "dependent_plugins": {}

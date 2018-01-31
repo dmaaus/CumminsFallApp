@@ -10,9 +10,9 @@ import {RangerAlertCreatorPage} from "../ranger-alert-creator/ranger-alert-creat
 })
 export class RangerLoginPage {
 
+    errorMessage: string = '';
     private username: string = '';
     private password: string = '';
-    errorMessage: string = '';
 
     constructor(public navCtrl: NavController, private auth: AuthProvider, private alertCtrl: AlertController) {
         console.log(auth);
