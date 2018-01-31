@@ -14,17 +14,15 @@ import {Storage} from '@ionic/storage'
 @Injectable()
 export class NotificationProvider {
 
-    appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
-    apiKey: string = 'N2NjMzI0MTktODBhMC00OTAxLWEzZjAtODVlM2Y0YzQwMDdj';
-    googleProjectNumber: string = '386934932788';
-
     static readonly WITHIN_50_MILES: string = "Within_50_Miles_Of_Park";
     static readonly WITHIN_10_MILES: string = "Within_10_Miles_Of_Park";
     static readonly WITHIN_5_MILES: string = "Within_5_Miles_Of_Park";
     static readonly ALL: string = "All";
     private static readonly LOCATION_KNOWN: string = "Location_Allowed";
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = "times_asked_for_location";
-
+    appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
+    apiKey: string = 'N2NjMzI0MTktODBhMC00OTAxLWEzZjAtODVlM2Y0YzQwMDdj';
+    googleProjectNumber: string = '386934932788';
 
     constructor(public http: HttpClient, private oneSignal: OneSignal, private alertCtrl: AlertController, private permissions: AndroidPermissions, private platform: Platform, private storage: Storage) {
         this.oneSignal.startInit(
@@ -104,36 +102,38 @@ export class NotificationProvider {
         });
     }
 
-    _requestLocation() {
-        this._shouldRequestLocation().then((should) => {
-            if (should) {
-                this.alertCtrl.create({
-                        title: 'Location',
-                        message: 'Cummins Falls sends notifications through this app about park closings and flash floods at the park. We would like permission to access your location so we can avoid sending you these notifications when you are not near the park.',
-                        buttons: [{
-                            text: 'Sure',
-                            handler: () => {
-                                this.oneSignal.promptLocation();
-                            }
-                        }, {
-                            text: 'No Thanks',
-                            role: 'cancel'
-                        }]
+
+    requestLocation() {
+        this.alertCtrl.create({
+                title: 'Location',
+                message: 'Cummins Falls sends notifications through this app about park closings and flash floods at the park. We would like permission to access your location so we can avoid sending you these notifications when you are not near the park.',
+                buttons: [{
+                    text: 'Sure',
+                    handler: () => {
+                        this.oneSignal.promptLocation();
                     }
-                ).present();
+                }, {
+                    text: 'No Thanks',
+                    role: 'cancel'
+                }]
             }
-        }).catch(console.error);
+        ).present();
     }
 
     /**
      * must be called before user can receive location-based notifications.
      */
     promptLocation() {
-        if (this.platform.is('android')) {
-            this.permissions.checkPermission(this.permissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+        let self = this;
+        if (self.platform.is('android')) {
+            self.permissions.checkPermission(self.permissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
                 result => {
                     if (!result.hasPermission) {
-                        this._requestLocation();
+                        self._shouldRequestLocation().then((should) => {
+                            if (should) {
+                                self.requestLocation();
+                            }
+                        }).catch(console.error);
                     }
                 },
                 err => {
@@ -142,7 +142,23 @@ export class NotificationProvider {
             )
         }
         else {
-            this._requestLocation();
+            self.requestLocation();
         }
+    }
+
+    locationAllowed(): Promise<boolean> {
+        let self = this;
+        return new Promise<boolean>((resolve, reject) => {
+            if (self.platform.is('android')) {
+                self.permissions.checkPermission(self.permissions.PERMISSION.ACCESS_COARSE_LOCATION).then(
+                    result => {
+                        resolve(result.hasPermission);
+                    }).catch(reject);
+            }
+            else {
+                // TODO find out for iOS as well.
+                return true;
+            }
+        });
     }
 }

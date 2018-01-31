@@ -1,13 +1,14 @@
-import { NgModule } from '@angular/core';
-import { IonicPageModule } from 'ionic-angular';
-import { RangerAlertCreatorPage } from './ranger-alert-creator';
+import {NgModule} from '@angular/core';
+import {IonicPageModule} from 'ionic-angular';
+import {RangerAlertCreatorPage} from './ranger-alert-creator';
 
 @NgModule({
-  declarations: [
-    RangerAlertCreatorPage,
-  ],
-  imports: [
-    IonicPageModule.forChild(RangerAlertCreatorPage),
-  ],
+    declarations: [
+        RangerAlertCreatorPage,
+    ],
+    imports: [
+        IonicPageModule.forChild(RangerAlertCreatorPage),
+    ],
 })
-export class RangerAlertCreatorPageModule {}
+export class RangerAlertCreatorPageModule {
+}

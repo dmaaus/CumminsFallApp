@@ -39,7 +39,7 @@
         <splash density="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
         <splash density="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
-        <custom-config-file mode="add" parent="/*" target="AndroidManifest.xml">
+        <custom-config-file mode="merge" parent="/*" target="AndroidManifest.xml">
             <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
         </custom-config-file>
     </platform>

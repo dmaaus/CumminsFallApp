@@ -21,6 +21,7 @@ import {OneSignal} from "@ionic-native/onesignal";
 import {NotificationProvider} from '../providers/notification/notification';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {IonicStorageModule} from "@ionic/storage";
+import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
 
 @NgModule({
     declarations: [
@@ -31,7 +32,8 @@ import {IonicStorageModule} from "@ionic/storage";
         SettingsPage,
         RangerLoginPage,
         RangerRegisterPage,
-        RangerAlertCreatorPage
+        RangerAlertCreatorPage,
+        NotificationSettingsPage
     ],
     imports: [
         BrowserModule,
@@ -48,7 +50,8 @@ import {IonicStorageModule} from "@ionic/storage";
         SettingsPage,
         RangerLoginPage,
         RangerRegisterPage,
-        RangerAlertCreatorPage
+        RangerAlertCreatorPage,
+        NotificationSettingsPage
     ],
     providers: [
         StatusBar,
