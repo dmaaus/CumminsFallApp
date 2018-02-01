@@ -20,6 +20,8 @@ export class NotificationProvider {
     static readonly ALL: string = "All";
     private static readonly LOCATION_KNOWN: string = "Location_Allowed";
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = "times_asked_for_location";
+
+    // TODO apiKey should be acquired from server upon login
     appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
     apiKey: string = 'N2NjMzI0MTktODBhMC00OTAxLWEzZjAtODVlM2Y0YzQwMDdj';
     googleProjectNumber: string = '386934932788';
