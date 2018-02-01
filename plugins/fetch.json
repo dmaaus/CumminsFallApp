@@ -47,18 +47,10 @@
     "is_top_level": true,
     "variables": {}
   },
-  "onesignal-cordova-plugin": {
-    "source": {
-      "type": "registry",
-      "id": "onesignal-cordova-plugin@^2.2.5"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-custom-config": {
     "source": {
       "type": "registry",
-      "id": "cordova-custom-config"
+      "id": "cordova-custom-config@^5.0.2"
     },
     "is_top_level": true,
     "variables": {}
@@ -67,6 +59,14 @@
     "source": {
       "type": "registry",
       "id": "cordova-plugin-android-permissions@^1.0.0"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "onesignal-cordova-plugin": {
+    "source": {
+      "type": "registry",
+      "id": "onesignal-cordova-plugin"
     },
     "is_top_level": true,
     "variables": {}
