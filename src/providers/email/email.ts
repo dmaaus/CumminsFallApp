@@ -1,5 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
+import * as querystring from 'query-string';
 
 
 /*
@@ -21,26 +22,16 @@ export class EmailProvider {
         console.log('Hello EmailProvider Provider');
     }
 
-    toQueryString(params: Object): string {
-        let result = '?';
-        Object.keys(params).forEach(function(key) {
-            if (params.hasOwnProperty(key)) {
-                result += `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}&`
-            }
-        });
-        return result.substr(0, result.length - 1);
-    }
-
     send(from: string, to: string, subject: string, message: string): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            let body = {
-                'from': from,
-                'to': to,
-                'subject': subject,
-                'text': message
+            let params = {
+                from: from,
+                to: to,
+                subject: subject,
+                text: message
             };
 
-            this.http.post(this.url + this.toQueryString(body), {})
+            this.http.post(this.url + '?' + querystring.stringify(params), {})
                 .subscribe(() => {
                     resolve(true);
                 }, reject);
