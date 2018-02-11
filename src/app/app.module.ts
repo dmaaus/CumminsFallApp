@@ -22,6 +22,10 @@ import {NotificationProvider} from '../providers/notification/notification';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
+import {EmailProvider} from '../providers/email/email';
+import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
+import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
+import {RangerHomePage} from "../pages/ranger-home/ranger-home";
 
 @NgModule({
     declarations: [
@@ -33,7 +37,10 @@ import {NotificationSettingsPage} from "../pages/notification-settings/notificat
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage
+        NotificationSettingsPage,
+        RangerInfoPage,
+        ManageRangerPage,
+        RangerHomePage
     ],
     imports: [
         BrowserModule,
@@ -51,7 +58,10 @@ import {NotificationSettingsPage} from "../pages/notification-settings/notificat
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage
+        NotificationSettingsPage,
+        RangerInfoPage,
+        ManageRangerPage,
+        RangerHomePage
     ],
     providers: [
         StatusBar,
@@ -64,7 +74,8 @@ import {NotificationSettingsPage} from "../pages/notification-settings/notificat
         SQLite,
         OneSignal,
         NotificationProvider,
-        AndroidPermissions
+        AndroidPermissions,
+        EmailProvider
     ]
 })
 export class AppModule {

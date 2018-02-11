@@ -14,6 +14,7 @@ import {Storage} from '@ionic/storage'
 @Injectable()
 export class NotificationProvider {
 
+    static readonly WITHIN_PARK: string = "Within_Park";
     static readonly WITHIN_50_MILES: string = "Within_50_Miles_Of_Park";
     static readonly WITHIN_10_MILES: string = "Within_10_Miles_Of_Park";
     static readonly WITHIN_5_MILES: string = "Within_5_Miles_Of_Park";
