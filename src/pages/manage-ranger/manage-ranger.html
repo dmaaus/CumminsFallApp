@@ -6,13 +6,21 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>Manage Rangers</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>Manage Rangers</ion-title>
+    </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
+    <ion-list>
+        <button ion-item *ngFor="let ranger of rangers" (click)="selectRanger(ranger)">{{ranger}}</button>
+    </ion-list>
 
+    <ion-fab right bottom>
+        <button ion-fab (click)="addRanger()">
+            <ion-icon name="add"></ion-icon>
+        </button>
+    </ion-fab>
 </ion-content>

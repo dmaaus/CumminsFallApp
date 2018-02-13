@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
-import {EmailProvider} from "../../providers/email/email";
+import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {DatabaseProvider, Ranger} from "../../providers/database/database";
+import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 
 /**
  * Generated class for the RangerInfoPage page.
@@ -16,13 +17,39 @@ import {EmailProvider} from "../../providers/email/email";
 })
 export class RangerInfoPage {
 
-    constructor(public navCtrl: NavController, public navParams: NavParams, private email: EmailProvider) {
+    ranger: Ranger;
+
+    constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertCtrl: AlertController, private alertError: AlertErrorProvider) {
+        this.ranger = db.getRangerWithName(navParams.get('ranger'));
     }
 
-    sendEmail() {
-        this.email.send('mailgun@example.com', 'jonmcclung@gmail.com', 'Test Message', 'Hey, you got my test message! Hope that wasn\'t too difficult!').then(() => {
-            console.log('success!');
-        }).catch(console.error);
+    deleteRanger() {
+        this.alertCtrl.create({
+            title: 'Confirm Deletion',
+            message: `This will revoke all privileges from ${this.ranger.name}. Are you sure you want to continue?`,
+            buttons: [{
+                text: 'Ok',
+                handler: () => {
+                    this.db.deleteUser(this.ranger.username).then(() => {
+                        this.alertCtrl.create({
+                            title: 'Deletion Complete',
+                            message: `${this.ranger.name} was successfully deleted.`,
+                            buttons: ['Ok']
+                        }).present();
+                    }).catch(this.alertError.show)
+                }
+            }, {
+                text: 'Cancel',
+                role: 'cancel'
+            }]
+        }).present();
     }
 
+    revokeAdmin() {
+        // TODO
+    }
+
+    grantAdmin() {
+        // TODO
+    }
 }

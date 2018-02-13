@@ -26,6 +26,9 @@ import {EmailProvider} from '../providers/email/email';
 import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
 import {RangerHomePage} from "../pages/ranger-home/ranger-home";
+import {CreateRangerPage} from "../pages/create-ranger/create-ranger";
+import {AlertErrorProvider} from '../providers/alert-error/alert-error';
+import {ResetPasswordPage} from "../pages/reset-password/reset-password";
 
 @NgModule({
     declarations: [
@@ -40,7 +43,9 @@ import {RangerHomePage} from "../pages/ranger-home/ranger-home";
         NotificationSettingsPage,
         RangerInfoPage,
         ManageRangerPage,
-        RangerHomePage
+        RangerHomePage,
+        CreateRangerPage,
+        ResetPasswordPage
     ],
     imports: [
         BrowserModule,
@@ -61,7 +66,9 @@ import {RangerHomePage} from "../pages/ranger-home/ranger-home";
         NotificationSettingsPage,
         RangerInfoPage,
         ManageRangerPage,
-        RangerHomePage
+        RangerHomePage,
+        CreateRangerPage,
+        ResetPasswordPage
     ],
     providers: [
         StatusBar,
@@ -75,7 +82,8 @@ import {RangerHomePage} from "../pages/ranger-home/ranger-home";
         OneSignal,
         NotificationProvider,
         AndroidPermissions,
-        EmailProvider
+        EmailProvider,
+    AlertErrorProvider
     ]
 })
 export class AppModule {

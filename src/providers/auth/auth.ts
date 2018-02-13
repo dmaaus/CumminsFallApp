@@ -1,40 +1,38 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {DatabaseProvider} from "../database/database";
+import {DatabaseProvider, Ranger} from "../database/database";
 
 @Injectable()
 export class AuthProvider {
 
-    username: string = '';
+    ranger: Ranger = null;
 
     constructor(public http: HttpClient, private db: DatabaseProvider) {
-        console.log('Hello AuthProvider Provider');
     }
 
     loggedIn(): boolean {
-        return this.username !== '';
+        return this.ranger !== null;
     }
 
-    login(username: string, password: string): Promise<boolean> {
+    login(username: string, password: string): Promise<Ranger> {
         let self = this;
-        return new Promise<boolean>(function (resolve, reject) {
-            self.db.authenticateUser(username, password).then(valid => {
-                self.username = valid ? username : '';
-                resolve(valid);
+        return new Promise<Ranger>(function (resolve, reject) {
+            self.db.authenticateUser(username, password).then(ranger => {
+                self.ranger = ranger;
+                resolve(ranger);
             })
                 .catch(msg => {
-                    self.username = '';
+                    self.ranger = null;
                     reject(msg);
                 });
         });
     }
 
+    resetPassword(oldPassword, newPassword): Promise<boolean> {
+        return this.db.resetPassword(this.ranger.username, oldPassword, newPassword);
+    }
+
     logout() {
-        this.username = '';
+        this.ranger = null;
     }
-
-    register(username: string, password: string): Promise<boolean> {
-        return this.db.registerUser(username, password);
-    }
-
 }

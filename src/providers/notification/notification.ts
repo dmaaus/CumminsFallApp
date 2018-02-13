@@ -98,7 +98,6 @@ export class NotificationProvider {
                 }
                 else {
                     self.storage.set(NotificationProvider.TIMES_CONSIDERED_ASKING_FOR_LOCATION, value + 1).catch(reject);
-                    console.log(value);
                     resolve(false);
                 }
             }).catch(reject);

@@ -6,13 +6,16 @@
 -->
 <ion-header>
 
-  <ion-navbar>
-    <ion-title>RangerHome</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>Ranger Home</ion-title>
+    </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
-
+    <ion-list>
+        <button ion-item (click)="goToCreateAlert()">Create Alert</button>
+        <button ion-item *ngIf="isAdmin()" (click)="goToManageRangers()">Manage Rangers</button>
+    </ion-list>
 </ion-content>
