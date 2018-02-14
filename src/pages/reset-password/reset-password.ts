@@ -2,13 +2,6 @@ import {Component} from '@angular/core';
 import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {AuthProvider} from "../../providers/auth/auth";
 
-/**
- * Generated class for the ResetPasswordPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
     selector: 'page-reset-password',
@@ -26,6 +19,8 @@ export class ResetPasswordPage {
 
     constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthProvider, private alertCtrl: AlertController) {
         this.pageWhenDone = navParams.get('pageWhenDone');
+        console.log(this.pageWhenDone);
+        console.log(typeof this.pageWhenDone);
     }
 
     reset() {
@@ -42,9 +37,15 @@ export class ResetPasswordPage {
                 buttons: [{
                     text: 'Ok',
                     handler: () => {
-                        self.navCtrl.push(self.pageWhenDone).then(() => {
-                            self.navCtrl.remove(self.navCtrl.length() - 2);
-                        });
+                        if (self.pageWhenDone !== undefined) {
+                            self.navCtrl.push(self.pageWhenDone).then(() => {
+                                self.navCtrl.remove(self.navCtrl.length() - 2);
+                            });
+                        }
+                        else {
+                            self.navCtrl.pop();
+                        }
+                        self.showError('');
                     }
                 }],
                 enableBackdropDismiss: false

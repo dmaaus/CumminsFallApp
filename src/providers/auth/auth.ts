@@ -5,34 +5,36 @@ import {DatabaseProvider, Ranger} from "../database/database";
 @Injectable()
 export class AuthProvider {
 
-    ranger: Ranger = null;
+    loggedInRanger: Ranger = Ranger.NULL_RANGER;
 
     constructor(public http: HttpClient, private db: DatabaseProvider) {
     }
 
     loggedIn(): boolean {
-        return this.ranger !== null;
+        return this.loggedInRanger.equals(Ranger.NULL_RANGER);
     }
 
     login(username: string, password: string): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>(function (resolve, reject) {
             self.db.authenticateUser(username, password).then(ranger => {
-                self.ranger = ranger;
+                self.loggedInRanger = ranger;
+                console.log('loggedInRange is now ' + self.loggedInRanger.toString());
                 resolve(ranger);
             })
                 .catch(msg => {
-                    self.ranger = null;
+                    self.loggedInRanger = Ranger.NULL_RANGER;
+                    console.log('loggedInRange is now null');
                     reject(msg);
                 });
         });
     }
 
     resetPassword(oldPassword, newPassword): Promise<boolean> {
-        return this.db.resetPassword(this.ranger.username, oldPassword, newPassword);
+        return this.db.resetPassword(this.loggedInRanger.username, oldPassword, newPassword);
     }
 
     logout() {
-        this.ranger = null;
+        this.loggedInRanger = Ranger.NULL_RANGER;
     }
 }

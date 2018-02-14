@@ -2,13 +2,8 @@ import {Component} from '@angular/core';
 import {IonicPage, NavController} from 'ionic-angular';
 import {RangerLoginPage} from "../ranger-login/ranger-login";
 import {NotificationSettingsPage} from "../notification-settings/notification-settings";
-
-/**
- * Generated class for the SettingsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import {AuthProvider} from "../../providers/auth/auth";
+import {RangerHomePage} from "../ranger-home/ranger-home";
 
 @IonicPage()
 @Component({
@@ -17,12 +12,12 @@ import {NotificationSettingsPage} from "../notification-settings/notification-se
 })
 export class SettingsPage {
 
-    constructor(public navCtrl: NavController) {
+    constructor(public navCtrl: NavController, private auth: AuthProvider) {
 
     }
 
     goToRangerLogin() {
-        this.navCtrl.push(RangerLoginPage)
+        this.navCtrl.push(this.auth.loggedIn() ? RangerHomePage : RangerLoginPage);
     }
 
     goToNotificationSettings() {

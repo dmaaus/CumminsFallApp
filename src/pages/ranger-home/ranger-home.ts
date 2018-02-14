@@ -4,13 +4,7 @@ import {RangerAlertCreatorPage} from "../ranger-alert-creator/ranger-alert-creat
 import {ManageRangerPage} from "../manage-ranger/manage-ranger";
 import {AuthProvider} from "../../providers/auth/auth";
 import {DatabaseProvider} from "../../providers/database/database";
-
-/**
- * Generated class for the RangerHomePage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import {ResetPasswordPage} from "../reset-password/reset-password";
 
 @IonicPage()
 @Component({
@@ -20,7 +14,6 @@ import {DatabaseProvider} from "../../providers/database/database";
 export class RangerHomePage {
 
     constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthProvider, private db: DatabaseProvider) {
-        console.log(this.db);
     }
 
     goToCreateAlert() {
@@ -32,6 +25,15 @@ export class RangerHomePage {
     }
 
     isAdmin() {
-        return this.auth.ranger ? this.auth.ranger.isAdmin : false;
+        return this.auth.loggedInRanger ? this.auth.loggedInRanger.isAdmin : false;
+    }
+
+    resetPassword() {
+        this.navCtrl.push(ResetPasswordPage);
+    }
+
+    logout() {
+        this.navCtrl.pop();
+        this.auth.logout();
     }
 }

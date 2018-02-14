@@ -6,47 +6,33 @@ import * as generatePassword from 'generate-password';
 import {SQLite, SQLiteObject} from "@ionic-native/sqlite";
 import {EmailProvider} from "../email/email";
 
-/*
-  Generated class for the DatabaseProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class DatabaseProvider implements OnDestroy {
     // TODO the app needs to send the credentials to the remote server rather than storing them locally
     db: any;
+    ready: boolean = false;
     static readonly NEW_RANGER_EXPIRATION_IN_MINUTES: number = 15;
 
     constructor(public http: HttpClient, private sqlite: SQLite, private email: EmailProvider) {
+
         let self = this;
         this.sqlite.create({
             name: 'database.db',
             location: 'default',
-        })
-            .then((db: SQLiteObject) => {
-                self.db = db;
-                db.executeSql(
-                    `CREATE TABLE IF NOT EXISTS ${DB_CONSTS.RANGER_TABLE_NAME} (` +
-                    `  ${DB_CONSTS.RANGER_USERNAME} VARCHAR(128) PRIMARY KEY NOT NULL,` +
-                    `  ${DB_CONSTS.RANGER_PASSWORD} CHAR(60) NOT NULL,` +
-                    `  ${DB_CONSTS.RANGER_NAME} VARCHAR(256) NOT NULL,` +
-                    `  ${DB_CONSTS.RANGER_EMAIL} VARCHAR(254) NOT NULL,` +
-                    `  ${DB_CONSTS.RANGER_IS_ADMIN} INTEGER NOT NULL,` +
-                    `  ${DB_CONSTS.RANGER_EXPIRATION} DATE` +
-                    `)`, []).then(() => {
-                    self.deleteUser('jonmcclung').catch(self.error).then(() => {
-                        self.addUser(new Ranger('Jon McClung', 'jonmcclung', 'jonmcclung@gmail.com', true)).catch(self.error);
-                    });
-                }).catch(self.error);
+        }).then((db: SQLiteObject) => {
+            self.db = db;
+            db.executeSql(
+                `CREATE TABLE IF NOT EXISTS ${DB_CONSTS.RANGER_TABLE_NAME} (` +
+                `  ${DB_CONSTS.RANGER_USERNAME} VARCHAR(128) PRIMARY KEY NOT NULL,` +
+                `  ${DB_CONSTS.RANGER_PASSWORD} CHAR(60) NOT NULL,` +
+                `  ${DB_CONSTS.RANGER_NAME} VARCHAR(256) NOT NULL,` +
+                `  ${DB_CONSTS.RANGER_EMAIL} VARCHAR(254) NOT NULL,` +
+                `  ${DB_CONSTS.RANGER_IS_ADMIN} INTEGER NOT NULL,` +
+                `  ${DB_CONSTS.RANGER_EXPIRATION} DATE` +
+                `)`, []).then(() => {
+                self.deleteUser('joeschmoe').catch(self.error);
             }).catch(self.error);
-        // self.addUser(new Ranger('Jon McClung2', 'jonmcclung2', 'jonmcclung@gmail.com', false));
-        // self.addUser(new Ranger('Jon McClung3', 'jonmcclung3', 'jonmcclung@gmail.com', false));
-        // self.addUser(new Ranger('Jon McClung4', 'jonmcclung4', 'jonmcclung@gmail.com', false));
-        // self.addUser(new Ranger('Jon McClung5', 'jonmcclung5', 'jonmcclung@gmail.com', false));
-        // self.addUser(new Ranger('Jon McClung6', 'jonmcclung6', 'jonmcclung@gmail.com', false));
-        // self.addUser(new Ranger('Jon McClung7', 'jonmcclung7', 'jonmcclung@gmail.com', false));
-        // self.addUser(new Ranger('Jon McClung8', 'jonmcclung8', 'jonmcclung@gmail.com', false));
+        }).catch(self.error);
     }
 
     ngOnDestroy() {
@@ -72,7 +58,7 @@ export class DatabaseProvider implements OnDestroy {
                     ` ${DB_CONSTS.RANGER_PASSWORD} = ?,` +
                     ` ${DB_CONSTS.RANGER_EXPIRATION} = ?` +
                     ` WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
-                    [newPassword, null, username]
+                    [hash, null, username]
                 )
                     .then(resolve(true))
                     .catch(reject);
@@ -141,18 +127,47 @@ export class DatabaseProvider implements OnDestroy {
         });
     }
 
-    getRangerNames(): string[] {
-        // TODO make real
-        return ['Jon McClung', 'Joe Schmoe', 'Alpha Schlarf'];
+    getRangerNames(): Promise<string[]> {
+        let self = this;
+        console.log('getting ranger names');
+        return new Promise<string[]>((resolve, reject) => {
+            console.log('executing sql');
+            self.db.executeSql( // TODO not *
+                `SELECT * FROM ${DB_CONSTS.RANGER_TABLE_NAME}`, []
+            ).then(result => {
+                let names: string[] = [];
+                console.log(result);
+                let rows = result.rows;
+                let length = rows.length;
+                for (let i = 0; i < length; i++) {
+                    names.push(rows.item(i)[DB_CONSTS.RANGER_NAME]);
+                }
+                console.log('names: ' + names);
+                resolve(names);
+            }).catch(reject);
+        });
     }
 
-    getRangerWithName(name: string): Ranger {
-        // TODO make real
-        return new Ranger(name, 'jonmcclung', 'jonmcclung@gmail.com', false);
+    getRangerWithName(name: string): Promise<Ranger> {
+        let self = this;
+        return new Promise<Ranger>((resolve, reject) => {
+            self.db.executeSql(
+                `SELECT ${DB_CONSTS.RANGER_USERNAME}, ${DB_CONSTS.RANGER_NAME}, ${DB_CONSTS.RANGER_EXPIRATION}, ` +
+                `${DB_CONSTS.RANGER_EMAIL}, ${DB_CONSTS.RANGER_IS_ADMIN}` +
+
+                `  FROM ${DB_CONSTS.RANGER_TABLE_NAME}` +
+                `  WHERE ${DB_CONSTS.RANGER_NAME} = ?`,
+                [name]
+            ).then(result => {
+                let item = result.rows.item(0);
+                Ranger.fromDatabaseQuery(item).then(value => {
+                    resolve(value);
+                }).catch(reject);
+            }).catch(reject);
+        });
     }
 
     authenticateUser(username: string, password: string): Promise<Ranger> {
-        console.log('authenticateUser');
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
             let fail = function () {
@@ -175,26 +190,11 @@ export class DatabaseProvider implements OnDestroy {
                     let result = rows.item(0);
                     if (!bcrypt.compareSync(password, result[DB_CONSTS.RANGER_PASSWORD])) {
                         fail();
+                        // TODO remove
+                        console.log(`password given: ${password} was wrong`);
                         return;
                     }
-                    let ranger = new Ranger(
-                        result[DB_CONSTS.RANGER_NAME],
-                        result[DB_CONSTS.RANGER_USERNAME],
-                        result[DB_CONSTS.RANGER_EMAIL],
-                        result[DB_CONSTS.RANGER_IS_ADMIN]);
-
-                    let expiration: Date = result[DB_CONSTS.RANGER_EXPIRATION];
-                    if (expiration != null) {
-                        if (new Date(expiration).getTime() < Date.now()) {
-                            reject('Temporary code has expired. Please have an admin recreate the account');
-                            return;
-                        }
-                        else {
-                            ranger.needsToResetPassword = true;
-                        }
-                    }
-                    console.log(ranger);
-                    resolve(ranger);
+                    resolve(Ranger.fromDatabaseQuery(result));
                 })
                 .catch((msg) => {
                         self.taskFailed('user authentication');
@@ -226,7 +226,33 @@ export class DatabaseProvider implements OnDestroy {
 }
 
 export class Ranger {
+
     constructor(public name: string, public username: string, public email: string, public isAdmin: boolean, public needsToResetPassword: boolean = false) {
+    }
+
+    static readonly NULL_RANGER: Ranger = new Ranger('', '', '', false, false);
+
+    static fromDatabaseQuery(item: any): Promise<Ranger> {
+        return new Promise<Ranger>((resolve, reject) => {
+            let ranger = new Ranger(
+                item[DB_CONSTS.RANGER_NAME],
+                item[DB_CONSTS.RANGER_USERNAME],
+                item[DB_CONSTS.RANGER_EMAIL],
+                item[DB_CONSTS.RANGER_IS_ADMIN]);
+
+            let expiration: Date = item[DB_CONSTS.RANGER_EXPIRATION];
+            if (expiration != null) {
+                if (new Date(expiration).getTime() < Date.now()) {
+                    reject('Temporary code has expired. Please have an admin recreate the account');
+                    return;
+                }
+                else {
+                    ranger.needsToResetPassword = true;
+                }
+            }
+            console.log(ranger);
+            resolve(ranger);
+        });
     }
 
     toString(): string {
@@ -237,6 +263,15 @@ export class Ranger {
             }
         });
         return result + '}]';
+    }
+
+    equals(ranger: Ranger) {
+        Object.keys(this).forEach((key) => {
+            if (this.hasOwnProperty(key) && this[key] != ranger[key]) {
+                return false;
+            }
+        });
+        return true;
     }
 }
 

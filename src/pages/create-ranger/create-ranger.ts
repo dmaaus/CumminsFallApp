@@ -3,13 +3,6 @@ import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angula
 import {DatabaseProvider, Ranger} from "../../providers/database/database";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 
-/**
- * Generated class for the CreateRangerPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
     selector: 'page-create-ranger',
@@ -17,22 +10,24 @@ import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 })
 export class CreateRangerPage {
 
-    ranger: Ranger;
+    ranger: Ranger = Ranger.NULL_RANGER;
 
     constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertCtrl: AlertController, private alertError: AlertErrorProvider) {
     }
 
     create() {
-        this.db.addUser(this.ranger).then((success) => {
+        let self = this;
+        self.db.addUser(this.ranger).then((success) => {
             if (success) {
-                this.alertCtrl.create({
+                self.alertCtrl.create({
                     title: 'Creation Successful',
-                    message: `A confirmation email has been sent to ${this.ranger.email} which will expire in ${DatabaseProvider.NEW_RANGER_EXPIRATION_IN_MINUTES} minutes.`,
+                    message: `A confirmation email has been sent to ${self.ranger.email} which will expire in` +
+                    ` ${DatabaseProvider.NEW_RANGER_EXPIRATION_IN_MINUTES} minutes.`,
                     buttons: ['Ok']
                 }).present();
             }
         })
-            .catch(this.alertError.show);
+            .catch(self.alertError.showCallback());
     }
 
 }

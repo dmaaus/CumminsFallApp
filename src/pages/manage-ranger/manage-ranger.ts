@@ -3,13 +3,7 @@ import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {DatabaseProvider} from "../../providers/database/database";
 import {RangerInfoPage} from "../ranger-info/ranger-info";
 import {CreateRangerPage} from "../create-ranger/create-ranger";
-
-/**
- * Generated class for the ManageRangerPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 
 @IonicPage()
 @Component({
@@ -17,12 +11,13 @@ import {CreateRangerPage} from "../create-ranger/create-ranger";
     templateUrl: 'manage-ranger.html',
 })
 export class ManageRangerPage {
-    rangers: string[];
+    rangers: string[] = [];
 
-    // TODO cannot delete self.
-
-    constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider) {
-        this.rangers = db.getRangerNames();
+    constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertError: AlertErrorProvider) {
+        let self = this;
+        self.db.getRangerNames().then(names => {
+            self.rangers = names;
+        }).catch(self.alertError.showCallback());
     }
 
     selectRanger(ranger: string) {

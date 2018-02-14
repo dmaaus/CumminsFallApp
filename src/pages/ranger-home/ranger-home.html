@@ -1,9 +1,3 @@
-<!--
-  Generated template for the RangerHomePage page.
-
-  See http://ionicframework.com/docs/components/#navigation for more info on
-  Ionic pages and navigation.
--->
 <ion-header>
 
     <ion-navbar>
@@ -17,5 +11,7 @@
     <ion-list>
         <button ion-item (click)="goToCreateAlert()">Create Alert</button>
         <button ion-item *ngIf="isAdmin()" (click)="goToManageRangers()">Manage Rangers</button>
+        <button ion-item (click)="resetPassword()">Reset Password</button>
+        <button ion-item (click)="logout()">Logout</button>
     </ion-list>
 </ion-content>

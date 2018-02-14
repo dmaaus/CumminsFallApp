@@ -33,14 +33,17 @@ export class RangerLoginPage {
                     buttons: [{
                         text: 'Ok',
                         handler: () => {
-                            self.navCtrl.push(ResetPasswordPage, {pageWhenDone: RangerHomePage});
+                            self.navCtrl.push(ResetPasswordPage, {pageWhenDone: RangerHomePage}).then(() => {
+                                self.navCtrl.remove(self.navCtrl.length() - 2);
+                            });
+                            self.showError('');
                         }
                     }],
                     enableBackdropDismiss: false
                 }).present();
             }
             else {
-                self.navCtrl.push(RangerHomePage);
+                self.continue();
             }
         }).catch(self.error());
         this.password = '';  // clear for security
@@ -55,6 +58,9 @@ export class RangerLoginPage {
     }
 
     private continue() {
-
+        this.navCtrl.push(RangerHomePage).then(() => {
+            this.navCtrl.remove(this.navCtrl.length() - 2);
+        });
+        this.showError('');
     }
 }

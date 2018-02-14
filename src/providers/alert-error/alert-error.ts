@@ -14,12 +14,15 @@ export class AlertErrorProvider {
         console.log('Hello AlertErrorProvider Provider');
     }
 
-    show(error: string) {
+    showCallback() {
+        return this.show.bind(this);
+    }
+
+    show(error) {
         this.alertCtrl.create({
             title: 'Error',
             message: error,
             buttons: ['Ok']
         }).present();
     }
-
 }
