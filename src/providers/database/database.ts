@@ -39,6 +39,50 @@ export class DatabaseProvider implements OnDestroy {
         this.db.close();
     }
 
+    static getExpiration(): Date {
+        let res = new Date();
+        res.setMinutes(res.getMinutes() + DatabaseProvider.NEW_RANGER_EXPIRATION_IN_MINUTES);
+        return res;
+    }
+
+    sendConfirmationEmail(ranger: Ranger, password: string, expiration: Date): Promise<boolean> {
+        return this.email.send(
+            'no-reply@cumminsfalls.com',
+            ranger.email,
+            'Confirm Account Registration',
+            `You have been added as a ranger of Cummins Falls. ` +
+            `Please download the app and confirm your account registration. ` +
+            `To do so, go to Settings > Ranger Login and use the code ${password}\n\n` +
+            `Note that this code expires at ${expiration.toLocaleTimeString()}`);
+    }
+
+    static genPassword(): string {
+        return generatePassword.generate({
+            length: 12,
+            numbers: true
+        });
+    }
+
+    resendConfirmationCode(ranger: Ranger): Promise<boolean> {
+        let self = this;
+        return new Promise<boolean>((resolve, reject) => {
+            let password = DatabaseProvider.genPassword();
+            let hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
+            let expiration = DatabaseProvider.getExpiration();
+            self.db.executeSql(
+                `UPDATE ${DB_CONSTS.RANGER_TABLE_NAME}` +
+                `  SET` +
+                `  ${DB_CONSTS.RANGER_EXPIRATION} = ?,` +
+                `  ${DB_CONSTS.RANGER_PASSWORD} = ?` +
+                `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
+                [expiration, password, ranger.username]
+            ).then(() => {
+                self.sendConfirmationEmail(ranger, password, expiration)
+                    .then(resolve).catch(reject);
+            }).catch(reject);
+        });
+    }
+
     resetPassword(username: string, oldPassword: string, newPassword: string): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
@@ -75,7 +119,9 @@ export class DatabaseProvider implements OnDestroy {
                 `DELETE FROM ${DB_CONSTS.RANGER_TABLE_NAME} ` +
                 `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`, [username]
             )
-                .then(resolve(true))
+                .then(() => {
+                    resolve(true);
+                })
                 .catch(reject);
         });
     }
@@ -85,12 +131,8 @@ export class DatabaseProvider implements OnDestroy {
         console.log('addUser');
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            let password = generatePassword.generate({
-                length: 12,
-                numbers: true
-            });
-            let salt = bcrypt.genSaltSync();
-            let hash = bcrypt.hashSync(password, salt);
+            let password = DatabaseProvider.genPassword();
+            let hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
             let count = 'count';
             self.db.executeSql(
                 `SELECT COUNT(*) AS ${count} FROM ${DB_CONSTS.RANGER_TABLE_NAME}` +
@@ -101,27 +143,20 @@ export class DatabaseProvider implements OnDestroy {
                         reject(`There is already an account associated with ${ranger.username}.`);
                         return;
                     }
-                    let expiration = new Date();
-                    expiration.setMinutes(expiration.getMinutes() + DatabaseProvider.NEW_RANGER_EXPIRATION_IN_MINUTES);
+                    let expiration = DatabaseProvider.getExpiration();
                     console.log('expiration is ' + expiration);
                     self.db.executeSql(
                         `INSERT INTO ${DB_CONSTS.RANGER_TABLE_NAME}` +
-                        `  (${DB_CONSTS.RANGER_USERNAME}, ${DB_CONSTS.RANGER_PASSWORD}, ${DB_CONSTS.RANGER_NAME}, ${DB_CONSTS.RANGER_EMAIL}, ${DB_CONSTS.RANGER_IS_ADMIN}, ${DB_CONSTS.RANGER_EXPIRATION}) ` +
+                        `  (${DB_CONSTS.RANGER_USERNAME}, ${DB_CONSTS.RANGER_PASSWORD},` +
+                        `   ${DB_CONSTS.RANGER_NAME}, ${DB_CONSTS.RANGER_EMAIL}, ${DB_CONSTS.RANGER_IS_ADMIN},` +
+                        `   ${DB_CONSTS.RANGER_EXPIRATION}) ` +
                         `  VALUES ` +
                         `  (?, ?, ?, ?, ?, ?)`,
                         [ranger.username, hash, ranger.name, ranger.email, ranger.isAdmin ? 1 : 0, expiration])
                         .then(() => {
                             /* They should get their username from their admin (this process would usually be done
                             with the admin */
-                            let message = `You have been added as a ranger of Cummins Falls. Please download the app and confirm your account registration. To do so, go to Settings > Ranger Login and use the code ${password}\n\nNote that this code expires at ${expiration.toLocaleTimeString()}`;
-                            this.email.send(
-                                'no-reply@cumminsfalls.com',
-                                ranger.email,
-                                'Confirm Account Registration',
-                                message)
-                                .catch(reject);
-                            console.log('email sent');
-                            resolve(true);
+                            this.sendConfirmationEmail(ranger, password, expiration).then(resolve).catch(reject);
                         }).catch(reject);
                 }).catch(reject);
         });
@@ -194,7 +229,14 @@ export class DatabaseProvider implements OnDestroy {
                         console.log(`password given: ${password} was wrong`);
                         return;
                     }
-                    resolve(Ranger.fromDatabaseQuery(result));
+                    Ranger.fromDatabaseQuery(result).then(ranger => {
+                        if (ranger.state === Ranger.EXPIRED) {
+                            reject('Temporary code has expired. Please have an admin recreate the account');
+                        }
+                        else {
+                            resolve(ranger);
+                        }
+                    });
                 })
                 .catch((msg) => {
                         self.taskFailed('user authentication');
@@ -223,14 +265,39 @@ export class DatabaseProvider implements OnDestroy {
             console.error(task + ' encountered error: ' + msg);
         }
     }
+
+    changeAdminRights(ranger: Ranger, isAdmin: boolean): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            // TODO
+            reject('Not implemented');
+        });
+    }
 }
 
 export class Ranger {
 
-    constructor(public name: string, public username: string, public email: string, public isAdmin: boolean, public needsToResetPassword: boolean = false) {
+    static readonly VALID: number = 1;
+    static readonly EXPIRED: number = 2;
+    static readonly NEEDS_CONFIRMATION: number = 0;
+
+    constructor(public name: string,
+                public username: string,
+                public email: string,
+                public isAdmin: boolean,
+                public state: number = Ranger.VALID) {
     }
 
-    static readonly NULL_RANGER: Ranger = new Ranger('', '', '', false, false);
+
+
+    isExpired() {
+        return this.state === Ranger.EXPIRED;
+    }
+
+    needsToResetPassword() {
+        return this.state === Ranger.NEEDS_CONFIRMATION;
+    }
+
+    static readonly NULL_RANGER: Ranger = new Ranger('', '', '', false, Ranger.EXPIRED);
 
     static fromDatabaseQuery(item: any): Promise<Ranger> {
         return new Promise<Ranger>((resolve, reject) => {
@@ -238,16 +305,16 @@ export class Ranger {
                 item[DB_CONSTS.RANGER_NAME],
                 item[DB_CONSTS.RANGER_USERNAME],
                 item[DB_CONSTS.RANGER_EMAIL],
-                item[DB_CONSTS.RANGER_IS_ADMIN]);
+                item[DB_CONSTS.RANGER_IS_ADMIN],
+                item[DB_CONSTS.RANGER_STATE]);
 
             let expiration: Date = item[DB_CONSTS.RANGER_EXPIRATION];
             if (expiration != null) {
                 if (new Date(expiration).getTime() < Date.now()) {
-                    reject('Temporary code has expired. Please have an admin recreate the account');
-                    return;
+                    ranger.state = Ranger.EXPIRED;
                 }
                 else {
-                    ranger.needsToResetPassword = true;
+                    ranger.state = Ranger.NEEDS_CONFIRMATION;
                 }
             }
             console.log(ranger);
@@ -265,13 +332,10 @@ export class Ranger {
         return result + '}]';
     }
 
-    equals(ranger: Ranger) {
-        Object.keys(this).forEach((key) => {
-            if (this.hasOwnProperty(key) && this[key] != ranger[key]) {
-                return false;
-            }
+    equals(ranger: Ranger): boolean {
+        return !Object.keys(this).some((key) => {
+            return this.hasOwnProperty(key) && this[key] !== ranger[key];
         });
-        return true;
     }
 }
 
@@ -283,4 +347,5 @@ class DB_CONSTS {
     static readonly RANGER_EMAIL: string = 'email';
     static readonly RANGER_IS_ADMIN: string = 'isAdmin';
     static readonly RANGER_EXPIRATION: string = 'expiration';
+    static readonly RANGER_STATE: string = 'state';
 }

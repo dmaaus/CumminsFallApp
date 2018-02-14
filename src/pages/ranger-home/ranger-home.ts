@@ -33,7 +33,7 @@ export class RangerHomePage {
     }
 
     logout() {
-        this.navCtrl.pop();
         this.auth.logout();
+        this.navCtrl.pop();
     }
 }

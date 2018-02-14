@@ -8,7 +8,7 @@
 
 
 <ion-content padding>
-    
+
     <ion-grid>
         <ion-row>
             <ion-col class="first">Username:</ion-col>
@@ -16,15 +16,30 @@
         </ion-row>
         <ion-row>
             <ion-col class="first">Email:</ion-col>
-            <ion-col>{{ranger.email + 'oaisrentaoiesrntoaiesrntoian'}}</ion-col>
+            <ion-col>{{ranger.email}}</ion-col>
         </ion-row>
         <ion-row>
             <ion-col class="first">Admin:</ion-col>
             <ion-col>{{ranger.isAdmin ? 'Yes' : 'No'}}</ion-col>
         </ion-row>
     </ion-grid>
-    <button ion-button full *ngIf="!lookingAtOwnInfo()" (click)="deleteRanger()">Delete</button>
-    <button ion-button full *ngIf="!lookingAtOwnInfo() && ranger.isAdmin" (click)="revokeAdmin()">Revoke Admin Rights</button>
-    <button ion-button full *ngIf="!ranger.isAdmin" (click)="grantAdmin()">Grant Admin Rights</button>
-
+    <ion-col *ngIf="!lookingAtOwnInfo()">
+    <ion-row>
+        <button ion-button full (click)="deleteRanger()">Delete</button>
+    </ion-row>
+    <ion-row>
+        <button ion-button full *ngIf="!ranger.isExpired() && ranger.isAdmin "
+                (click)="revokeAdmin()">Revoke Admin Rights
+        </button>
+    </ion-row>
+    <ion-row>
+        <button ion-button full *ngIf="!ranger.isExpired() && !ranger.isAdmin" (click)="grantAdmin()">Grant Admin
+            Rights
+        </button>
+    </ion-row>
+    <ion-row>
+        <button ion-button full *ngIf="ranger.isExpired()" (click)="resendConfirmationCode()">Resend Confirmation Code
+        </button>
+    </ion-row>
+    </ion-col>
 </ion-content>

@@ -11,7 +11,7 @@ export class AuthProvider {
     }
 
     loggedIn(): boolean {
-        return this.loggedInRanger.equals(Ranger.NULL_RANGER);
+        return !this.loggedInRanger.equals(Ranger.NULL_RANGER);
     }
 
     login(username: string, password: string): Promise<Ranger> {

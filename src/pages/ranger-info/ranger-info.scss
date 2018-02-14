@@ -3,4 +3,8 @@ page-ranger-info {
   ion-col.first {
     font-weight: bold;
   }
+
+  ion-col + ion-col {
+    text-align: end;
+  }
 }

@@ -14,7 +14,12 @@ export class RangerInfoPage {
     ranger: Ranger = Ranger.NULL_RANGER;
 
     lookingAtOwnInfo() {
-        return this.ranger.equals(this.auth.loggedInRanger);
+        console.log('Am I looking at my own info?');
+        console.log('Me: ' + this.auth.loggedInRanger.toString());
+        console.log('Looking at: ' + this.ranger.toString());
+        let result = this.ranger.equals(this.auth.loggedInRanger);
+        console.log('verdict: ' + result);
+        return result;
     }
 
     constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertCtrl: AlertController, private alertError: AlertErrorProvider, private auth: AuthProvider) {
@@ -37,7 +42,12 @@ export class RangerInfoPage {
                         self.alertCtrl.create({
                             title: 'Deletion Complete',
                             message: `${self.ranger.name} was successfully deleted.`,
-                            buttons: ['Ok']
+                            buttons: [{
+                                text: 'Ok',
+                                handler: () => {
+                                    self.navCtrl.pop();
+                                }
+                            }]
                         }).present();
                     }).catch(self.alertError.showCallback())
                 }
@@ -49,10 +59,35 @@ export class RangerInfoPage {
     }
 
     revokeAdmin() {
-        // TODO
+        let self = this;
+        self.db.changeAdminRights(self.ranger, false).then(() => {
+            self.alertCtrl.create({
+                title: 'Rights Revoked',
+                message: `${self.ranger.name} no longer has admin privileges.`,
+                buttons: ['Ok']
+            })
+        }).catch(self.alertError.showCallback());
     }
 
     grantAdmin() {
-        // TODO
+        let self = this;
+        self.db.changeAdminRights(self.ranger, true).then(() => {
+            self.alertCtrl.create({
+                title: 'Rights Granted',
+                message: `${self.ranger.name} now has admin privileges.`,
+                buttons: ['Ok']
+            })
+        }).catch(self.alertError.showCallback());
+    }
+
+    resendConfirmationCode() {
+        let self = this;
+        this.db.resendConfirmationCode(this.ranger).then(() => {
+            self.alertCtrl.create({
+                title: 'Code Sent',
+                message: `Another confirmation code has been sent to ${self.ranger.name} at ${self.ranger.email}.`,
+                buttons: ['Ok']
+            })
+        }).catch(self.alertError.showCallback());
     }
 }

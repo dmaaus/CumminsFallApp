@@ -10,14 +10,15 @@ import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 })
 export class CreateRangerPage {
 
-    ranger: Ranger = Ranger.NULL_RANGER;
+    ranger: Ranger = Object.assign({}, Ranger.NULL_RANGER);
 
     constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertCtrl: AlertController, private alertError: AlertErrorProvider) {
     }
 
     create() {
         let self = this;
-        self.db.addUser(this.ranger).then((success) => {
+        self.ranger.username = self.ranger.username.toLowerCase();
+        self.db.addUser(self.ranger).then((success) => {
             if (success) {
                 self.alertCtrl.create({
                     title: 'Creation Successful',

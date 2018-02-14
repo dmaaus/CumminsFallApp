@@ -26,7 +26,7 @@ export class RangerLoginPage {
         console.log(`login... username: ${this.username.toLowerCase()}, password: ${this.password}`);
         let self = this;
         this.auth.login(this.username.toLowerCase(), this.password).then((ranger) => {
-            if (ranger.needsToResetPassword) {
+            if (ranger.needsToResetPassword()) {
                 self.alertCtrl.create({
                     title: 'Password Reset',
                     message: 'For security purposes, you are required to reset your password at this time.',
