@@ -1,3 +1,4 @@
+import { MapsPage } from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
@@ -29,6 +30,8 @@ import {RangerHomePage} from "../pages/ranger-home/ranger-home";
 import {CreateRangerPage} from "../pages/create-ranger/create-ranger";
 import {AlertErrorProvider} from '../providers/alert-error/alert-error';
 import {ResetPasswordPage} from "../pages/reset-password/reset-password";
+import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
+import { TrailsPage } from '../pages/maps/trails-page/trails-page';
 
 @NgModule({
     declarations: [
@@ -36,6 +39,9 @@ import {ResetPasswordPage} from "../pages/reset-password/reset-password";
         AboutPage,
         HomePage,
         TabsPage,
+        MapsPage,
+        GoogleMapsPage,
+        TrailsPage,
         SettingsPage,
         RangerLoginPage,
         RangerRegisterPage,
@@ -59,6 +65,9 @@ import {ResetPasswordPage} from "../pages/reset-password/reset-password";
         AboutPage,
         HomePage,
         TabsPage,
+        MapsPage,
+        GoogleMapsPage,
+        TrailsPage,
         SettingsPage,
         RangerLoginPage,
         RangerRegisterPage,
