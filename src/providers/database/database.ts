@@ -83,9 +83,9 @@ export class DatabaseProvider implements OnDestroy {
         });
     }
 
-    resetPassword(username: string, oldPassword: string, newPassword: string): Promise<boolean> {
+    resetPassword(ranger: Ranger, oldPassword: string, newPassword: string): Promise<Ranger> {
         let self = this;
-        return new Promise<boolean>((resolve, reject) => {
+        return new Promise<Ranger>((resolve, reject) => {
             if (newPassword.length < 8) {
                 reject('Password must be at least 8 characters in length');
                 return;
@@ -94,7 +94,7 @@ export class DatabaseProvider implements OnDestroy {
                 reject('New password must not match current password');
                 return;
             }
-            self.authenticateUser(username, oldPassword).then((ranger: Ranger) => {
+            self.authenticateUser(ranger.username, oldPassword).then((ranger: Ranger) => {
                 let salt = bcrypt.genSaltSync();
                 let hash = bcrypt.hashSync(newPassword, salt);
                 self.db.executeSql(
@@ -102,9 +102,12 @@ export class DatabaseProvider implements OnDestroy {
                     ` ${DB_CONSTS.RANGER_PASSWORD} = ?,` +
                     ` ${DB_CONSTS.RANGER_EXPIRATION} = ?` +
                     ` WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
-                    [hash, null, username]
+                    [hash, null, ranger.username]
                 )
-                    .then(resolve(true))
+                    .then(() => {
+                        ranger.state = Ranger.VALID;
+                        resolve(ranger);
+                    })
                     .catch(reject);
             }).catch(() => {
                 reject('Old password is invalid.')
@@ -156,7 +159,13 @@ export class DatabaseProvider implements OnDestroy {
                         .then(() => {
                             /* They should get their username from their admin (this process would usually be done
                             with the admin */
-                            this.sendConfirmationEmail(ranger, password, expiration).then(resolve).catch(reject);
+                            this.sendConfirmationEmail(ranger, password, expiration).then(resolve).catch((msg) => {
+                                self.deleteUser(ranger.username).then(() => {
+                                    reject(msg);
+                                }).catch((msg2) => {
+                                    reject(`Encountered two errors: 1) ${msg}. 2) ${msg2}`);
+                                });
+                            });
                         }).catch(reject);
                 }).catch(reject);
         });
@@ -164,20 +173,16 @@ export class DatabaseProvider implements OnDestroy {
 
     getRangerNames(): Promise<string[]> {
         let self = this;
-        console.log('getting ranger names');
         return new Promise<string[]>((resolve, reject) => {
-            console.log('executing sql');
             self.db.executeSql( // TODO not *
                 `SELECT * FROM ${DB_CONSTS.RANGER_TABLE_NAME}`, []
             ).then(result => {
                 let names: string[] = [];
-                console.log(result);
                 let rows = result.rows;
                 let length = rows.length;
                 for (let i = 0; i < length; i++) {
                     names.push(rows.item(i)[DB_CONSTS.RANGER_NAME]);
                 }
-                console.log('names: ' + names);
                 resolve(names);
             }).catch(reject);
         });
@@ -266,10 +271,19 @@ export class DatabaseProvider implements OnDestroy {
         }
     }
 
-    changeAdminRights(ranger: Ranger, isAdmin: boolean): Promise<boolean> {
-        return new Promise<boolean>((resolve, reject) => {
-            // TODO
-            reject('Not implemented');
+    changeAdminRights(ranger: Ranger, isAdmin: boolean): Promise<Ranger> {
+        let self = this;
+        return new Promise<Ranger>((resolve, reject) => {
+            self.db.executeSql(
+                `UPDATE ${DB_CONSTS.RANGER_TABLE_NAME}` +
+                `  SET` +
+                `  ${DB_CONSTS.RANGER_IS_ADMIN} = ?` +
+                `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
+                [isAdmin ? 1 : 0, ranger.username]
+            ).then(() => {
+                ranger.isAdmin = isAdmin;
+                resolve(ranger);
+            }).catch(reject);
         });
     }
 }
@@ -297,7 +311,11 @@ export class Ranger {
         return this.state === Ranger.NEEDS_CONFIRMATION;
     }
 
-    static readonly NULL_RANGER: Ranger = new Ranger('', '', '', false, Ranger.EXPIRED);
+    static readonly NULL_RANGER: Ranger = Ranger.makeNullRanger();
+
+    static makeNullRanger(): Ranger {
+        return new Ranger('', '', '', false, Ranger.EXPIRED);
+    }
 
     static fromDatabaseQuery(item: any): Promise<Ranger> {
         return new Promise<Ranger>((resolve, reject) => {

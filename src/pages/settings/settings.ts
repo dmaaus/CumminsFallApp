@@ -4,6 +4,7 @@ import {RangerLoginPage} from "../ranger-login/ranger-login";
 import {NotificationSettingsPage} from "../notification-settings/notification-settings";
 import {AuthProvider} from "../../providers/auth/auth";
 import {RangerHomePage} from "../ranger-home/ranger-home";
+import {CreateRangerPage} from "../create-ranger/create-ranger";
 
 @IonicPage()
 @Component({
@@ -24,4 +25,7 @@ export class SettingsPage {
         this.navCtrl.push(NotificationSettingsPage);
     }
 
+    createRanger() {
+        this.navCtrl.push(CreateRangerPage);
+    }
 }

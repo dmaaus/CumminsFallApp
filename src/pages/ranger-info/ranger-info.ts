@@ -11,22 +11,16 @@ import {AuthProvider} from "../../providers/auth/auth";
 })
 export class RangerInfoPage {
 
-    ranger: Ranger = Ranger.NULL_RANGER;
+    ranger: Ranger = Ranger.makeNullRanger();
 
     lookingAtOwnInfo() {
-        console.log('Am I looking at my own info?');
-        console.log('Me: ' + this.auth.loggedInRanger.toString());
-        console.log('Looking at: ' + this.ranger.toString());
-        let result = this.ranger.equals(this.auth.loggedInRanger);
-        console.log('verdict: ' + result);
-        return result;
+        return this.ranger.equals(this.auth.loggedInRanger);
     }
 
     constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertCtrl: AlertController, private alertError: AlertErrorProvider, private auth: AuthProvider) {
         let self = this;
         db.getRangerWithName(navParams.get('ranger')).then(ranger => {
             self.ranger = ranger;
-            console.log('got ranger: ' + self.ranger.toString());
         });
     }
 
@@ -34,7 +28,8 @@ export class RangerInfoPage {
         let self = this;
         self.alertCtrl.create({
             title: 'Confirm Deletion',
-            message: `This will revoke all privileges from ${self.ranger.name}. Are you sure you want to continue?`,
+            message: `${self.ranger.name} will no longer be able to log in to the app or create alerts. ` +
+            `Are you sure you want to continue?`,
             buttons: [{
                 text: 'Ok',
                 handler: () => {
@@ -65,7 +60,7 @@ export class RangerInfoPage {
                 title: 'Rights Revoked',
                 message: `${self.ranger.name} no longer has admin privileges.`,
                 buttons: ['Ok']
-            })
+            }).present();
         }).catch(self.alertError.showCallback());
     }
 
@@ -76,7 +71,7 @@ export class RangerInfoPage {
                 title: 'Rights Granted',
                 message: `${self.ranger.name} now has admin privileges.`,
                 buttons: ['Ok']
-            })
+            }).present();
         }).catch(self.alertError.showCallback());
     }
 
@@ -87,7 +82,7 @@ export class RangerInfoPage {
                 title: 'Code Sent',
                 message: `Another confirmation code has been sent to ${self.ranger.name} at ${self.ranger.email}.`,
                 buttons: ['Ok']
-            })
+            }).present();
         }).catch(self.alertError.showCallback());
     }
 }

@@ -14,6 +14,9 @@ export class ManageRangerPage {
     rangers: string[] = [];
 
     constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertError: AlertErrorProvider) {
+    }
+
+    ionViewWillEnter() {
         let self = this;
         self.db.getRangerNames().then(names => {
             self.rangers = names;

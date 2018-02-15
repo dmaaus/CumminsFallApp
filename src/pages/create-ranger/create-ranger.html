@@ -42,7 +42,7 @@
             </ion-row>
 
             <ion-row>
-                <button ion-button class="submit-btn" full type="submit" [disabled]="!createForm.form.valid">
+                <button ion-button class="submit-btn" full type="submit" [disabled]="!createForm.form.valid || disableButton">
                     Create
                 </button>
             </ion-row>

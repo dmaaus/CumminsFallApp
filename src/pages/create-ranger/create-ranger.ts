@@ -10,13 +10,19 @@ import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 })
 export class CreateRangerPage {
 
-    ranger: Ranger = Object.assign({}, Ranger.NULL_RANGER);
+    ranger: Ranger = Ranger.makeNullRanger();
+    disableButton: boolean = false;
 
-    constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertCtrl: AlertController, private alertError: AlertErrorProvider) {
+    constructor(public navCtrl: NavController,
+                public navParams: NavParams,
+                private db: DatabaseProvider,
+                private alertCtrl: AlertController,
+                private alertError: AlertErrorProvider) {
     }
 
     create() {
         let self = this;
+        self.disableButton = true;
         self.ranger.username = self.ranger.username.toLowerCase();
         self.db.addUser(self.ranger).then((success) => {
             if (success) {
@@ -27,8 +33,10 @@ export class CreateRangerPage {
                     buttons: ['Ok']
                 }).present();
             }
-        })
-            .catch(self.alertError.showCallback());
+        }).catch((msg) => {
+            self.disableButton = false;
+            console.log(msg);
+            self.alertError.show(msg);
+        });
     }
-
 }

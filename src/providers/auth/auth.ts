@@ -5,7 +5,7 @@ import {DatabaseProvider, Ranger} from "../database/database";
 @Injectable()
 export class AuthProvider {
 
-    loggedInRanger: Ranger = Ranger.NULL_RANGER;
+    loggedInRanger: Ranger = Ranger.makeNullRanger();
 
     constructor(public http: HttpClient, private db: DatabaseProvider) {
     }
@@ -19,22 +19,28 @@ export class AuthProvider {
         return new Promise<Ranger>(function (resolve, reject) {
             self.db.authenticateUser(username, password).then(ranger => {
                 self.loggedInRanger = ranger;
-                console.log('loggedInRange is now ' + self.loggedInRanger.toString());
+                console.log('loggedInRanger is now ' + self.loggedInRanger.toString());
                 resolve(ranger);
             })
                 .catch(msg => {
-                    self.loggedInRanger = Ranger.NULL_RANGER;
-                    console.log('loggedInRange is now null');
+                    self.loggedInRanger = Ranger.makeNullRanger();
+                    console.log('loggedInRanger is now null');
                     reject(msg);
                 });
         });
     }
 
-    resetPassword(oldPassword, newPassword): Promise<boolean> {
-        return this.db.resetPassword(this.loggedInRanger.username, oldPassword, newPassword);
+    resetPassword(oldPassword: string, newPassword: string): Promise<boolean> {
+        let self = this;
+        return new Promise<boolean>((resolve, reject) => {
+            self.db.resetPassword(self.loggedInRanger, oldPassword, newPassword).then((ranger) => {
+                self.loggedInRanger = ranger;
+                resolve(true);
+            }).catch(reject);
+        });
     }
 
     logout() {
-        this.loggedInRanger = Ranger.NULL_RANGER;
+        this.loggedInRanger = Ranger.makeNullRanger();
     }
 }

@@ -11,7 +11,6 @@ import {AlertController} from "ionic-angular";
 export class AlertErrorProvider {
 
     constructor(private alertCtrl: AlertController) {
-        console.log('Hello AlertErrorProvider Provider');
     }
 
     showCallback() {

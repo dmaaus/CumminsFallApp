@@ -1,4 +1,4 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {AlertController, Platform} from "ionic-angular";
 import {OneSignal} from "@ionic-native/onesignal";
@@ -74,7 +74,7 @@ export class NotificationProvider {
                         buttons: ['OK']
                     }).present();
                 }
-            }, err => {
+            }, (err: HttpErrorResponse) => {
                 console.log(err);
                 let message = err.message;
                 if (err.status === 0) {

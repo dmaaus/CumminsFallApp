@@ -19,8 +19,6 @@ export class ResetPasswordPage {
 
     constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthProvider, private alertCtrl: AlertController) {
         this.pageWhenDone = navParams.get('pageWhenDone');
-        console.log(this.pageWhenDone);
-        console.log(typeof this.pageWhenDone);
     }
 
     reset() {
@@ -31,6 +29,7 @@ export class ResetPasswordPage {
         let self = this;
         this.auth.resetPassword(this.oldPassword, this.newPassword).then(() => {
             self.showError('');
+            console.log('reset: ' + self.auth.loggedInRanger.toString());
             self.alertCtrl.create({
                 title: 'Password Reset',
                 message: 'Your password has successfully been reset.',

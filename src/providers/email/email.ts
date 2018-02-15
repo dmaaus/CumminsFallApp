@@ -1,4 +1,4 @@
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import * as querystring from 'query-string';
 
@@ -34,7 +34,11 @@ export class EmailProvider {
             this.http.post(this.url + '?' + querystring.stringify(params), {})
                 .subscribe(() => {
                     resolve(true);
-                }, reject);
+                }, (error: HttpErrorResponse) => {
+                    console.log(error.error.message);
+                    reject('Unable to send confirmation email. Please make sure you are connected to the Internet ' +
+                        'and the email address is valid.');
+                });
         });
     }
 }

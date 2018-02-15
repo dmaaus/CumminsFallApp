@@ -16,14 +16,12 @@ export class RangerLoginPage {
     private password: string = '';
 
     constructor(public navCtrl: NavController, private auth: AuthProvider, private alertCtrl: AlertController) {
-        console.log(auth);
         if (auth.loggedIn()) {
             this.continue();
         }
     }
 
     login() {
-        console.log(`login... username: ${this.username.toLowerCase()}, password: ${this.password}`);
         let self = this;
         this.auth.login(this.username.toLowerCase(), this.password).then((ranger) => {
             if (ranger.needsToResetPassword()) {
