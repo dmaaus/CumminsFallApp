@@ -20,9 +20,6 @@ export class MyApp {
             statusBar.styleDefault();
             splashScreen.hide();
             this.notification.promptLocation();
-            setTimeout(() => {
-                this.auth.login('jonmcclung', 'bbbbbbbb');
-            }, 2000);
         });
     }
 }
