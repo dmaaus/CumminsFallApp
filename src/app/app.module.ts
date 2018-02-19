@@ -1,3 +1,4 @@
+import { MapsPage } from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
@@ -22,6 +23,8 @@ import {NotificationProvider} from '../providers/notification/notification';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
+import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
+import { TrailsPage } from '../pages/maps/trails-page/trails-page';
 
 @NgModule({
     declarations: [
@@ -29,6 +32,9 @@ import {NotificationSettingsPage} from "../pages/notification-settings/notificat
         AboutPage,
         HomePage,
         TabsPage,
+        MapsPage,
+        GoogleMapsPage,
+        TrailsPage,
         SettingsPage,
         RangerLoginPage,
         RangerRegisterPage,
@@ -47,6 +53,9 @@ import {NotificationSettingsPage} from "../pages/notification-settings/notificat
         AboutPage,
         HomePage,
         TabsPage,
+        MapsPage,
+        GoogleMapsPage,
+        TrailsPage,
         SettingsPage,
         RangerLoginPage,
         RangerRegisterPage,
