@@ -1,4 +1,4 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {AlertController, Platform} from "ionic-angular";
 import {OneSignal} from "@ionic-native/onesignal";
@@ -14,6 +14,7 @@ import {Storage} from '@ionic/storage'
 @Injectable()
 export class NotificationProvider {
 
+    static readonly WITHIN_PARK: string = "Within_Park";
     static readonly WITHIN_50_MILES: string = "Within_50_Miles_Of_Park";
     static readonly WITHIN_10_MILES: string = "Within_10_Miles_Of_Park";
     static readonly WITHIN_5_MILES: string = "Within_5_Miles_Of_Park";
@@ -73,7 +74,7 @@ export class NotificationProvider {
                         buttons: ['OK']
                     }).present();
                 }
-            }, err => {
+            }, (err: HttpErrorResponse) => {
                 console.log(err);
                 let message = err.message;
                 if (err.status === 0) {
@@ -97,7 +98,6 @@ export class NotificationProvider {
                 }
                 else {
                     self.storage.set(NotificationProvider.TIMES_CONSIDERED_ASKING_FOR_LOCATION, value + 1).catch(reject);
-                    console.log(value);
                     resolve(false);
                 }
             }).catch(reject);
