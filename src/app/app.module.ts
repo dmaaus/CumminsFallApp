@@ -25,7 +25,7 @@ import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
 import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
 import { TrailsPage } from '../pages/maps/trails-page/trails-page';
-
+import { CumminsFallsEvents } from '../providers/events/event';
 @NgModule({
     declarations: [
         MyApp,
@@ -45,7 +45,8 @@ import { TrailsPage } from '../pages/maps/trails-page/trails-page';
         BrowserModule,
         IonicModule.forRoot(MyApp),
         HttpClientModule,
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -73,7 +74,8 @@ import { TrailsPage } from '../pages/maps/trails-page/trails-page';
         SQLite,
         OneSignal,
         NotificationProvider,
-        AndroidPermissions
+        AndroidPermissions,
+        CumminsFallsEvents
     ]
 })
 export class AppModule {
