@@ -88,8 +88,8 @@
     <allow-navigation href="http://:8100" />
     <plugin name="onesignal-cordova-plugin" spec="^2.2.5" />
     <plugin name="cordova-custom-config" spec="^5.0.2" />
+    <plugin name="cordova-sqlite-storage" spec="^2.2.0" />
     <engine name="browser" spec="5.0.3" />
     <engine name="android" spec="^7.0.0" />
     <engine name="ios" spec="4.5.4" />
-    <plugin name="cordova-sqlite-storage" spec="^2.2.0" />
 </widget>

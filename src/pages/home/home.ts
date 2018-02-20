@@ -1,7 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {NavController} from 'ionic-angular';
 import { Chart } from 'chart.js';
-
+import { CumminsFallsEventsProvider, CumminsFallsEvent, CumminsFallsHttpEvent } from '../../providers/events/event';
 @Component({
   selector: 'page-home',
   templateUrl: 'home.html',
@@ -12,12 +12,16 @@ export class HomePage {
  
     barChart: any;
  
-    constructor(public navCtrl: NavController) {
- 
+    constructor(public navCtrl: NavController, public cumminsFallsEvents: CumminsFallsEventsProvider) {
     }
  
     ionViewDidLoad() {
-		
+		let httpObservable = this.cumminsFallsEvents.getEventsFromUrl();
+
+		httpObservable.subscribe(events => {
+			console.log(events.Events.filter(e => e.Account.indexOf('Cummins') != -1).length);
+		})
+
         this.barChart = new Chart(this.barCanvas.nativeElement, {
  
             type: 'bar',
@@ -66,7 +70,7 @@ export class HomePage {
             }
 			
 			});
-        }
+	}
 	
 	btnClicked(btn){
 		var day_data = [1, 5, 23, 30, 59, 87, 77, 43, 38, 24, 9];

@@ -32,7 +32,7 @@ import {AlertErrorProvider} from '../providers/alert-error/alert-error';
 import {ResetPasswordPage} from "../pages/reset-password/reset-password";
 import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
 import { TrailsPage } from '../pages/maps/trails-page/trails-page';
-import { CumminsFallsEvents } from '../providers/events/event';
+import { CumminsFallsEventsProvider } from '../providers/events/event';
 @NgModule({
     declarations: [
         MyApp,
@@ -58,7 +58,6 @@ import { CumminsFallsEvents } from '../providers/events/event';
         IonicModule.forRoot(MyApp),
         HttpClientModule,
         IonicStorageModule.forRoot(),
-        
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -93,7 +92,8 @@ import { CumminsFallsEvents } from '../providers/events/event';
         NotificationProvider,
         AndroidPermissions,
         EmailProvider,
-    AlertErrorProvider
+    AlertErrorProvider,
+    CumminsFallsEventsProvider
     ]
 })
 export class AppModule {
