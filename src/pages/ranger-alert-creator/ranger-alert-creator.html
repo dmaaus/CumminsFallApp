@@ -14,6 +14,19 @@
 
 
 <ion-content padding>
-    <p>Would you like to send an alert to people in the area that Cummins Falls is closed for the rest of the day?</p>
-    <button ion-button (click)="closePark()">Send Alert</button>
+    <ion-list>
+        <ion-row>
+            <ion-col>
+                <p>Would you like to send an alert to people in the area that Cummins Falls is closed for the rest of
+                    the day?</p>
+                <button ion-button (click)="closePark()">Send Alert</button>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col>
+                <p>Would you like to send a flood warning to people in the park to evacuate immediately?</p>
+                <button ion-button color="danger" (click)="floodWarning()">Send Flood Warning</button>
+            </ion-col>
+        </ion-row>
+    </ion-list>
 </ion-content>

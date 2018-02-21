@@ -1,4 +1,4 @@
-import { MapsPage } from './../pages/maps/maps';
+import {MapsPage} from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
@@ -23,15 +23,9 @@ import {NotificationProvider} from '../providers/notification/notification';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
-import {EmailProvider} from '../providers/email/email';
-import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
-import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
-import {RangerHomePage} from "../pages/ranger-home/ranger-home";
-import {CreateRangerPage} from "../pages/create-ranger/create-ranger";
+import {GoogleMapsPage} from '../pages/maps/google-maps-page/google-maps-page';
+import {TrailsPage} from '../pages/maps/trails-page/trails-page';
 import {AlertErrorProvider} from '../providers/alert-error/alert-error';
-import {ResetPasswordPage} from "../pages/reset-password/reset-password";
-import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
-import { TrailsPage } from '../pages/maps/trails-page/trails-page';
 
 @NgModule({
     declarations: [
@@ -91,8 +85,7 @@ import { TrailsPage } from '../pages/maps/trails-page/trails-page';
         OneSignal,
         NotificationProvider,
         AndroidPermissions,
-        EmailProvider,
-    AlertErrorProvider
+        AlertErrorProvider
     ]
 })
 export class AppModule {

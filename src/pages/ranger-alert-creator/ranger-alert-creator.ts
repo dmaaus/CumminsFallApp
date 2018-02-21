@@ -14,9 +14,15 @@ export class RangerAlertCreatorPage {
     }
 
     closePark() {
-        // TODO notification only sends to people in the area
         let date = dateformat(Date.now(), 'mmm dS');
         this.notification.postToLocal('Park Closing', `Cummins Falls is closed for the remainder of today, ${date}`);
     }
 
+    floodWarning() {
+        this.notification.post(
+            'Flood Warning',
+            'Cummins Falls is or may soon be experiencing flash flooding. Please exit the park immediately.',
+            NotificationProvider.WITHIN_PARK
+        );
+    }
 }

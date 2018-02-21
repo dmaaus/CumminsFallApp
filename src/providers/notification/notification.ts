@@ -1,33 +1,29 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {AlertController, Platform} from "ionic-angular";
-import {OneSignal} from "@ionic-native/onesignal";
-import {AndroidPermissions} from "@ionic-native/android-permissions";
+import {AlertController, Platform} from 'ionic-angular';
+import {OneSignal} from '@ionic-native/onesignal';
+import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {Storage} from '@ionic/storage'
+import {AlertErrorProvider} from "../alert-error/alert-error";
 
-/*
-  Generated class for the NotificationProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class NotificationProvider {
 
-    static readonly WITHIN_PARK: string = "Within_Park";
-    static readonly WITHIN_50_MILES: string = "Within_50_Miles_Of_Park";
-    static readonly WITHIN_10_MILES: string = "Within_10_Miles_Of_Park";
-    static readonly WITHIN_5_MILES: string = "Within_5_Miles_Of_Park";
-    static readonly ALL: string = "All";
-    private static readonly LOCATION_KNOWN: string = "Location_Allowed";
-    private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = "times_asked_for_location";
+    static readonly WITHIN_50_MILES: string = 'Within_50_Miles_Of_Park';
+    static readonly WITHIN_10_MILES: string = 'Within_10_Miles_Of_Park';
+    static readonly WITHIN_5_MILES: string = 'Within_5_Miles_Of_Park';
+    static readonly WITHIN_PARK: string = 'Within_Park';
+    static readonly ALL: string = 'All';
+
+    private static readonly LOCATION_KNOWN: string = 'Location_Allowed';
+    private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = 'times_asked_for_location';
 
     // TODO apiKey should be acquired from server upon login
     appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
     apiKey: string = 'N2NjMzI0MTktODBhMC00OTAxLWEzZjAtODVlM2Y0YzQwMDdj';
     googleProjectNumber: string = '386934932788';
 
-    constructor(public http: HttpClient, private oneSignal: OneSignal, private alertCtrl: AlertController, private permissions: AndroidPermissions, private platform: Platform, private storage: Storage) {
+    constructor(public http: HttpClient, private oneSignal: OneSignal, private alertCtrl: AlertController, private permissions: AndroidPermissions, private platform: Platform, private storage: Storage, private alertError: AlertErrorProvider) {
         this.oneSignal.startInit(
             this.appId,
             this.googleProjectNumber)
@@ -39,53 +35,91 @@ export class NotificationProvider {
     }
 
     /**
-     * @param title The title of the notification
-     * @param message The message of the notification
-     * Sends the message to everyone within a certain radius of Cummins Falls, as well as those whose location we don't
-     * know.
+     * @param {string} title The title of the notification
+     * @param {string} message The message of the notification
+     * @param {string} segment The segment to send it to (one of the static readonly variables of this class). Note that it will also be sent to anyone whose location is unknown.
+     * @param {string} confirmationTitle The title used in the confirmation dialog
+     * @param {string} confirmationMessage The message used in the confirmation message
      */
-    postToLocal(title: string, message: string) {
+    post(title: string, message: string, segment: string, confirmationTitle = 'Notification Sent', confirmationMessage: string = 'The notification was successfully sent') {
         let body = {
             app_id: this.appId,
             contents: {'en': message},
             headings: {'en': title},
-            // TODO make within 5 miles for production
-            included_segments: [NotificationProvider.WITHIN_10_MILES]
+            included_segments: [segment]
         };
 
         let headers = new HttpHeaders()
             .append('Content-Type', 'application/json; charset=utf-8')
             .append('Authorization', 'Basic ' + this.apiKey);
 
-        this._post(body, headers, false);
-        body.included_segments = [NotificationProvider.ALL];
-        body['excluded_segments'] = [NotificationProvider.LOCATION_KNOWN];
-        this._post(body, headers);
+        let self = this;
+        if (segment === NotificationProvider.ALL) {
+            self._post(body, headers, confirmationTitle, confirmationMessage).catch(self.catchPostErrorCallback());
+        }
+        else {
+            self._post(body, headers).catch(self.catchPostErrorCallback()).then(() => {
+                body.included_segments = [NotificationProvider.ALL];
+                body['excluded_segments'] = [NotificationProvider.LOCATION_KNOWN];
+                self._post(body, headers, confirmationTitle, confirmationMessage)
+                    .catch(self.catchPostErrorCallback(
+                        'The message was successfully sent to some, but not all recipients. ' +
+                        'You can send the notification again, but some people will get it twice.'));
+            });
+        }
     }
 
-    _post(body, headers: HttpHeaders, notify: boolean = true) {
-        this.http.post(
-            'https://onesignal.com:443/api/v1/notifications', body, {headers: headers})
-            .subscribe(() => {
-                if (notify) {
-                    this.alertCtrl.create({
-                        title: 'Alert Sent',
-                        message: 'The alert was successfully sent out to people in the area',
-                        buttons: ['OK']
-                    }).present();
-                }
-            }, (err: HttpErrorResponse) => {
-                console.log(err);
-                let message = err.message;
-                if (err.status === 0) {
-                    message = 'Unable to connect to server. Are you connected to the Internet?'
-                }
-                this.alertCtrl.create({
-                    title: 'Error',
-                    message: message,
-                    buttons: ['OK']
-                }).present();
-            });
+    catchPostErrorCallback(pretext = '') {
+        if (pretext !== '') {
+            return this.catchPostErrorWithPretext.bind(this, pretext);
+        }
+        return this.catchPostError.bind(this);
+    }
+
+    catchPostError(err) {
+        this.catchPostErrorWithPretext('', err);
+    }
+
+    /**
+     * @param {string} pretext text to be prepended to the error message. No whitespace or other separator is used.
+     * @param err The error thrown by the HttpClient
+     */
+    catchPostErrorWithPretext(pretext, err) {
+        let message = err.message;
+        if (err.status === 0) {
+            message = 'Unable to connect to server. Are you connected to the Internet?'
+        }
+        if (pretext !== '') {
+            message = pretext + message;
+        }
+        this.alertError.show(message);
+    }
+
+    /**
+     * @param title The title of the notification
+     * @param message The message of the notification
+     * Sends the message to everyone within a certain radius of Cummins Falls, as well as those whose location we don't
+     * know.
+     */
+    postToLocal(title: string, message: string) {
+        this.post(title, message, NotificationProvider.WITHIN_5_MILES);
+    }
+
+    _post(body, headers: HttpHeaders, title = '', message = ''): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            this.http.post(
+                'https://onesignal.com:443/api/v1/notifications', body, {headers: headers})
+                .subscribe(() => {
+                    if (title !== '') {
+                        this.alertCtrl.create({
+                            title: title,
+                            message: message,
+                            buttons: ['OK']
+                        }).present();
+                    }
+                    resolve(true);
+                }, reject);
+        });
     }
 
     _shouldRequestLocation(): Promise<boolean> {
