@@ -40,7 +40,12 @@ import {AlertErrorProvider} from '../providers/alert-error/alert-error';
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage
+        NotificationSettingsPage,
+        RangerInfoPage,
+        ManageRangerPage,
+        RangerHomePage,
+        CreateRangerPage,
+        ResetPasswordPage
     ],
     imports: [
         BrowserModule,
@@ -61,7 +66,12 @@ import {AlertErrorProvider} from '../providers/alert-error/alert-error';
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage
+        NotificationSettingsPage,
+        RangerInfoPage,
+        ManageRangerPage,
+        RangerHomePage,
+        CreateRangerPage,
+        ResetPasswordPage
     ],
     providers: [
         StatusBar,

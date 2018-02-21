@@ -7,8 +7,8 @@
 </ion-header>
 
 
-<ion-content padding="true" class="center" style="width: 100%">
-    <div class="login-box" style="width: 100%">
+<ion-content padding="true" style="width: 100%">
+    <div style="width: 100%">
         <form (ngSubmit)="login()" #registerForm="ngForm">
             <ion-row>
                 <ion-col>
@@ -33,14 +33,9 @@
             </ion-row>
 
             <ion-row>
-                <ion-col class="signup-col">
-                    <button ion-button class="submit-btn" full type="submit" [disabled]="!registerForm.form.valid">
-                        Login
-                    </button>
-                    <button ion-button class="register-btn" type="button" block clear (click)="createAccount()">Create
-                        New Account
-                    </button>
-                </ion-col>
+                <button ion-button class="submit-btn" full type="submit" [disabled]="!registerForm.form.valid">
+                    Login
+                </button>
             </ion-row>
 
         </form>

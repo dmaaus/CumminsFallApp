@@ -1,4 +1,4 @@
-import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {AlertController, Platform} from 'ionic-angular';
 import {OneSignal} from '@ionic-native/onesignal';
@@ -132,7 +132,6 @@ export class NotificationProvider {
                 }
                 else {
                     self.storage.set(NotificationProvider.TIMES_CONSIDERED_ASKING_FOR_LOCATION, value + 1).catch(reject);
-                    console.log(value);
                     resolve(false);
                 }
             }).catch(reject);
