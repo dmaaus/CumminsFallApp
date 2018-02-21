@@ -4,12 +4,6 @@ import {Injectable, OnDestroy} from '@angular/core';
 import * as bcrypt from 'bcryptjs';
 import {SQLite, SQLiteObject} from "@ionic-native/sqlite";
 
-/*
-  Generated class for the DatabaseProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class DatabaseProvider implements OnDestroy {
     // TODO the app needs to send the credentials to the remote server rather than storing them locally
@@ -73,8 +67,6 @@ export class DatabaseProvider implements OnDestroy {
     }
 
     registerUser(username: string, password: string): Promise<boolean> {
-        // TODO only valid rangers should be able to register...
-        // TODO confirm with email?
         console.log('registerUser');
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
