@@ -13,8 +13,14 @@
 	  
       <ion-card-content>
         <canvas #barCanvas></canvas>
-		<button id="0" type="button" (click)="btnClicked('0')">Traffic per Day</button>
-		<button id="1" type="button" (click)="btnClicked('1')">Traffic per Week</button>
+		<button id="0" type="button" (click)="btnClicked('0')">Busiest Hour(s)</button>
+		<button id="1" type="button" (click)="btnClicked('1')">Busiest Day(s)</button>
+		
+		<form action="/">
+			Count for Specific Day:
+			<input type="date" name="calendar">
+			<input type="submit" (click)="submitForm('date')">
+		</form>
       </ion-card-content>
   </ion-card>
   
