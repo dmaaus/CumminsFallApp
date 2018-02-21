@@ -1,0 +1,17 @@
+<ion-header>
+
+    <ion-navbar>
+        <ion-title>Ranger Home</ion-title>
+    </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+    <ion-list>
+        <button ion-item (click)="goToCreateAlert()">Create Alert</button>
+        <button ion-item *ngIf="isAdmin()" (click)="goToManageRangers()">Manage Rangers</button>
+        <button ion-item (click)="resetPassword()">Reset Password</button>
+        <button ion-item (click)="logout()">Logout</button>
+    </ion-list>
+</ion-content>

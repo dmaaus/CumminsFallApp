@@ -3,13 +3,6 @@ import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {NotificationProvider} from "../../providers/notification/notification";
 import * as dateformat from 'dateformat';
 
-/**
- * Generated class for the RangerAlertCreatorPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
     selector: 'page-ranger-alert-creator',
