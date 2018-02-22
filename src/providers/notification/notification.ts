@@ -1,4 +1,4 @@
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {AlertController, Platform} from 'ionic-angular';
 import {OneSignal} from '@ionic-native/onesignal';

@@ -26,6 +26,12 @@ import {NotificationSettingsPage} from "../pages/notification-settings/notificat
 import {GoogleMapsPage} from '../pages/maps/google-maps-page/google-maps-page';
 import {TrailsPage} from '../pages/maps/trails-page/trails-page';
 import {AlertErrorProvider} from '../providers/alert-error/alert-error';
+import {ResetPasswordPage} from "../pages/reset-password/reset-password";
+import {CreateRangerPage} from "../pages/create-ranger/create-ranger";
+import {RangerHomePage} from "../pages/ranger-home/ranger-home";
+import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
+import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
+import {EmailProvider} from "../providers/email/email";
 
 @NgModule({
     declarations: [
@@ -85,7 +91,8 @@ import {AlertErrorProvider} from '../providers/alert-error/alert-error';
         OneSignal,
         NotificationProvider,
         AndroidPermissions,
-        AlertErrorProvider
+        AlertErrorProvider,
+        EmailProvider
     ]
 })
 export class AppModule {
