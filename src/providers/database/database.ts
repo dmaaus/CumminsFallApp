@@ -1,42 +1,22 @@
-import {HttpClient} from '@angular/common/http';
-import {Injectable, OnDestroy} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Injectable} from '@angular/core';
 
 import * as bcrypt from 'bcryptjs';
 import * as generatePassword from 'generate-password';
-import {SQLite, SQLiteObject} from "@ionic-native/sqlite";
 import {EmailProvider} from "../email/email";
 
+
 @Injectable()
-export class DatabaseProvider implements OnDestroy {
-    // TODO the app needs to send the credentials to the remote server rather than storing them locally
-    db: any;
-    ready: boolean = false;
+export class DatabaseProvider {
     static readonly NEW_RANGER_EXPIRATION_IN_MINUTES: number = 15;
+    static readonly AWS_URL: string = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/ranger';
+    static readonly API_KEY: string = 'cdIRFxmAYK3JctGIHCyQE82XM3Nv5cwT9gJXzqiU';
 
-    constructor(public http: HttpClient, private sqlite: SQLite, private email: EmailProvider) {
+    db: any = null; // TODO remove
+    ready: boolean = false;
+    credentials: Credentials = null;
 
-        let self = this;
-        this.sqlite.create({
-            name: 'database.db',
-            location: 'default',
-        }).then((db: SQLiteObject) => {
-            self.db = db;
-            db.executeSql(
-                `CREATE TABLE IF NOT EXISTS ${DB_CONSTS.RANGER_TABLE_NAME} (` +
-                `  ${DB_CONSTS.RANGER_USERNAME} VARCHAR(128) PRIMARY KEY NOT NULL,` +
-                `  ${DB_CONSTS.RANGER_PASSWORD} CHAR(60) NOT NULL,` +
-                `  ${DB_CONSTS.RANGER_NAME} VARCHAR(256) NOT NULL,` +
-                `  ${DB_CONSTS.RANGER_EMAIL} VARCHAR(254) NOT NULL,` +
-                `  ${DB_CONSTS.RANGER_IS_ADMIN} INTEGER NOT NULL,` +
-                `  ${DB_CONSTS.RANGER_EXPIRATION} DATE` +
-                `)`, []).then(() => {
-                self.deleteUser('joeschmoe').catch(self.error);
-            }).catch(self.error);
-        }).catch(self.error);
-    }
-
-    ngOnDestroy() {
-        this.db.close();
+    constructor(public http: HttpClient, private email: EmailProvider) {
     }
 
     static getExpiration(): Date {
@@ -44,6 +24,28 @@ export class DatabaseProvider implements OnDestroy {
         res.setMinutes(res.getMinutes() + DatabaseProvider.NEW_RANGER_EXPIRATION_IN_MINUTES);
         return res;
     }
+
+    api(functionName: string, args: Object): Promise<Object> {
+        let self = this;
+        let headers = new HttpHeaders()
+            .append('x-api-key', DatabaseProvider.API_KEY)
+            .append('functionName', functionName)
+            .append('username', this.credentials.username)
+            .append('password', this.credentials.password)
+            .append('args', JSON.stringify(args));
+
+        return new Promise<Object>((resolve, reject) => {
+                self.http.post(
+                    DatabaseProvider.AWS_URL,
+                    {},
+                    {headers: headers}
+                    ).subscribe(resolve, function (error) {
+                        reject(error.error.message);
+                    });
+            }
+        );
+    }
+
 
     sendConfirmationEmail(ranger: Ranger, password: string, expiration: Date): Promise<boolean> {
         return this.email.send(
@@ -67,17 +69,13 @@ export class DatabaseProvider implements OnDestroy {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
             let password = DatabaseProvider.genPassword();
-            let hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
-            let expiration = DatabaseProvider.getExpiration();
-            self.db.executeSql(
-                `UPDATE ${DB_CONSTS.RANGER_TABLE_NAME}` +
-                `  SET` +
-                `  ${DB_CONSTS.RANGER_EXPIRATION} = ?,` +
-                `  ${DB_CONSTS.RANGER_PASSWORD} = ?` +
-                `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
-                [expiration, hash, ranger.username]
-            ).then(() => {
-                self.sendConfirmationEmail(ranger, password, expiration)
+            let args = {
+                ranger: ranger,
+                newPassword: password
+            };
+            self.api('resetUnconfirmedPassword', args)
+                .then((result) => {
+                self.sendConfirmationEmail(ranger, password, result['expiration'])
                     .then(resolve).catch(reject);
             }).catch(reject);
         });
@@ -94,33 +92,23 @@ export class DatabaseProvider implements OnDestroy {
                 reject('New password must not match current password');
                 return;
             }
-            self.authenticateUser(ranger.username, oldPassword).then((ranger: Ranger) => {
-                let salt = bcrypt.genSaltSync();
-                let hash = bcrypt.hashSync(newPassword, salt);
-                self.db.executeSql(
-                    `UPDATE ${DB_CONSTS.RANGER_TABLE_NAME} SET` +
-                    ` ${DB_CONSTS.RANGER_PASSWORD} = ?,` +
-                    ` ${DB_CONSTS.RANGER_EXPIRATION} = ?` +
-                    ` WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
-                    [hash, null, ranger.username]
-                )
-                    .then(() => {
-                        ranger.state = Ranger.VALID;
-                        resolve(ranger);
-                    })
-                    .catch(reject);
-            }).catch(() => {
-                reject('Old password is invalid.')
-            });
+            let args = {
+                oldPassword: oldPassword,
+                newPassword: newPassword
+            };
+            self.api('resetPassword', args).then(() => {
+                ranger.state = Ranger.VALID;
+                resolve(ranger);
+            }).catch(reject);
         });
     }
 
-    deleteUser(username: string): Promise<boolean> {
+    deleteUser(ranger: Ranger): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
             self.db.executeSql(
                 `DELETE FROM ${DB_CONSTS.RANGER_TABLE_NAME} ` +
-                `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`, [username]
+                `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`, [ranger.username]
             )
                 .then(() => {
                     resolve(true);
@@ -160,7 +148,7 @@ export class DatabaseProvider implements OnDestroy {
                             /* They should get their username from their admin (this process would usually be done
                             with the admin */
                             this.sendConfirmationEmail(ranger, password, expiration).then(resolve).catch((msg) => {
-                                self.deleteUser(ranger.username).then(() => {
+                                self.deleteUser(ranger).then(() => {
                                     reject(msg);
                                 }).catch((msg2) => {
                                     reject(`Encountered two errors: 1) ${msg}. 2) ${msg2}`);
@@ -221,17 +209,12 @@ export class DatabaseProvider implements OnDestroy {
                 .then((resultSet) => {
                     let rows = resultSet.rows;
                     if (rows.length < 1) {
-                        // user is not present
-                        // TODO remove log for production
-                        console.log('user is not present');
                         fail();
                         return;
                     }
                     let result = rows.item(0);
                     if (!bcrypt.compareSync(password, result[DB_CONSTS.RANGER_PASSWORD])) {
                         fail();
-                        // TODO remove
-                        console.log(`password given: ${password} was wrong`);
                         return;
                     }
                     Ranger.fromDatabaseQuery(result).then(ranger => {
@@ -302,7 +285,6 @@ export class Ranger {
     }
 
 
-
     isExpired() {
         return this.state === Ranger.EXPIRED;
     }
@@ -354,6 +336,11 @@ export class Ranger {
         return !Object.keys(this).some((key) => {
             return this.hasOwnProperty(key) && this[key] !== ranger[key];
         });
+    }
+}
+
+export class Credentials {
+    constructor(public username: string, public password: string) {
     }
 }
 

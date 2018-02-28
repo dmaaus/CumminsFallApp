@@ -1,6 +1,6 @@
 import {HttpClient} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import {DatabaseProvider, Ranger} from "../database/database";
+import {Credentials, DatabaseProvider, Ranger} from "../database/database";
 
 @Injectable()
 export class AuthProvider {
@@ -19,11 +19,13 @@ export class AuthProvider {
         return new Promise<Ranger>(function (resolve, reject) {
             self.db.authenticateUser(username, password).then(ranger => {
                 self.loggedInRanger = ranger;
+                self.db.credentials = new Credentials(username, password);
                 console.log('loggedInRanger is now ' + self.loggedInRanger.toString());
                 resolve(ranger);
             })
                 .catch(msg => {
                     self.loggedInRanger = Ranger.makeNullRanger();
+                    self.db.credentials = null;
                     console.log('loggedInRanger is now null');
                     reject(msg);
                 });
@@ -35,6 +37,7 @@ export class AuthProvider {
         return new Promise<boolean>((resolve, reject) => {
             self.db.resetPassword(self.loggedInRanger, oldPassword, newPassword).then((ranger) => {
                 self.loggedInRanger = ranger;
+                self.db.credentials = new Credentials(ranger.username, newPassword);
                 resolve(true);
             }).catch(reject);
         });
@@ -42,5 +45,6 @@ export class AuthProvider {
 
     logout() {
         this.loggedInRanger = Ranger.makeNullRanger();
+        this.db.credentials = null;
     }
 }

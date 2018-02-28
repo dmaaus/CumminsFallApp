@@ -33,7 +33,7 @@ export class RangerInfoPage {
             buttons: [{
                 text: 'Ok',
                 handler: () => {
-                    self.db.deleteUser(self.ranger.username).then(() => {
+                    self.db.deleteUser(self.ranger).then(() => {
                         self.alertCtrl.create({
                             title: 'Deletion Complete',
                             message: `${self.ranger.name} was successfully deleted.`,
