@@ -55,7 +55,7 @@ export class RangerInfoPage {
 
     revokeAdmin() {
         let self = this;
-        self.db.changeAdminRights(self.ranger, false).then(() => {
+        self.db.updateAdminRights(self.ranger, false).then(() => {
             self.alertCtrl.create({
                 title: 'Rights Revoked',
                 message: `${self.ranger.name} no longer has admin privileges.`,
@@ -66,7 +66,7 @@ export class RangerInfoPage {
 
     grantAdmin() {
         let self = this;
-        self.db.changeAdminRights(self.ranger, true).then(() => {
+        self.db.updateAdminRights(self.ranger, true).then(() => {
             self.alertCtrl.create({
                 title: 'Rights Granted',
                 message: `${self.ranger.name} now has admin privileges.`,

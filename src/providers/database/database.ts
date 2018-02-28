@@ -1,9 +1,8 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-
-import * as bcrypt from 'bcryptjs';
 import * as generatePassword from 'generate-password';
 import {EmailProvider} from "../email/email";
+import {NotificationProvider} from "../notification/notification";
 
 
 @Injectable()
@@ -14,9 +13,21 @@ export class DatabaseProvider {
 
     db: any = null; // TODO remove
     ready: boolean = false;
-    credentials: Credentials = null;
+    private credentials: Credentials = null;
 
-    constructor(public http: HttpClient, private email: EmailProvider) {
+    setCredentials(username: string, password: string = null) {
+        if (username === null) {
+            this.credentials = null;
+        }
+        else {
+            this.credentials = new Credentials(username, password);
+        }
+    }
+
+    constructor(
+        public http: HttpClient,
+        private email: EmailProvider,
+        private notification: NotificationProvider) {
     }
 
     static getExpiration(): Date {
@@ -39,9 +50,9 @@ export class DatabaseProvider {
                     DatabaseProvider.AWS_URL,
                     {},
                     {headers: headers}
-                    ).subscribe(resolve, function (error) {
-                        reject(error.error.message);
-                    });
+                ).subscribe(resolve, function (error) {
+                    reject(error.error.message);
+                });
             }
         );
     }
@@ -75,9 +86,9 @@ export class DatabaseProvider {
             };
             self.api('resetUnconfirmedPassword', args)
                 .then((result) => {
-                self.sendConfirmationEmail(ranger, password, result['expiration'])
-                    .then(resolve).catch(reject);
-            }).catch(reject);
+                    self.sendConfirmationEmail(ranger, password, result['expiration'])
+                        .then(resolve).catch(reject);
+                }).catch(reject);
         });
     }
 
@@ -106,55 +117,28 @@ export class DatabaseProvider {
     deleteUser(ranger: Ranger): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            self.db.executeSql(
-                `DELETE FROM ${DB_CONSTS.RANGER_TABLE_NAME} ` +
-                `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`, [ranger.username]
-            )
+            self.api('deleteUser', {ranger: ranger})
                 .then(() => {
                     resolve(true);
-                })
-                .catch(reject);
+                }).catch(reject);
         });
     }
 
     addUser(ranger: Ranger): Promise<boolean> {
-        // Admin Rangers can add other rangers who will be sent an email to log in and register.
-        console.log('addUser');
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            let password = DatabaseProvider.genPassword();
-            let hash = bcrypt.hashSync(password, bcrypt.genSaltSync());
-            let count = 'count';
-            self.db.executeSql(
-                `SELECT COUNT(*) AS ${count} FROM ${DB_CONSTS.RANGER_TABLE_NAME}` +
-                `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
-                [ranger.username])
+            self.api('addUser', {ranger: ranger})
                 .then((result) => {
-                    if (result.rows.item(0)[count] > 0) {
-                        reject(`There is already an account associated with ${ranger.username}.`);
-                        return;
-                    }
-                    let expiration = DatabaseProvider.getExpiration();
-                    console.log('expiration is ' + expiration);
-                    self.db.executeSql(
-                        `INSERT INTO ${DB_CONSTS.RANGER_TABLE_NAME}` +
-                        `  (${DB_CONSTS.RANGER_USERNAME}, ${DB_CONSTS.RANGER_PASSWORD},` +
-                        `   ${DB_CONSTS.RANGER_NAME}, ${DB_CONSTS.RANGER_EMAIL}, ${DB_CONSTS.RANGER_IS_ADMIN},` +
-                        `   ${DB_CONSTS.RANGER_EXPIRATION}) ` +
-                        `  VALUES ` +
-                        `  (?, ?, ?, ?, ?, ?)`,
-                        [ranger.username, hash, ranger.name, ranger.email, ranger.isAdmin ? 1 : 0, expiration])
-                        .then(() => {
-                            /* They should get their username from their admin (this process would usually be done
-                            with the admin */
-                            this.sendConfirmationEmail(ranger, password, expiration).then(resolve).catch((msg) => {
-                                self.deleteUser(ranger).then(() => {
-                                    reject(msg);
-                                }).catch((msg2) => {
-                                    reject(`Encountered two errors: 1) ${msg}. 2) ${msg2}`);
-                                });
-                            });
-                        }).catch(reject);
+                    this.sendConfirmationEmail(
+                        ranger,
+                        result['password'],
+                        result['expiration'])
+
+                        .then(resolve).catch((msg) => {
+                        reject(`A confirmation email could not be sent to ${ranger.name}` +
+                            `because of the following error: ${msg}\n` +
+                            `Please try again later.`);
+                    });
                 }).catch(reject);
         });
     }
@@ -162,16 +146,8 @@ export class DatabaseProvider {
     getRangerNames(): Promise<string[]> {
         let self = this;
         return new Promise<string[]>((resolve, reject) => {
-            self.db.executeSql( // TODO not *
-                `SELECT * FROM ${DB_CONSTS.RANGER_TABLE_NAME}`, []
-            ).then(result => {
-                let names: string[] = [];
-                let rows = result.rows;
-                let length = rows.length;
-                for (let i = 0; i < length; i++) {
-                    names.push(rows.item(i)[DB_CONSTS.RANGER_NAME]);
-                }
-                resolve(names);
+            self.api('getRangerNames', {}).then((result) => {
+                resolve(result['names']);
             }).catch(reject);
         });
     }
@@ -179,58 +155,40 @@ export class DatabaseProvider {
     getRangerWithName(name: string): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
-            self.db.executeSql(
-                `SELECT ${DB_CONSTS.RANGER_USERNAME}, ${DB_CONSTS.RANGER_NAME}, ${DB_CONSTS.RANGER_EXPIRATION}, ` +
-                `${DB_CONSTS.RANGER_EMAIL}, ${DB_CONSTS.RANGER_IS_ADMIN}` +
-
-                `  FROM ${DB_CONSTS.RANGER_TABLE_NAME}` +
-                `  WHERE ${DB_CONSTS.RANGER_NAME} = ?`,
-                [name]
-            ).then(result => {
-                let item = result.rows.item(0);
-                Ranger.fromDatabaseQuery(item).then(value => {
-                    resolve(value);
+            self.api('getRangerWithName', {name: name})
+                .then(ranger => {
+                    resolve(ranger as Ranger);
                 }).catch(reject);
-            }).catch(reject);
         });
     }
 
-    authenticateUser(username: string, password: string): Promise<Ranger> {
+    authenticate(): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
-            let fail = function () {
-                reject('username or password is invalid');
-            };
-            self.db.executeSql(
-                `SELECT ${DB_CONSTS.RANGER_PASSWORD}, ${DB_CONSTS.RANGER_NAME}, ${DB_CONSTS.RANGER_USERNAME}, ` +
-                `${DB_CONSTS.RANGER_EMAIL}, ${DB_CONSTS.RANGER_IS_ADMIN}, ${DB_CONSTS.RANGER_EXPIRATION}` +
-                ` FROM ${DB_CONSTS.RANGER_TABLE_NAME}` +
-                ` WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`, [username])
-                .then((resultSet) => {
-                    let rows = resultSet.rows;
-                    if (rows.length < 1) {
-                        fail();
-                        return;
-                    }
-                    let result = rows.item(0);
-                    if (!bcrypt.compareSync(password, result[DB_CONSTS.RANGER_PASSWORD])) {
-                        fail();
-                        return;
-                    }
-                    Ranger.fromDatabaseQuery(result).then(ranger => {
-                        if (ranger.state === Ranger.EXPIRED) {
-                            reject('Temporary code has expired. Please have an admin recreate the account');
-                        }
-                        else {
-                            resolve(ranger);
-                        }
-                    });
-                })
-                .catch((msg) => {
-                        self.taskFailed('user authentication');
-                        reject(msg);
-                    }
-                );
+            self.api('authenticate', {}).then(result => {
+                let ranger: Ranger = result['ranger'] as Ranger;
+                self.email.apiKey = result['emailKey'];
+                self.notification.apiKey = result['notificationKey'];
+                if (ranger.state === Ranger.EXPIRED) {
+                    reject('Temporary code has expired. Please have an admin recreate the account');
+                }
+                else {
+                    resolve(ranger);
+                }
+            }).catch(msg => {
+                reject(msg);
+            });
+        });
+    }
+
+    updateAdminRights(ranger: Ranger, isAdmin: boolean): Promise<Ranger> {
+        let self = this;
+        return new Promise<Ranger>((resolve, reject) => {
+            self.api('updateAdminRights', {ranger: ranger})
+                .then(result => {
+                    ranger.isAdmin = isAdmin;
+                    resolve(ranger);
+                }).catch(reject);
         });
     }
 
@@ -252,22 +210,6 @@ export class DatabaseProvider {
         return function (msg) {
             console.error(task + ' encountered error: ' + msg);
         }
-    }
-
-    changeAdminRights(ranger: Ranger, isAdmin: boolean): Promise<Ranger> {
-        let self = this;
-        return new Promise<Ranger>((resolve, reject) => {
-            self.db.executeSql(
-                `UPDATE ${DB_CONSTS.RANGER_TABLE_NAME}` +
-                `  SET` +
-                `  ${DB_CONSTS.RANGER_IS_ADMIN} = ?` +
-                `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
-                [isAdmin ? 1 : 0, ranger.username]
-            ).then(() => {
-                ranger.isAdmin = isAdmin;
-                resolve(ranger);
-            }).catch(reject);
-        });
     }
 }
 
