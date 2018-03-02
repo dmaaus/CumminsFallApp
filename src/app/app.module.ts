@@ -33,6 +33,7 @@ import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
 import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {EmailProvider} from "../providers/email/email";
 
+import { CumminsFallsEventsProvider } from '../providers/events/event';
 @NgModule({
     declarations: [
         MyApp,
@@ -57,7 +58,7 @@ import {EmailProvider} from "../providers/email/email";
         BrowserModule,
         IonicModule.forRoot(MyApp),
         HttpClientModule,
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -91,8 +92,9 @@ import {EmailProvider} from "../providers/email/email";
         OneSignal,
         NotificationProvider,
         AndroidPermissions,
-        AlertErrorProvider,
-        EmailProvider
+        EmailProvider,
+    AlertErrorProvider,
+    CumminsFallsEventsProvider
     ]
 })
 export class AppModule {
