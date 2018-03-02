@@ -1,4 +1,4 @@
-import { MapsPage } from './../pages/maps/maps';
+import {MapsPage} from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
@@ -23,9 +23,13 @@ import {NotificationProvider} from '../providers/notification/notification';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
+import {GoogleMapsPage} from '../pages/maps/google-maps-page/google-maps-page';
+import {TrailsPage} from '../pages/maps/trails-page/trails-page';
+import {AlertErrorProvider} from '../providers/alert-error/alert-error';
+import {ResetPasswordPage} from "../pages/reset-password/reset-password";
 import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
 import { TrailsPage } from '../pages/maps/trails-page/trails-page';
-
+import { CumminsFallsEventsProvider } from '../providers/events/event';
 @NgModule({
     declarations: [
         MyApp,
@@ -39,13 +43,18 @@ import { TrailsPage } from '../pages/maps/trails-page/trails-page';
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage
+        NotificationSettingsPage,
+        RangerInfoPage,
+        ManageRangerPage,
+        RangerHomePage,
+        CreateRangerPage,
+        ResetPasswordPage
     ],
     imports: [
         BrowserModule,
         IonicModule.forRoot(MyApp),
         HttpClientModule,
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -60,7 +69,12 @@ import { TrailsPage } from '../pages/maps/trails-page/trails-page';
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage
+        NotificationSettingsPage,
+        RangerInfoPage,
+        ManageRangerPage,
+        RangerHomePage,
+        CreateRangerPage,
+        ResetPasswordPage
     ],
     providers: [
         StatusBar,
@@ -73,7 +87,10 @@ import { TrailsPage } from '../pages/maps/trails-page/trails-page';
         SQLite,
         OneSignal,
         NotificationProvider,
-        AndroidPermissions
+        AndroidPermissions,
+        EmailProvider,
+    AlertErrorProvider,
+    CumminsFallsEventsProvider
     ]
 })
 export class AppModule {

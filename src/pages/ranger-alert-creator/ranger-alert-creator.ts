@@ -3,13 +3,6 @@ import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {NotificationProvider} from "../../providers/notification/notification";
 import * as dateformat from 'dateformat';
 
-/**
- * Generated class for the RangerAlertCreatorPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
     selector: 'page-ranger-alert-creator',
@@ -21,9 +14,15 @@ export class RangerAlertCreatorPage {
     }
 
     closePark() {
-        // TODO notification only sends to people in the area
         let date = dateformat(Date.now(), 'mmm dS');
         this.notification.postToLocal('Park Closing', `Cummins Falls is closed for the remainder of today, ${date}`);
     }
 
+    floodWarning() {
+        this.notification.post(
+            'Flood Warning',
+            'Cummins Falls is or may soon be experiencing flash flooding. Please exit the park immediately.',
+            NotificationProvider.WITHIN_PARK
+        );
+    }
 }
