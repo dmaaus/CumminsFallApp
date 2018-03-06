@@ -27,9 +27,13 @@ import {GoogleMapsPage} from '../pages/maps/google-maps-page/google-maps-page';
 import {TrailsPage} from '../pages/maps/trails-page/trails-page';
 import {AlertErrorProvider} from '../providers/alert-error/alert-error';
 import {ResetPasswordPage} from "../pages/reset-password/reset-password";
-import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
-import { TrailsPage } from '../pages/maps/trails-page/trails-page';
 import { CumminsFallsEventsProvider } from '../providers/events/event';
+import { RangerInfoPage } from '../pages/ranger-info/ranger-info';
+import { ManageRangerPage } from '../pages/manage-ranger/manage-ranger';
+import { RangerHomePage } from '../pages/ranger-home/ranger-home';
+import { CreateRangerPage } from '../pages/create-ranger/create-ranger';
+import { EmailProvider } from '../providers/email/email';
+import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor-analytics';
 @NgModule({
     declarations: [
         MyApp,
@@ -90,7 +94,8 @@ import { CumminsFallsEventsProvider } from '../providers/events/event';
         AndroidPermissions,
         EmailProvider,
     AlertErrorProvider,
-    CumminsFallsEventsProvider
+    CumminsFallsEventsProvider,
+    VisitorAnalyticsProvider
     ]
 })
 export class AppModule {

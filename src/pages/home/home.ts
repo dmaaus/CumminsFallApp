@@ -2,7 +2,9 @@ import {Component, ViewChild} from '@angular/core';
 import {NavController} from 'ionic-angular';
 import { Chart } from 'chart.js';
 
-import {HttpClient, HttpHeaders, HttpErrorResponse} from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
+import { VisitorAnalyticsProvider } from '../../providers/visitor-analytics/visitor-analytics';
+
 
 @Component({
   selector: 'page-home',
@@ -12,17 +14,14 @@ export class HomePage {
 
   @ViewChild('barCanvas') barCanvas;
  
-    barChart: any;
- 
-    constructor(public navCtrl: NavController, public http: HttpClient) {
+	barChart: any;
+	
+
+	responseText: string;
+    constructor(public navCtrl: NavController, public http: HttpClient, private visitorAnalytic: VisitorAnalyticsProvider) {
  
     }
 	
-	
-	
-	
-	
- 
     ionViewDidLoad() {
 		
         this.barChart = new Chart(this.barCanvas.nativeElement, {
@@ -99,37 +98,57 @@ export class HomePage {
 		
 		else if (btn == '1') {
 		/** Busiest Day */
-		this.barChart.config.data.datasets[0].data = tempTot;
-		this.barChart.config.data.labels = week_labels;
-		this.barChart.update();
+		this.visitorAnalytic.getCountsForBusiestDay()
+			.subscribe(res => {
+				let dataSet: DataSet = {
+					label: 'Busiest Days',
+					data: [
+						res['Sun'],
+						res['Mon'],
+						res['Tues'],
+						res['Wed'],
+						res['Thur'],
+						res['Fri'],
+						res['Sat']
+					],
+					backgroundColor: [
+						'rgba(54, 162, 235, 0.3)',
+                        'rgba(54, 162, 235, 0.3)',
+                        'rgba(54, 162, 235, 0.3)',
+                        'rgba(54, 162, 235, 0.3)',
+						'rgba(54, 162, 235, 0.3)',
+						'rgba(54, 162, 235, 0.3)',
+						'rgba(54, 162, 235, 0.3)'
+					],
+					borderColor: [
+						'rgba(54, 162, 235, 1)',
+						'rgba(54, 162, 235, 1)',
+						'rgba(54, 162, 235, 1)',
+						'rgba(54, 162, 235, 1)',
+						'rgba(54, 162, 235, 1)',
+						'rgba(54, 162, 235, 1)',
+						'rgba(54, 162, 235, 1)'
+					],
+					borderWidth: 1
+				}
+
+				this.updateChart(this.barChart, week_labels, [dataSet]);
+			});
 		}
 		
 		else if (btn == '2') {
 		/** Specific Year Count */
-		temp2[0] = 3452;
-		
-		
-		let key_name = 'x-api-key';
-		let key = 'mgpLtp0bwP6XX3wFUOK2673KxF3mVrm6aVzqMfbv'
-		
-		let url = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/visitorinfo';
-        let varHeaders = new HttpHeaders().append(key_name, key).append('CountPerYear', '2017');
-           
-        this.http.get(url, {headers: varHeaders}).subscribe(
-               (response) => {
-                   console.log(response);
-               }, (error: HttpErrorResponse) => {
-                   console.error(error.error.message);
-               }
-           );
-		
-		
-		
-		
-		
-		this.barChart.config.data.datasets[0].data = temp2;
-		this.barChart.config.data.labels = ["Total count for this Year"];
-		this.barChart.update();		
+		this.visitorAnalytic.getCountByYear(2017)
+			.subscribe(res => {
+				let dataSet : DataSet = {
+					label: 'Count for 2017',
+					data: [res['count']],
+					backgroundColor: ['rgba(54, 162, 235, 0.3)'],
+					borderColor: ['rgba(54, 162, 235, 1.0)'],
+					borderWidth: 1
+				};
+				this.updateChart(this.barChart, ['Total count for this Year'], [dataSet]);
+			});
 		}
 		
 		else if (btn == '3') {
@@ -152,5 +171,25 @@ export class HomePage {
 		this.barChart.update();
 		}
 			
-	};
+	}
+
+	updateChart(chart: Chart, dataLabels : string[], dataSets: DataSet[]) {
+		//Clear chart
+		chart.data.labels = [];
+		chart.data.datasets = [];
+		chart.update();
+
+		//Add data to chart
+		chart.data.labels = dataLabels;
+		chart.data.datasets = dataSets;
+		chart.update();
+	}
+}
+
+interface DataSet {
+	label: string;
+	data: number[];
+	backgroundColor: string[];
+	borderColor: string[];
+	borderWidth: number;
 }
