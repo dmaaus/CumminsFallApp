@@ -75,7 +75,7 @@ export class DatabaseProvider implements OnDestroy {
                 `  ${DB_CONSTS.RANGER_EXPIRATION} = ?,` +
                 `  ${DB_CONSTS.RANGER_PASSWORD} = ?` +
                 `  WHERE ${DB_CONSTS.RANGER_USERNAME} = ?`,
-                [expiration, password, ranger.username]
+                [expiration, hash, ranger.username]
             ).then(() => {
                 self.sendConfirmationEmail(ranger, password, expiration)
                     .then(resolve).catch(reject);

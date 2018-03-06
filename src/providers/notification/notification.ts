@@ -1,4 +1,4 @@
-import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {AlertController, Platform} from 'ionic-angular';
 import {OneSignal} from '@ionic-native/onesignal';
@@ -63,8 +63,9 @@ export class NotificationProvider {
                 body['excluded_segments'] = [NotificationProvider.LOCATION_KNOWN];
                 self._post(body, headers, confirmationTitle, confirmationMessage)
                     .catch(self.catchPostErrorCallback(
-                        'The message was successfully sent to some, but not all recipients. ' +
-                        'You can send the notification again, but some people will get it twice.'));
+                        'The message was successfully sent to some, but not all, recipients. ' +
+                        'You can send the notification again, but some people will get it twice. ' +
+                        'The following error was produced: '));
             });
         }
     }
@@ -107,8 +108,9 @@ export class NotificationProvider {
 
     _post(body, headers: HttpHeaders, title = '', message = ''): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
+            let url = 'https://onesignal.com:443/api/v1/notifications';
             this.http.post(
-                'https://onesignal.com:443/api/v1/notifications', body, {headers: headers})
+                url, body, {headers: headers})
                 .subscribe(() => {
                     if (title !== '') {
                         this.alertCtrl.create({
