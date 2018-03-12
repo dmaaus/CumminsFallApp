@@ -1,19 +1,16 @@
 import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
-import * as generatePassword from 'generate-password';
 import {EmailProvider} from "../email/email";
 import {NotificationProvider} from "../notification/notification";
 
 
 @Injectable()
 export class DatabaseProvider {
-    static readonly NEW_RANGER_EXPIRATION_IN_MINUTES: number = 15;
     static readonly AWS_URL: string = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/ranger';
     static readonly API_KEY: string = 'cdIRFxmAYK3JctGIHCyQE82XM3Nv5cwT9gJXzqiU';
 
     db: any = null; // TODO remove
-    ready: boolean = false;
-    private credentials: Credentials = null;
+    credentials: Credentials = null;
 
     setCredentials(username: string, password: string = null) {
         if (username === null) {
@@ -24,16 +21,9 @@ export class DatabaseProvider {
         }
     }
 
-    constructor(
-        public http: HttpClient,
-        private email: EmailProvider,
-        private notification: NotificationProvider) {
-    }
-
-    static getExpiration(): Date {
-        let res = new Date();
-        res.setMinutes(res.getMinutes() + DatabaseProvider.NEW_RANGER_EXPIRATION_IN_MINUTES);
-        return res;
+    constructor(public http: HttpClient,
+                private email: EmailProvider,
+                private notification: NotificationProvider) {
     }
 
     api(functionName: string, args: Object): Promise<Object> {
@@ -50,7 +40,30 @@ export class DatabaseProvider {
                     DatabaseProvider.AWS_URL,
                     {},
                     {headers: headers}
-                ).subscribe(resolve, function (error) {
+                ).subscribe((responseString: string) => {
+                    let response = JSON.parse(responseString);
+                    if (!response.hasOwnProperty('body')) {
+                        let message = '';
+                        if (response.hasOwnProperty('message')) {
+                            message = response['message'];
+                        }
+                        else if (response.hasOwnProperty('errorMessage')) {
+                            message = response['errorMessage'];
+                        }
+                        else {
+                            message = 'unknown error occurred. response: ' + JSON.stringify(response);
+                        }
+                        console.error(message);
+                        reject('An error has occurred while attempting to process your request. Please try again later. If the error persists, contact your IT administrator.');
+                        return;
+                    }
+                    let body = response['body'];
+                    if (body.hasOwnProperty('error')) {
+                        reject(body.error);
+                        return;
+                    }
+                    resolve(response['body']);
+                }, error => {
                     reject(error.error.message);
                 });
             }
@@ -69,42 +82,32 @@ export class DatabaseProvider {
             `Note that this code expires at ${expiration.toLocaleTimeString()}`);
     }
 
-    static genPassword(): string {
-        return generatePassword.generate({
-            length: 12,
-            numbers: true
-        });
-    }
-
     resendConfirmationCode(ranger: Ranger): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            let password = DatabaseProvider.genPassword();
             let args = {
-                ranger: ranger,
-                newPassword: password
+                username: ranger.username
             };
             self.api('resetUnconfirmedPassword', args)
                 .then((result) => {
-                    self.sendConfirmationEmail(ranger, password, result['expiration'])
+                    self.sendConfirmationEmail(ranger, result['password'], result['expiration'])
                         .then(resolve).catch(reject);
                 }).catch(reject);
         });
     }
 
-    resetPassword(ranger: Ranger, oldPassword: string, newPassword: string): Promise<Ranger> {
+    resetPassword(ranger: Ranger, newPassword: string): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
             if (newPassword.length < 8) {
                 reject('Password must be at least 8 characters in length');
                 return;
             }
-            if (oldPassword === newPassword) {
+            if (self.credentials.password === newPassword) {
                 reject('New password must not match current password');
                 return;
             }
             let args = {
-                oldPassword: oldPassword,
                 newPassword: newPassword
             };
             self.api('resetPassword', args).then(() => {
@@ -117,7 +120,7 @@ export class DatabaseProvider {
     deleteUser(ranger: Ranger): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            self.api('deleteUser', {ranger: ranger})
+            self.api('deleteUser', {username: ranger.username})
                 .then(() => {
                     resolve(true);
                 }).catch(reject);
@@ -184,8 +187,10 @@ export class DatabaseProvider {
     updateAdminRights(ranger: Ranger, isAdmin: boolean): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
-            self.api('updateAdminRights', {ranger: ranger})
-                .then(result => {
+            self.api(
+                'updateAdminRights',
+                {username: ranger.username, isAdmin: isAdmin})
+                .then(() => {
                     ranger.isAdmin = isAdmin;
                     resolve(ranger);
                 }).catch(reject);

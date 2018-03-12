@@ -18,9 +18,8 @@ export class NotificationProvider {
     private static readonly LOCATION_KNOWN: string = 'Location_Allowed';
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = 'times_asked_for_location';
 
-    // TODO apiKey should be acquired from server upon login
     appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
-    apiKey: string = 'N2NjMzI0MTktODBhMC00OTAxLWEzZjAtODVlM2Y0YzQwMDdj';
+    apiKey: string = '';
     googleProjectNumber: string = '386934932788';
 
     constructor(public http: HttpClient, private oneSignal: OneSignal, private alertCtrl: AlertController, private permissions: AndroidPermissions, private platform: Platform, private storage: Storage, private alertError: AlertErrorProvider) {
@@ -42,6 +41,10 @@ export class NotificationProvider {
      * @param {string} confirmationMessage The message used in the confirmation message
      */
     post(title: string, message: string, segment: string, confirmationTitle = 'Notification Sent', confirmationMessage: string = 'The notification was successfully sent') {
+        if (this.apiKey === '') {
+            console.error('apiKey has not been set, so how was post called?');
+            return;
+        }
         let body = {
             app_id: this.appId,
             contents: {'en': message},

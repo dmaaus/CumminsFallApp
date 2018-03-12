@@ -34,7 +34,11 @@ export class AuthProvider {
     resetPassword(oldPassword: string, newPassword: string): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            self.db.resetPassword(self.loggedInRanger, oldPassword, newPassword).then((ranger) => {
+            if (self.db.credentials.password !== oldPassword) {
+                reject('old password is incorrect.');
+                return;
+            }
+            self.db.resetPassword(self.loggedInRanger, newPassword).then((ranger) => {
                 self.loggedInRanger = ranger;
                 self.db.setCredentials(ranger.username, newPassword);
                 resolve(true);
