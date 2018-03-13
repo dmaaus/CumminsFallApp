@@ -20,12 +20,10 @@ export class AuthProvider {
             self.db.setCredentials(username, password);
             self.db.authenticate().then(ranger => {
                 self.loggedInRanger = ranger;
-                console.log('loggedInRanger is now ' + self.loggedInRanger.toString());
                 resolve(ranger);
             })
                 .catch(msg => {
                     self.logout();
-                    console.log('loggedInRanger is now null');
                     reject(msg);
                 });
         });

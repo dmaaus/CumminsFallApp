@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {AuthProvider} from "../../providers/auth/auth";
+import {LoadingProvider} from "../../providers/loading/loading";
 
 @IonicPage()
 @Component({
@@ -17,7 +18,7 @@ export class ResetPasswordPage {
 
     pageWhenDone: any;
 
-    constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthProvider, private alertCtrl: AlertController) {
+    constructor(public navCtrl: NavController, public navParams: NavParams, private auth: AuthProvider, private alertCtrl: AlertController, private loading: LoadingProvider) {
         this.pageWhenDone = navParams.get('pageWhenDone');
     }
 
@@ -27,7 +28,9 @@ export class ResetPasswordPage {
             return;
         }
         let self = this;
+        self.loading.present();
         this.auth.resetPassword(this.oldPassword, this.newPassword).then(() => {
+            self.loading.dismiss();
             self.showError('');
             console.log('reset: ' + self.auth.loggedInRanger.toString());
             self.alertCtrl.create({
@@ -57,6 +60,7 @@ export class ResetPasswordPage {
     }
 
     showError(msg) {
+        this.loading.dismiss();
         this.errorMessage = msg;
     }
 

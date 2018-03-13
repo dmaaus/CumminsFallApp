@@ -9,7 +9,7 @@ export class DatabaseProvider {
     static readonly AWS_URL: string = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/ranger';
     static readonly API_KEY: string = 'cdIRFxmAYK3JctGIHCyQE82XM3Nv5cwT9gJXzqiU';
 
-    db: any = null; // TODO remove
+    db: any = null;
     credentials: Credentials = null;
 
     setCredentials(username: string, password: string = null) {
@@ -28,20 +28,20 @@ export class DatabaseProvider {
 
     api(functionName: string, args: Object): Promise<Object> {
         let self = this;
-        let headers = new HttpHeaders()
-            .append('x-api-key', DatabaseProvider.API_KEY)
-            .append('functionName', functionName)
-            .append('username', this.credentials.username)
-            .append('password', this.credentials.password)
-            .append('args', JSON.stringify(args));
+        let headers = new HttpHeaders({
+            'x-api-key': DatabaseProvider.API_KEY,
+            'function-name': functionName,
+            'username': this.credentials.username,
+            'password': this.credentials.password,
+            'args': JSON.stringify(args)
+        });
 
         return new Promise<Object>((resolve, reject) => {
                 self.http.post(
                     DatabaseProvider.AWS_URL,
                     {},
                     {headers: headers}
-                ).subscribe((responseString: string) => {
-                    let response = JSON.parse(responseString);
+                ).subscribe((response: Object) => {
                     if (!response.hasOwnProperty('body')) {
                         let message = '';
                         if (response.hasOwnProperty('message')) {
@@ -54,15 +54,17 @@ export class DatabaseProvider {
                             message = 'unknown error occurred. response: ' + JSON.stringify(response);
                         }
                         console.error(message);
-                        reject('An error has occurred while attempting to process your request. Please try again later. If the error persists, contact your IT administrator.');
+                        reject(
+                            'An error has occurred while attempting to process your request. Please try again later. ' +
+                            'If the error persists, contact your IT administrator.');
                         return;
                     }
-                    let body = response['body'];
+                    let body = JSON.parse(response['body']);
                     if (body.hasOwnProperty('error')) {
                         reject(body.error);
                         return;
                     }
-                    resolve(response['body']);
+                    resolve(body);
                 }, error => {
                     reject(error.error.message);
                 });
@@ -127,17 +129,20 @@ export class DatabaseProvider {
         });
     }
 
-    addUser(ranger: Ranger): Promise<boolean> {
+    addUser(ranger: Ranger): Promise<Date> {
         let self = this;
-        return new Promise<boolean>((resolve, reject) => {
+        return new Promise<Date>((resolve, reject) => {
             self.api('addUser', {ranger: ranger})
                 .then((result) => {
+                    let expiration = new Date(result['expiration']);
                     this.sendConfirmationEmail(
                         ranger,
                         result['password'],
-                        result['expiration'])
+                        expiration)
 
-                        .then(resolve).catch((msg) => {
+                        .then(() => {
+                            resolve(expiration);
+                        }).catch((msg) => {
                         reject(`A confirmation email could not be sent to ${ranger.name}` +
                             `because of the following error: ${msg}\n` +
                             `Please try again later.`);
@@ -160,7 +165,7 @@ export class DatabaseProvider {
         return new Promise<Ranger>((resolve, reject) => {
             self.api('getRangerWithName', {name: name})
                 .then(ranger => {
-                    resolve(ranger as Ranger);
+                    resolve(Ranger.fromObject(ranger));
                 }).catch(reject);
         });
     }
@@ -169,7 +174,7 @@ export class DatabaseProvider {
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
             self.api('authenticate', {}).then(result => {
-                let ranger: Ranger = result['ranger'] as Ranger;
+                let ranger = Ranger.fromObject(result['ranger']);
                 self.email.apiKey = result['emailKey'];
                 self.notification.apiKey = result['notificationKey'];
                 if (ranger.state === Ranger.EXPIRED) {
@@ -179,6 +184,7 @@ export class DatabaseProvider {
                     resolve(ranger);
                 }
             }).catch(msg => {
+                console.error(msg);
                 reject(msg);
             });
         });
@@ -246,27 +252,8 @@ export class Ranger {
         return new Ranger('', '', '', false, Ranger.EXPIRED);
     }
 
-    static fromDatabaseQuery(item: any): Promise<Ranger> {
-        return new Promise<Ranger>((resolve, reject) => {
-            let ranger = new Ranger(
-                item[DB_CONSTS.RANGER_NAME],
-                item[DB_CONSTS.RANGER_USERNAME],
-                item[DB_CONSTS.RANGER_EMAIL],
-                item[DB_CONSTS.RANGER_IS_ADMIN],
-                item[DB_CONSTS.RANGER_STATE]);
-
-            let expiration: Date = item[DB_CONSTS.RANGER_EXPIRATION];
-            if (expiration != null) {
-                if (new Date(expiration).getTime() < Date.now()) {
-                    ranger.state = Ranger.EXPIRED;
-                }
-                else {
-                    ranger.state = Ranger.NEEDS_CONFIRMATION;
-                }
-            }
-            console.log(ranger);
-            resolve(ranger);
-        });
+    static fromObject(obj): Ranger {
+        return new Ranger(obj.name, obj.username, obj.email, obj.isAdmin, obj.state);
     }
 
     toString(): string {
@@ -289,15 +276,4 @@ export class Ranger {
 export class Credentials {
     constructor(public username: string, public password: string) {
     }
-}
-
-class DB_CONSTS {
-    static readonly RANGER_TABLE_NAME: string = 'Ranger';
-    static readonly RANGER_USERNAME: string = 'username';
-    static readonly RANGER_PASSWORD: string = 'password';
-    static readonly RANGER_NAME: string = 'name';
-    static readonly RANGER_EMAIL: string = 'email';
-    static readonly RANGER_IS_ADMIN: string = 'isAdmin';
-    static readonly RANGER_EXPIRATION: string = 'expiration';
-    static readonly RANGER_STATE: string = 'state';
 }

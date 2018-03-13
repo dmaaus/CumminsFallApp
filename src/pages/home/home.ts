@@ -2,8 +2,6 @@ import {Component, ViewChild} from '@angular/core';
 import {AlertController, NavController} from 'ionic-angular';
 import {Chart} from 'chart.js';
 
-import * as bcrypt from 'bcryptjs';
-
 @Component({
     selector: 'page-home',
     templateUrl: 'home.html',
@@ -15,8 +13,6 @@ export class HomePage {
     barChart: any;
 
     constructor(public navCtrl: NavController, private alertCtrl: AlertController) {
-        let hash = bcrypt.hashSync('bbbbbbbb', bcrypt.genSaltSync());
-        console.log(hash);
     }
 
     ionViewDidLoad() {

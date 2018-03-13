@@ -13,7 +13,6 @@ export class EmailProvider {
     }
 
     constructor(public http: HttpClient) {
-        console.log('Hello EmailProvider Provider');
     }
 
     send(from: string, to: string, subject: string, message: string): Promise<boolean> {
