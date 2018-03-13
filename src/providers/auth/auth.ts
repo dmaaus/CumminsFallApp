@@ -17,14 +17,13 @@ export class AuthProvider {
     login(username: string, password: string): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>(function (resolve, reject) {
-            self.db.authenticateUser(username, password).then(ranger => {
+            self.db.setCredentials(username, password);
+            self.db.authenticate().then(ranger => {
                 self.loggedInRanger = ranger;
-                console.log('loggedInRanger is now ' + self.loggedInRanger.toString());
                 resolve(ranger);
             })
                 .catch(msg => {
-                    self.loggedInRanger = Ranger.makeNullRanger();
-                    console.log('loggedInRanger is now null');
+                    self.logout();
                     reject(msg);
                 });
         });
@@ -33,8 +32,13 @@ export class AuthProvider {
     resetPassword(oldPassword: string, newPassword: string): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            self.db.resetPassword(self.loggedInRanger, oldPassword, newPassword).then((ranger) => {
+            if (self.db.credentials.password !== oldPassword) {
+                reject('old password is incorrect.');
+                return;
+            }
+            self.db.resetPassword(self.loggedInRanger, newPassword).then((ranger) => {
                 self.loggedInRanger = ranger;
+                self.db.setCredentials(ranger.username, newPassword);
                 resolve(true);
             }).catch(reject);
         });
@@ -42,5 +46,6 @@ export class AuthProvider {
 
     logout() {
         this.loggedInRanger = Ranger.makeNullRanger();
+        this.db.setCredentials(null);
     }
 }
