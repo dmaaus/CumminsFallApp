@@ -30,7 +30,11 @@ export class RangerAlertCreatorPage {
         let date = dateformat(Date.now(), 'mmm dS');
         self.loading.present();
 
-        self.notification.postToLocal('Park Closing', `Cummins Falls is closed for the remainder of today, ${date}`).then(self.displayConfirmation.bind(self)).catch(self.alertError.showCallback(this.loading));
+        self.notification.postToLocal(
+            'Park Closing',
+            `Cummins Falls is closed for the remainder of today, ${date}`)
+            .then(self.displayConfirmation.bind(self))
+            .catch(self.alertError.showCallback(this.loading));
     }
 
     floodWarning() {
@@ -40,6 +44,8 @@ export class RangerAlertCreatorPage {
             'Flood Warning',
             'Cummins Falls is or may soon be experiencing flash flooding. Please exit the park immediately.',
             NotificationProvider.WITHIN_PARK
-        ).then(self.displayConfirmation.bind(self)).catch(self.alertError.showCallback(this.loading));
+        )
+            .then(self.displayConfirmation.bind(self))
+            .catch(self.alertError.showCallback(this.loading));
     }
 }
