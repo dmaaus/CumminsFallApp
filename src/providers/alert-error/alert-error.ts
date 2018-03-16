@@ -18,11 +18,15 @@ export class AlertErrorProvider {
         }
     }
 
-    show(error) {
+    show(error, onDismiss: () => void = () => {}) {
         this.alertCtrl.create({
             title: 'Error',
             message: error,
-            buttons: ['Ok']
+            buttons: [{
+                text: 'Ok',
+                handler: onDismiss
+            }],
+            enableBackdropDismiss: false
         }).present();
     }
 }

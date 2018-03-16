@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {AlertController, NavController} from 'ionic-angular';
+import {NavController} from 'ionic-angular';
 import {Chart} from 'chart.js';
 
 @Component({
@@ -12,7 +12,7 @@ export class HomePage {
 
     barChart: any;
 
-    constructor(public navCtrl: NavController, private alertCtrl: AlertController) {
+    constructor(public navCtrl: NavController) {
     }
 
     ionViewDidLoad() {

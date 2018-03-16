@@ -11,6 +11,7 @@ import {RangerHomePage} from "../ranger-home/ranger-home";
     templateUrl: 'settings.html',
 })
 export class SettingsPage {
+    // TODO opt out
 
     constructor(public navCtrl: NavController, private auth: AuthProvider) {
 
