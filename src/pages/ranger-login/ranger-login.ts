@@ -3,6 +3,8 @@ import {AlertController, IonicPage, NavController} from 'ionic-angular';
 import {AuthProvider} from "../../providers/auth/auth";
 import {RangerHomePage} from "../ranger-home/ranger-home";
 import {ResetPasswordPage} from "../reset-password/reset-password";
+import {Ranger} from "../../providers/database/database";
+import {LoadingProvider} from "../../providers/loading/loading";
 
 @IonicPage()
 @Component({
@@ -15,7 +17,7 @@ export class RangerLoginPage {
     private username: string = '';
     private password: string = '';
 
-    constructor(public navCtrl: NavController, private auth: AuthProvider, private alertCtrl: AlertController) {
+    constructor(public navCtrl: NavController, private auth: AuthProvider, private alertCtrl: AlertController, private loading: LoadingProvider) {
         if (auth.loggedIn()) {
             this.continue();
         }
@@ -23,7 +25,9 @@ export class RangerLoginPage {
 
     login() {
         let self = this;
-        this.auth.login(this.username.toLowerCase(), this.password).then((ranger) => {
+        self.loading.present();
+        this.auth.login(this.username.toLowerCase(), this.password).then((ranger: Ranger) => {
+            self.loading.dismiss();
             if (ranger.needsToResetPassword()) {
                 self.alertCtrl.create({
                     title: 'Password Reset',
@@ -31,9 +35,10 @@ export class RangerLoginPage {
                     buttons: [{
                         text: 'Ok',
                         handler: () => {
-                            self.navCtrl.push(ResetPasswordPage, {pageWhenDone: RangerHomePage}).then(() => {
-                                self.navCtrl.remove(self.navCtrl.length() - 2);
-                            });
+                            self.navCtrl.push(ResetPasswordPage, {pageWhenDone: RangerHomePage})
+                                .then(() => {
+                                    self.navCtrl.remove(self.navCtrl.length() - 2);
+                                });
                             self.showError('');
                         }
                     }],
@@ -52,10 +57,12 @@ export class RangerLoginPage {
     }
 
     showError(msg: string) {
+        this.loading.dismiss();
         this.errorMessage = msg;
     }
 
     private continue() {
+        this.loading.dismiss();
         this.navCtrl.push(RangerHomePage).then(() => {
             this.navCtrl.remove(this.navCtrl.length() - 2);
         });

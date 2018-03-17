@@ -27,12 +27,13 @@ import {GoogleMapsPage} from '../pages/maps/google-maps-page/google-maps-page';
 import {TrailsPage} from '../pages/maps/trails-page/trails-page';
 import {AlertErrorProvider} from '../providers/alert-error/alert-error';
 import {ResetPasswordPage} from "../pages/reset-password/reset-password";
+import {CreateRangerPage} from "../pages/create-ranger/create-ranger";
+import {RangerHomePage} from "../pages/ranger-home/ranger-home";
+import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
+import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
+import {EmailProvider} from "../providers/email/email";
+import {LoadingProvider} from '../providers/loading/loading';
 import { CumminsFallsEventsProvider } from '../providers/events/event';
-import { RangerInfoPage } from '../pages/ranger-info/ranger-info';
-import { ManageRangerPage } from '../pages/manage-ranger/manage-ranger';
-import { RangerHomePage } from '../pages/ranger-home/ranger-home';
-import { CreateRangerPage } from '../pages/create-ranger/create-ranger';
-import { EmailProvider } from '../providers/email/email';
 import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor-analytics';
 @NgModule({
     declarations: [
@@ -92,8 +93,9 @@ import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor
         OneSignal,
         NotificationProvider,
         AndroidPermissions,
+        AlertErrorProvider,
         EmailProvider,
-    AlertErrorProvider,
+        LoadingProvider
     CumminsFallsEventsProvider,
     VisitorAnalyticsProvider
     ]
