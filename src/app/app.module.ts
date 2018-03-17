@@ -32,6 +32,7 @@ import {RangerHomePage} from "../pages/ranger-home/ranger-home";
 import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
 import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {EmailProvider} from "../providers/email/email";
+import {LoadingProvider} from '../providers/loading/loading';
 
 @NgModule({
     declarations: [
@@ -92,7 +93,8 @@ import {EmailProvider} from "../providers/email/email";
         NotificationProvider,
         AndroidPermissions,
         AlertErrorProvider,
-        EmailProvider
+        EmailProvider,
+        LoadingProvider
     ]
 })
 export class AppModule {

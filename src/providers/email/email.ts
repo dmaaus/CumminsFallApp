@@ -2,28 +2,25 @@ import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import * as querystring from 'query-string';
 
-
-/*
-  Generated class for the EmailProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class EmailProvider {
 
-    // TODO apiKey should be grabbed from server
     domain: string = 'sandboxff0637d7099b4069b7410adb473f3bfd.mailgun.org';
-    apiKey: string = 'key-9b10dcf96845d9e84a8a3306ddfa2d87';
+    apiKey: string = '';
 
-    url: string = `https://api:${this.apiKey}@api.mailgun.net/v3/${this.domain}/messages`;
+    url(): string {
+        return `https://api:${this.apiKey}@api.mailgun.net/v3/${this.domain}/messages`;
+    }
 
     constructor(public http: HttpClient) {
-        console.log('Hello EmailProvider Provider');
     }
 
     send(from: string, to: string, subject: string, message: string): Promise<boolean> {
+        let self = this;
         return new Promise<boolean>((resolve, reject) => {
+            if (self.apiKey === '') {
+                reject('apiKey has not been set, so how was send called?');
+            }
             let params = {
                 from: from,
                 to: to,
@@ -31,7 +28,7 @@ export class EmailProvider {
                 text: message
             };
 
-            this.http.post(this.url + '?' + querystring.stringify(params), {})
+            this.http.post(self.url() + '?' + querystring.stringify(params), {})
                 .subscribe(() => {
                     resolve(true);
                 }, (error: HttpErrorResponse) => {

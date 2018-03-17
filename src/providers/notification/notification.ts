@@ -18,9 +18,8 @@ export class NotificationProvider {
     private static readonly LOCATION_KNOWN: string = 'Location_Allowed';
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = 'times_asked_for_location';
 
-    // TODO apiKey should be acquired from server upon login
     appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
-    apiKey: string = 'N2NjMzI0MTktODBhMC00OTAxLWEzZjAtODVlM2Y0YzQwMDdj';
+    apiKey: string = '';
     googleProjectNumber: string = '386934932788';
 
     constructor(public http: HttpClient, private oneSignal: OneSignal, private alertCtrl: AlertController, private permissions: AndroidPermissions, private platform: Platform, private storage: Storage, private alertError: AlertErrorProvider) {
@@ -41,59 +40,45 @@ export class NotificationProvider {
      * @param {string} confirmationTitle The title used in the confirmation dialog
      * @param {string} confirmationMessage The message used in the confirmation message
      */
-    post(title: string, message: string, segment: string, confirmationTitle = 'Notification Sent', confirmationMessage: string = 'The notification was successfully sent') {
-        let body = {
-            app_id: this.appId,
-            contents: {'en': message},
-            headings: {'en': title},
-            included_segments: [segment]
-        };
+    post(title: string, message: string, segment: string): Promise<boolean> {
+        return new Promise<boolean>((resolve, reject) => {
+            if (this.apiKey === '') {
+                reject('apiKey has not been set, so how was post called?');
+                return;
+            }
+            let body = {
+                app_id: this.appId,
+                contents: {'en': message},
+                headings: {'en': title},
+                included_segments: [segment]
+            };
 
-        let headers = new HttpHeaders()
-            .append('Content-Type', 'application/json; charset=utf-8')
-            .append('Authorization', 'Basic ' + this.apiKey);
+            let headers = new HttpHeaders()
+                .append('Content-Type', 'application/json; charset=utf-8')
+                .append('Authorization', 'Basic ' + this.apiKey);
 
-        let self = this;
-        if (segment === NotificationProvider.ALL) {
-            self._post(body, headers, confirmationTitle, confirmationMessage).catch(self.catchPostErrorCallback());
-        }
-        else {
-            self._post(body, headers).catch(self.catchPostErrorCallback()).then(() => {
-                body.included_segments = [NotificationProvider.ALL];
-                body['excluded_segments'] = [NotificationProvider.LOCATION_KNOWN];
-                self._post(body, headers, confirmationTitle, confirmationMessage)
-                    .catch(self.catchPostErrorCallback(
-                        'The message was successfully sent to some, but not all, recipients. ' +
-                        'You can send the notification again, but some people will get it twice. ' +
-                        'The following error was produced: '));
-            });
-        }
-    }
-
-    catchPostErrorCallback(pretext = '') {
-        if (pretext !== '') {
-            return this.catchPostErrorWithPretext.bind(this, pretext);
-        }
-        return this.catchPostError.bind(this);
-    }
-
-    catchPostError(err) {
-        this.catchPostErrorWithPretext('', err);
-    }
-
-    /**
-     * @param {string} pretext text to be prepended to the error message. No whitespace or other separator is used.
-     * @param err The error thrown by the HttpClient
-     */
-    catchPostErrorWithPretext(pretext, err) {
-        let message = err.message;
-        if (err.status === 0) {
-            message = 'Unable to connect to server. Are you connected to the Internet?'
-        }
-        if (pretext !== '') {
-            message = pretext + message;
-        }
-        this.alertError.show(message);
+            let self = this;
+            if (segment === NotificationProvider.ALL) {
+                self._post(body, headers).then(() => {
+                    resolve(true);
+                }).catch(reject);
+            }
+            else {
+                self._post(body, headers).then(() => {
+                    body.included_segments = [NotificationProvider.ALL];
+                    body['excluded_segments'] = [NotificationProvider.LOCATION_KNOWN];
+                    self._post(body, headers).then(() => {
+                        resolve(true);
+                    }).catch((error) => {
+                            reject(
+                                'The message was successfully sent to some, but not all, recipients. ' +
+                                'You can send the notification again, but some people will get it twice. ' +
+                                'The following error was produced: '
+                                + error);
+                        });
+                }).catch(reject);
+            }
+        });
     }
 
     /**
@@ -102,23 +87,16 @@ export class NotificationProvider {
      * Sends the message to everyone within a certain radius of Cummins Falls, as well as those whose location we don't
      * know.
      */
-    postToLocal(title: string, message: string) {
-        this.post(title, message, NotificationProvider.WITHIN_5_MILES);
+    postToLocal(title: string, message: string): Promise<boolean> {
+        return this.post(title, message, NotificationProvider.WITHIN_10_MILES);
     }
 
-    _post(body, headers: HttpHeaders, title = '', message = ''): Promise<boolean> {
+    _post(body, headers: HttpHeaders): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             let url = 'https://onesignal.com:443/api/v1/notifications';
             this.http.post(
                 url, body, {headers: headers})
                 .subscribe(() => {
-                    if (title !== '') {
-                        this.alertCtrl.create({
-                            title: title,
-                            message: message,
-                            buttons: ['OK']
-                        }).present();
-                    }
                     resolve(true);
                 }, reject);
         });

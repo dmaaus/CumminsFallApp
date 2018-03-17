@@ -4,6 +4,7 @@ import {DatabaseProvider} from "../../providers/database/database";
 import {RangerInfoPage} from "../ranger-info/ranger-info";
 import {CreateRangerPage} from "../create-ranger/create-ranger";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
+import {LoadingProvider} from "../../providers/loading/loading";
 
 @IonicPage()
 @Component({
@@ -13,14 +14,16 @@ import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 export class ManageRangerPage {
     rangers: string[] = [];
 
-    constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertError: AlertErrorProvider) {
+    constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertError: AlertErrorProvider, private loading: LoadingProvider) {
     }
 
     ionViewWillEnter() {
         let self = this;
+        self.loading.present(true, true);
         self.db.getRangerNames().then(names => {
             self.rangers = names;
-        }).catch(self.alertError.showCallback());
+            self.loading.dismiss();
+        }).catch(self.alertError.showCallback(self.loading));
     }
 
     selectRanger(ranger: string) {
