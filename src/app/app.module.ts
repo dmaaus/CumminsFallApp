@@ -1,7 +1,7 @@
 import {MapsPage} from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
+import {AlertController, IonicApp, IonicErrorHandler, IonicModule, Slides} from 'ionic-angular';
 import {MyApp} from './app.component';
 
 import {AboutPage} from '../pages/about/about';
@@ -34,7 +34,11 @@ import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {EmailProvider} from "../providers/email/email";
 import {LoadingProvider} from '../providers/loading/loading';
 
-import { CumminsFallsEventsProvider } from '../providers/events/event';
+import { CumminsFallsEventsProvider } from '../providers/events/events';
+import { ComponentsModule } from '../components/components.module';
+import { EventPage } from '../pages/event/event';
+
+import { InAppBrowser } from '@ionic-native/in-app-browser';
 @NgModule({
     declarations: [
         MyApp,
@@ -53,13 +57,15 @@ import { CumminsFallsEventsProvider } from '../providers/events/event';
         ManageRangerPage,
         RangerHomePage,
         CreateRangerPage,
-        ResetPasswordPage
+        ResetPasswordPage,
+        EventPage
     ],
     imports: [
         BrowserModule,
         IonicModule.forRoot(MyApp),
         HttpClientModule,
         IonicStorageModule.forRoot(),
+        ComponentsModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -79,7 +85,8 @@ import { CumminsFallsEventsProvider } from '../providers/events/event';
         ManageRangerPage,
         RangerHomePage,
         CreateRangerPage,
-        ResetPasswordPage
+        ResetPasswordPage,
+        EventPage
     ],
     providers: [
         StatusBar,
@@ -95,8 +102,9 @@ import { CumminsFallsEventsProvider } from '../providers/events/event';
         AndroidPermissions,
         AlertErrorProvider,
         EmailProvider,
-        LoadingProvider
-    CumminsFallsEventsProvider
+        LoadingProvider,
+    CumminsFallsEventsProvider,
+    InAppBrowser
     ]
 })
 export class AppModule {

@@ -1,88 +1,80 @@
-/**
- * This provider is focused on obtaining a list of events from the
- * TN State Park events API
- * 
- * The current Events API (Feb. 27th, 2018): https://tsp.itinio.com/events/events.html
- */
+import { Injectable } from '@angular/core';
+import { Storage } from '@ionic/storage';
+import { HttpClient } from '@angular/common/http';
+import {Observable} from 'rxjs/Observable';
 
- import { HttpClient } from '@angular/common/http';
- import { Observable } from 'rxjs/Observable';
-
- export module CumminsFallsEventsProvider {
-     /** 
-      * This class is used to grab the correct events from the
-      * State Park API. Deals with parsing all the events given
-      * by the API
-     */
-     export class EventsProvider {
-
-     }
-     export class EventsModel {
-         public Events : Event[]
-     }
-     /** 
-      * This class descibes the items within an event.
-      * Follows the following model:
-      * {
-            "Account": "Seven Islands State Birding Park",
-            "Title": "Birding with Friends",
-            "EventURL": "birding-with-friends",
-            "Summary": "This event is part of a monthly birding series held on the 4th Wednesday of every month. No RSVP required, and you do not have to be a member of KTOS",
-            "StartDate": 1519797600000,
-            "EndDate": 1519797600000,
-            "Time": "",
-            "Duration": [
+/*
+Example of event object
+{
+            "Account": "Cummins Falls State Park",
+            "Title": "2018 Cummins Falls Marathon",
+            "EventURL": "2018-cummins-falls-marathon",
+            "Summary": "Join us for the 2018 Cummins Falls Marathon, Half Marathon, 10K, and 5K! ",
+            "StartDate": 1519452000000,
+            "EndDate": 1519452000000,
+            "Time": "8:00AM - Marathon/Half Start",
+            "Duration": [],
+            "Audience": [],
+            "Interests": [],
+            "Majors": [
                 {
-                    "name": "2 to 4 Hours",
-                    "url": "2-to-4-hours",
-                    "key": 332
-                }
-            ],
-            "Audience": [
-                {
-                    "name": "Everyone",
-                    "url": "everyone",
-                    "key": 351
-                }
-            ],
-            "Interests": [
-                {
-                    "name": "Hiking / Exploring",
-                    "url": "hiking-exploring",
-                    "key": 237
+                    "name": "Run Club",
+                    "url": "run-club",
+                    "key": 369
                 },
                 {
-                    "name": "Birding / Wildlife",
-                    "url": "birding-wildlife",
-                    "key": 240
-                },
-                {
-                    "name": "Nature / Science",
-                    "url": "nature-science",
-                    "key": 243
+                    "name": "Organized Races",
+                    "url": "organized-races",
+                    "key": 377
                 }
             ],
-            "Majors": [],
-            "StateParks": [
-                {
-                    "name": "Norris Dam State Park",
-                    "url": "norris-dam-state-park",
-                    "key": 298
-                },
-                {
-                    "name": "Panther Creek State Park",
-                    "url": "panther-creek-state-park",
-                    "key": 300
-                }
-            ],
+            "StateParks": [],
             "Recurring": "false",
-            "Region": "east",
+            "Region": "middle",
             "Status": "Active",
             "Calendar": "",
             "Available": "Yes"
         }
-     */
-     export class Event {
 
-     }
- }
+*/
+
+//This module will host all functions that pulls events from
+//the TN State park website.
+//This module will also use caching to minimize requests to the
+//web for a list of events
+const STORAGE_KEY = 'cumminsFallsEvents';
+const EVENTURL = 'https://tsp.itinio.com/events/events.html';
+
+@Injectable()
+export class CumminsFallsEventsProvider {
+    
+    constructor(public http: HttpClient){}
+
+    getEventsFromUrl() : Observable<CumminsFallsHttpEvent> {
+        return this.http.get<CumminsFallsHttpEvent>(EVENTURL, {responseType: 'json'});
+    }
+}
+
+    export class CumminsFallsHttpEvent {
+        Events: CumminsFallsEvent[];
+    }
+
+    export class CumminsFallsEvent {
+        Account: string;
+        Title: string;
+        EventURL: string;
+        Summary: string;
+        StartDate: number;
+        EndDate: number;
+        Time: string;
+        Duration: any;
+        Audience: any;
+        Interests: any;
+        Majors: any;
+        StateParks: any;
+        Recurring: boolean;
+        Region: string;
+        Status: string;
+        Calendar: string;
+        Available: string;
+    }

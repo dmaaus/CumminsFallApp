@@ -1,0 +1,16 @@
+<!-- Generated template for the EventCardComponent component -->
+
+<ion-card>
+    <ion-card-header>
+        {{header}}
+    </ion-card-header>
+
+    <ion-card-content>
+        <ion-slides pager>
+            <ion-slide tappable (click)="loadEventPage()" *ngFor="let event of cumminsFallsEvents">
+                <h2>{{event.Title}}</h2>
+                <p>{{event.Summary}}</p>
+            </ion-slide>
+        </ion-slides>
+    </ion-card-content>
+</ion-card>

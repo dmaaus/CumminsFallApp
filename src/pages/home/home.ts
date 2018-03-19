@@ -4,6 +4,7 @@ import {Chart} from 'chart.js';
 
 import {HttpClient, HttpHeaders, HttpErrorResponse} from '@angular/common/http';
 
+import { EventCardComponent } from '../../components/event-card/event-card';
 @Component({
     selector: 'page-home',
     templateUrl: 'home.html',

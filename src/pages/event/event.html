@@ -1,0 +1,23 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>Event</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-card>
+        <ion-card-header>{{event.Title}}</ion-card-header>
+
+        <ion-card-content>
+            <span>Start Date: {{startDate.toLocaleDateString()}}</span>
+            <span>End Date: {{endDate.toLocaleDateString()}}</span>
+            <span>{{event.Summary}}</span>
+        </ion-card-content>
+
+        <ion-row>
+            <ion-col>
+                <button ion-button (click)="goToPage()">Go To Page</button>
+            </ion-col>
+        </ion-row>
+    </ion-card>
+</ion-content>
