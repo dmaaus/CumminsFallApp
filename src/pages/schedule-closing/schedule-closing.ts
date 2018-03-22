@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {DatePicker} from "@ionic-native/date-picker";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 import {DatabaseProvider} from "../../providers/database/database";
@@ -21,7 +21,6 @@ export class ScheduleClosingPage {
                 public navParams: NavParams,
                 private datePicker: DatePicker,
                 private alertError: AlertErrorProvider,
-                private alertCtrl: AlertController,
                 private http: HttpClient,
                 private db: DatabaseProvider,
                 private loading: LoadingProvider) {
@@ -46,7 +45,6 @@ export class ScheduleClosingPage {
     }
 
     static postClosing(closing: Closing, http: HttpClient, db: DatabaseProvider): Promise<boolean> {
-        let self = this;
         let obj = closing.toObject();
         console.log('posting', obj);
         return new Promise<boolean>((resolve, reject) => {
@@ -56,6 +54,34 @@ export class ScheduleClosingPage {
                     resolve(true);
                 }).catch(reject);
         });
+    }
+
+    static scheduleClosing(closing: Closing,
+                           alertError: AlertErrorProvider,
+                           callback: (sendTime: moment.Moment, message: string) => void,
+                           navCtrl: NavController,
+                           loading: LoadingProvider,
+                           http: HttpClient,
+                           db: DatabaseProvider) {
+
+        loading.present();
+        let error = closing.isStartTimeValid(closing.start);
+        if (error !== '') {
+            alertError.show(error);
+            return;
+        }
+        error = closing.isEndTimeValid(closing.end);
+        if (error !== '') {
+            alertError.show(error);
+            return;
+        }
+        let self = this;
+        self.postClosing(closing, http, db).then(() => {
+            console.log('posted');
+            navCtrl.pop().then(() => {
+                callback(closing.getSendTime(), closing.getMessage());
+            });
+        }).catch(alertError.showCallback(loading));
     }
 
     getMessage() {
@@ -136,34 +162,6 @@ export class ScheduleClosingPage {
                 .catch(reject);
         });
     }
-
-    static scheduleClosing(closing: Closing,
-                           alertError: AlertErrorProvider,
-                           callback: (sendTime: moment.Moment, message: string) => void,
-                           navCtrl: NavController,
-                           loading: LoadingProvider,
-                           http: HttpClient,
-                           db: DatabaseProvider) {
-
-        loading.present();
-        let error = closing.isStartTimeValid(closing.start);
-        if (error !== '') {
-            alertError.show(error);
-            return;
-        }
-        error = closing.isEndTimeValid(closing.end);
-        if (error !== '') {
-            alertError.show(error);
-            return;
-        }
-        let self = this;
-        self.postClosing(closing, http, db).then(() => {
-            console.log('posted');
-            navCtrl.pop().then(() => {
-                callback(closing.getSendTime(), closing.getMessage());
-            });
-        }).catch(alertError.showCallback(loading));
-    }
 }
 
 export class Closing {
@@ -172,6 +170,12 @@ export class Closing {
 
     static fromObject(start, end, startsNow, fromOpening, untilClosing): Closing {
         return new Closing(moment(start), moment(end), !!startsNow, !!fromOpening, !!untilClosing);
+    }
+
+    static isSendTimeValid(date: moment.Moment): boolean {
+        let minFutureSendDate = moment();
+        minFutureSendDate.minutes(minFutureSendDate.minutes() + 15);
+        return minFutureSendDate.valueOf() <= date.valueOf();
     }
 
     toObject(): Object {
@@ -302,11 +306,5 @@ export class Closing {
             return sendTime;
         }
         return moment(0);
-    }
-
-    static isSendTimeValid(date: moment.Moment): boolean {
-        let minFutureSendDate = moment();
-        minFutureSendDate.minutes(minFutureSendDate.minutes() + 15);
-        return minFutureSendDate.valueOf() <= date.valueOf();
     }
 }
