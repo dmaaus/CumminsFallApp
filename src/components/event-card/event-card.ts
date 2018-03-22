@@ -2,8 +2,7 @@ import { Component,ViewChild } from '@angular/core';
 
 import { CumminsFallsEventsProvider, CumminsFallsHttpEvent, CumminsFallsEvent } from '../../providers/events/events';
 
-import { Observable } from 'rxjs/Observable';
-import { List, Slides, NavController } from 'ionic-angular';
+import { Slides, NavController } from 'ionic-angular';
 import { EventPage } from '../../pages/event/event';
 
 /**
@@ -22,33 +21,30 @@ export class EventCardComponent {
   
   eventPage : EventPage;
 
+  cumminsFallsDisplayEvents: Array<DisplayEvent>;
   cumminsFallsEvents: Array<CumminsFallsEvent>;
   header: string;
 
   @ViewChild(Slides) cardSlides: Slides;
 
   constructor(private eventsProvider: CumminsFallsEventsProvider, public navCntrl: NavController) {
+    this.cumminsFallsDisplayEvents = new Array<DisplayEvent>(0);
     this.cumminsFallsEvents = new Array<CumminsFallsEvent>(0);
 
-    this.header = "Upcoming Events"
-
+    this.header = "Upcoming Events";
+    
     eventsProvider.getEventsFromUrl().subscribe(res => {
-      this.cumminsFallsEvents = res.Events.filter(event => event.Account.includes("Cummins Falls"));
+      let events = res.Events.filter(event => event.Account.includes("Cummins Falls"));
+      this.cumminsFallsEvents = events;
+      events.forEach(event => {
+        let newDisplayEvent = new DisplayEvent();
+        newDisplayEvent.title = event.Title;
+        newDisplayEvent.summary = event.Summary;
+        newDisplayEvent.date = new Date(event.StartDate);
+
+        console.log(`${this.cumminsFallsDisplayEvents.push(newDisplayEvent)} event(s) added.`);
+      })
       this.cardSlides.update();
-    });
-
-    //this.parseEvents();
-  }
-
-  parseEvents(){
-    console.log("Parsing events ...");
-    console.log("Length of events: " + this.httpEvent.Events.length);
-    this.cumminsFallsEvents.pop();
-    this.httpEvent.Events.forEach(event => {
-      if(event.Account.includes("Cummins Falls")){
-        //console.log("Found Cummins Falls event ...");
-        this.cumminsFallsEvents.push(event);
-      }
     });
   }
 
@@ -61,4 +57,10 @@ export class EventCardComponent {
 
     this.navCntrl.push(EventPage, {clickedEvent});
   }
+}
+
+class DisplayEvent {
+  title: String;
+  date: Date;
+  summary: String;
 }

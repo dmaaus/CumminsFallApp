@@ -1,5 +1,5 @@
 import { Component } from "@angular/core";
-import { NavController, NavParams, DateTime } from "ionic-angular";
+import { NavController, NavParams} from "ionic-angular";
 import { CumminsFallsEvent } from "../../providers/events/events";
 import { InAppBrowser } from "@ionic-native/in-app-browser";
 
@@ -18,7 +18,6 @@ export class EventPage {
 
         this.startDate = new Date(this.event.StartDate);
         this.endDate = new Date(this.event.EndDate);
-
     }
 
     goToPage(){

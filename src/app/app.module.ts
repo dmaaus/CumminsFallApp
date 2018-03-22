@@ -1,7 +1,7 @@
 import {MapsPage} from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
-import {AlertController, IonicApp, IonicErrorHandler, IonicModule, Slides} from 'ionic-angular';
+import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
 import {MyApp} from './app.component';
 
 import {AboutPage} from '../pages/about/about';

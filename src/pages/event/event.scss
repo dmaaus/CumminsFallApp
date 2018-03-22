@@ -1,1 +1,14 @@
-page-event {}
+page-event {
+    .eventHeader {
+        padding-top: 4pt;
+        padding-bottom: 4pt;
+    }
+    .eventDate {
+        font-size: 12sp;
+        padding-bottom: 4pt;
+    }
+
+    .eventSummary {
+        padding-bottom: 4pt;
+    }
+}

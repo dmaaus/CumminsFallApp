@@ -33,6 +33,9 @@
     },
     "onesignal-cordova-plugin": {
       "PACKAGE_NAME": "edu.tntech.CSC4620.CumminsFalls"
+    },
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "edu.tntech.CSC4620.CumminsFalls"
     }
   },
   "dependent_plugins": {}

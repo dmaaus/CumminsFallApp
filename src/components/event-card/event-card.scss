@@ -1,1 +1,11 @@
-event-card {}
+event-card {
+    .eventDate {
+        padding-bottom: 4pt;
+    }
+    .eventTitle {
+        padding-bottom: 4pt;
+    }
+    .eventSummary {
+        padding-bottom: 8pt;
+    }
+}
