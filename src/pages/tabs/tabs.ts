@@ -10,8 +10,8 @@ import {HomePage} from "../home/home";
 })
 export class TabsPage {
 
-    tab1Root = AboutPage;
-    tab2Root = HomePage;
+    tab1Root = HomePage;
+    tab2Root = AboutPage;
     tab3Root = SettingsPage;
     tab4Root = MapsPage;
 
