@@ -25,6 +25,7 @@
     "@angular/platform-browser-dynamic": "5.0.3",
     "@ionic-native/android-permissions": "^4.5.3",
     "@ionic-native/core": "4.4.0",
+    "@ionic-native/date-picker": "^4.5.3",
     "@ionic-native/in-app-browser": "^4.5.3",
     "@ionic-native/onesignal": "^4.5.3",
     "@ionic-native/splash-screen": "4.4.0",
@@ -39,6 +40,7 @@
     "cordova-custom-config": "^5.0.2",
     "cordova-ios": "4.5.4",
     "cordova-plugin-android-permissions": "^1.0.0",
+    "cordova-plugin-datepicker": "^0.9.3",
     "cordova-plugin-device": "^1.1.7",
     "cordova-plugin-inappbrowser": "^2.0.2",
     "cordova-plugin-ionic-webview": "^1.1.16",
@@ -50,6 +52,7 @@
     "ionic-angular": "3.9.2",
     "ionic-plugin-keyboard": "^2.2.1",
     "ionicons": "3.0.0",
+    "moment-timezone": "^0.5.14",
     "onesignal-cordova-plugin": "^2.3.1",
     "query-string": "^5.1.0",
     "rxjs": "5.5.2",
@@ -71,8 +74,9 @@
       "cordova-sqlite-storage": {},
       "cordova-custom-config": {},
       "cordova-plugin-android-permissions": {},
-      "onesignal-cordova-plugin": {},
       "cordova-plugin-inappbrowser": {}
+      "cordova-plugin-datepicker": {}
+      "onesignal-cordova-plugin": {},
     },
     "platforms": [
       "browser",

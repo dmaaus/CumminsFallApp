@@ -33,6 +33,9 @@ import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
 import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {EmailProvider} from "../providers/email/email";
 import {LoadingProvider} from '../providers/loading/loading';
+import {DatePicker} from "@ionic-native/date-picker";
+import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
+import {ViewClosingsPage} from "../pages/view-closings/view-closings";
 
 import { CumminsFallsEventsProvider } from '../providers/events/events';
 import { ComponentsModule } from '../components/components.module';
@@ -58,6 +61,8 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
         RangerHomePage,
         CreateRangerPage,
         ResetPasswordPage,
+        ScheduleClosingPage,
+        ViewClosingsPage
         EventPage
     ],
     imports: [
@@ -86,6 +91,8 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
         RangerHomePage,
         CreateRangerPage,
         ResetPasswordPage,
+        ScheduleClosingPage,
+        ViewClosingsPage
         EventPage
     ],
     providers: [
@@ -103,6 +110,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
         AlertErrorProvider,
         EmailProvider,
         LoadingProvider,
+        DatePicker
     CumminsFallsEventsProvider,
     InAppBrowser
     ]

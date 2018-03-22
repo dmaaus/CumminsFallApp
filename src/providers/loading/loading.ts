@@ -1,12 +1,6 @@
 import {Injectable} from '@angular/core';
 import {Loading, LoadingController} from "ionic-angular";
 
-/*
-  Generated class for the LoadingProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
 export class LoadingProvider {
 
@@ -17,10 +11,10 @@ export class LoadingProvider {
 
     present(persistent = false, backdropDismiss = false) {
         this.loading = this.loadingCtrl.create({
-                dismissOnPageChange: !persistent,
-                content: 'Loading...',
-                enableBackdropDismiss: backdropDismiss
-            });
+            dismissOnPageChange: !persistent,
+            content: 'Loading...',
+            enableBackdropDismiss: backdropDismiss
+        });
         this.loading.present();
     }
 

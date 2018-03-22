@@ -8,11 +8,11 @@ export class EmailProvider {
     domain: string = 'sandboxff0637d7099b4069b7410adb473f3bfd.mailgun.org';
     apiKey: string = '';
 
-    url(): string {
-        return `https://api:${this.apiKey}@api.mailgun.net/v3/${this.domain}/messages`;
+    constructor(public http: HttpClient) {
     }
 
-    constructor(public http: HttpClient) {
+    url(): string {
+        return `https://api:${this.apiKey}@api.mailgun.net/v3/${this.domain}/messages`;
     }
 
     send(from: string, to: string, subject: string, message: string): Promise<boolean> {

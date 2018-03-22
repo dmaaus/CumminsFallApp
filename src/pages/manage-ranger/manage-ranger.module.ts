@@ -3,11 +3,12 @@ import {IonicPageModule} from 'ionic-angular';
 import {ManageRangerPage} from './manage-ranger';
 
 @NgModule({
-  declarations: [
-    ManageRangerPage,
-  ],
-  imports: [
-    IonicPageModule.forChild(ManageRangerPage),
-  ],
+    declarations: [
+        ManageRangerPage,
+    ],
+    imports: [
+        IonicPageModule.forChild(ManageRangerPage),
+    ],
 })
-export class ManagerRangerPageModule {}
+export class ManagerRangerPageModule {
+}

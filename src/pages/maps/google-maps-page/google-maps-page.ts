@@ -6,7 +6,7 @@ import {NavController} from 'ionic-angular';
     templateUrl: 'google-maps-page.html',
 })
 export class GoogleMapsPage {
-    constructor(navCtrl: NavController){
-        
+    constructor(navCtrl: NavController) {
+
     }
 }

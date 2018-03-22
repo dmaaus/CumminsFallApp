@@ -1,9 +1,9 @@
 import {Component} from '@angular/core';
 
 import {AboutPage} from '../about/about';
-import {HomePage} from '../home/home';
 import {SettingsPage} from "../settings/settings";
 import {MapsPage} from '../maps/maps';
+import {HomePage} from "../home/home";
 
 @Component({
     templateUrl: 'tabs.html'
