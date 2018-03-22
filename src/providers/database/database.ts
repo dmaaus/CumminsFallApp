@@ -6,39 +6,31 @@ import {NotificationProvider} from "../notification/notification";
 
 @Injectable()
 export class DatabaseProvider {
-    static readonly AWS_URL: string = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/ranger';
+    static readonly AWS_URL: string = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/';
     static readonly API_KEY: string = 'cdIRFxmAYK3JctGIHCyQE82XM3Nv5cwT9gJXzqiU';
 
     db: any = null;
     credentials: Credentials = null;
-
-    setCredentials(username: string, password: string = null) {
-        if (username === null) {
-            this.credentials = null;
-        }
-        else {
-            this.credentials = new Credentials(username, password);
-        }
-    }
 
     constructor(public http: HttpClient,
                 private email: EmailProvider,
                 private notification: NotificationProvider) {
     }
 
-    api(functionName: string, args: Object): Promise<Object> {
-        let self = this;
-        let headers = new HttpHeaders({
+    static api(http: HttpClient, lambda: string, functionName: string, args: Object = {}, otherHeaders: Object = {}): Promise<Object> {
+        let headersObj = {
             'x-api-key': DatabaseProvider.API_KEY,
             'function-name': functionName,
-            'username': this.credentials.username,
-            'password': this.credentials.password,
             'args': JSON.stringify(args)
-        });
+        };
+
+        Object.assign(headersObj, otherHeaders);
+
+        let headers = new HttpHeaders(headersObj);
 
         return new Promise<Object>((resolve, reject) => {
-                self.http.post(
-                    DatabaseProvider.AWS_URL,
+                http.post(
+                    DatabaseProvider.AWS_URL + lambda,
                     {},
                     {headers: headers}
                 ).subscribe((response: Object) => {
@@ -49,6 +41,16 @@ export class DatabaseProvider {
                         }
                         else if (response.hasOwnProperty('errorMessage')) {
                             message = response['errorMessage'];
+                        }
+                        else if (response.hasOwnProperty('error')) {
+                            message = response['error'];
+                        }
+                        else if (!response.hasOwnProperty('statusCode')) {
+                            /* sometimes, for whatever reason, AWS sends back *just* the body without the fluff
+                            around it. In this case, the whole response is really just the body. */
+                            console.log('response', response);
+                            resolve(response);
+                            return;
                         }
                         else {
                             message = 'unknown error occurred. response: ' + JSON.stringify(response);
@@ -72,6 +74,18 @@ export class DatabaseProvider {
         );
     }
 
+    setCredentials(username: string, password: string = null) {
+        if (username === null) {
+            this.credentials = null;
+        }
+        else {
+            this.credentials = new Credentials(username, password);
+        }
+    }
+
+    _api(functionName: string, args: Object): Promise<Object> {
+        return DatabaseProvider.api(this.http, 'ranger', functionName, args, this.credentials);
+    }
 
     sendConfirmationEmail(ranger: Ranger, password: string, expiration: Date): Promise<boolean> {
         return this.email.send(
@@ -90,7 +104,7 @@ export class DatabaseProvider {
             let args = {
                 username: ranger.username
             };
-            self.api('resetUnconfirmedPassword', args)
+            self._api('resetUnconfirmedPassword', args)
                 .then((result) => {
                     self.sendConfirmationEmail(ranger, result['password'], result['expiration'])
                         .then(resolve).catch(reject);
@@ -112,7 +126,7 @@ export class DatabaseProvider {
             let args = {
                 newPassword: newPassword
             };
-            self.api('resetPassword', args).then(() => {
+            self._api('resetPassword', args).then(() => {
                 ranger.state = Ranger.VALID;
                 resolve(ranger);
             }).catch(reject);
@@ -122,7 +136,7 @@ export class DatabaseProvider {
     deleteUser(ranger: Ranger): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            self.api('deleteUser', {username: ranger.username})
+            self._api('deleteUser', {username: ranger.username})
                 .then(() => {
                     resolve(true);
                 }).catch(reject);
@@ -132,7 +146,7 @@ export class DatabaseProvider {
     addUser(ranger: Ranger): Promise<Date> {
         let self = this;
         return new Promise<Date>((resolve, reject) => {
-            self.api('addUser', {ranger: ranger})
+            self._api('addUser', {ranger: ranger})
                 .then((result) => {
                     let expiration = new Date(result['expiration']);
                     this.sendConfirmationEmail(
@@ -154,7 +168,7 @@ export class DatabaseProvider {
     getRangerNames(): Promise<string[]> {
         let self = this;
         return new Promise<string[]>((resolve, reject) => {
-            self.api('getRangerNames', {}).then((result) => {
+            self._api('getRangerNames', {}).then((result) => {
                 resolve(result['names']);
             }).catch(reject);
         });
@@ -163,7 +177,7 @@ export class DatabaseProvider {
     getRangerWithName(name: string): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
-            self.api('getRangerWithName', {name: name})
+            self._api('getRangerWithName', {name: name})
                 .then(ranger => {
                     resolve(Ranger.fromObject(ranger));
                 }).catch(reject);
@@ -173,7 +187,7 @@ export class DatabaseProvider {
     authenticate(): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
-            self.api('authenticate', {}).then(result => {
+            self._api('authenticate', {}).then(result => {
                 let ranger = Ranger.fromObject(result['ranger']);
                 self.email.apiKey = result['emailKey'];
                 self.notification.apiKey = result['notificationKey'];
@@ -193,7 +207,7 @@ export class DatabaseProvider {
     updateAdminRights(ranger: Ranger, isAdmin: boolean): Promise<Ranger> {
         let self = this;
         return new Promise<Ranger>((resolve, reject) => {
-            self.api(
+            self._api(
                 'updateAdminRights',
                 {username: ranger.username, isAdmin: isAdmin})
                 .then(() => {
@@ -229,6 +243,7 @@ export class Ranger {
     static readonly VALID: number = 1;
     static readonly EXPIRED: number = 2;
     static readonly NEEDS_CONFIRMATION: number = 0;
+    static readonly NULL_RANGER: Ranger = Ranger.makeNullRanger();
 
     constructor(public name: string,
                 public username: string,
@@ -237,6 +252,13 @@ export class Ranger {
                 public state: number = Ranger.VALID) {
     }
 
+    static makeNullRanger(): Ranger {
+        return new Ranger('', '', '', false, Ranger.EXPIRED);
+    }
+
+    static fromObject(obj): Ranger {
+        return new Ranger(obj.name, obj.username, obj.email, obj.isAdmin, obj.state);
+    }
 
     isExpired() {
         return this.state === Ranger.EXPIRED;
@@ -244,16 +266,6 @@ export class Ranger {
 
     needsToResetPassword() {
         return this.state === Ranger.NEEDS_CONFIRMATION;
-    }
-
-    static readonly NULL_RANGER: Ranger = Ranger.makeNullRanger();
-
-    static makeNullRanger(): Ranger {
-        return new Ranger('', '', '', false, Ranger.EXPIRED);
-    }
-
-    static fromObject(obj): Ranger {
-        return new Ranger(obj.name, obj.username, obj.email, obj.isAdmin, obj.state);
     }
 
     toString(): string {

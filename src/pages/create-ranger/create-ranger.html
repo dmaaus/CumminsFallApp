@@ -34,7 +34,8 @@
                             <ion-toggle [(ngModel)]="ranger.isAdmin" name="isAdmin" checked="false"></ion-toggle>
                         </ion-item>
                         <ion-item text-wrap>
-                            Admins have the ability to add new rangers and delete existing ones (even the ranger who gave them admin rights!), so be careful who you make an admin.
+                            Admins have the ability to add new rangers and delete existing ones (even the ranger who
+                            gave them admin rights!), so be careful who you make an admin.
                         </ion-item>
 
                     </ion-list>
@@ -42,7 +43,8 @@
             </ion-row>
 
             <ion-row>
-                <button ion-button class="submit-btn" full type="submit" [disabled]="!createForm.form.valid || disableButton">
+                <button ion-button class="submit-btn" full type="submit"
+                        [disabled]="!createForm.form.valid || disableButton">
                     Create
                 </button>
             </ion-row>

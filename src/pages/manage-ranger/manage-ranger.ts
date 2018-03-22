@@ -17,6 +17,7 @@ export class ManageRangerPage {
     constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertError: AlertErrorProvider, private loading: LoadingProvider) {
     }
 
+    // noinspection JSUnusedGlobalSymbols
     ionViewWillEnter() {
         let self = this;
         self.loading.present(true, true);

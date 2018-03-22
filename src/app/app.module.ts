@@ -33,6 +33,9 @@ import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
 import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {EmailProvider} from "../providers/email/email";
 import {LoadingProvider} from '../providers/loading/loading';
+import {DatePicker} from "@ionic-native/date-picker";
+import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
+import {ViewClosingsPage} from "../pages/view-closings/view-closings";
 
 @NgModule({
     declarations: [
@@ -52,7 +55,9 @@ import {LoadingProvider} from '../providers/loading/loading';
         ManageRangerPage,
         RangerHomePage,
         CreateRangerPage,
-        ResetPasswordPage
+        ResetPasswordPage,
+        ScheduleClosingPage,
+        ViewClosingsPage
     ],
     imports: [
         BrowserModule,
@@ -78,7 +83,9 @@ import {LoadingProvider} from '../providers/loading/loading';
         ManageRangerPage,
         RangerHomePage,
         CreateRangerPage,
-        ResetPasswordPage
+        ResetPasswordPage,
+        ScheduleClosingPage,
+        ViewClosingsPage
     ],
     providers: [
         StatusBar,
@@ -94,7 +101,8 @@ import {LoadingProvider} from '../providers/loading/loading';
         AndroidPermissions,
         AlertErrorProvider,
         EmailProvider,
-        LoadingProvider
+        LoadingProvider,
+        DatePicker
     ]
 })
 export class AppModule {

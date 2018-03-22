@@ -24,22 +24,23 @@
         </ion-row>
     </ion-grid>
     <ion-col *ngIf="!lookingAtOwnInfo()">
-    <ion-row>
-        <button ion-button full (click)="deleteRanger()">Delete</button>
-    </ion-row>
-    <ion-row>
-        <button ion-button full *ngIf="!ranger.isExpired() && ranger.isAdmin "
-                (click)="revokeAdmin()">Revoke Admin Rights
-        </button>
-    </ion-row>
-    <ion-row>
-        <button ion-button full *ngIf="!ranger.isExpired() && !ranger.isAdmin" (click)="grantAdmin()">Grant Admin
-            Rights
-        </button>
-    </ion-row>
-    <ion-row>
-        <button ion-button full *ngIf="ranger.isExpired()" (click)="resendConfirmationCode()">Resend Confirmation Code
-        </button>
-    </ion-row>
+        <ion-row>
+            <button ion-button full (click)="deleteRanger()">Delete</button>
+        </ion-row>
+        <ion-row>
+            <button ion-button full *ngIf="!ranger.isExpired() && ranger.isAdmin "
+                    (click)="revokeAdmin()">Revoke Admin Rights
+            </button>
+        </ion-row>
+        <ion-row>
+            <button ion-button full *ngIf="!ranger.isExpired() && !ranger.isAdmin" (click)="grantAdmin()">Grant Admin
+                Rights
+            </button>
+        </ion-row>
+        <ion-row>
+            <button ion-button full *ngIf="ranger.isExpired()" (click)="resendConfirmationCode()">Resend Confirmation
+                Code
+            </button>
+        </ion-row>
     </ion-col>
 </ion-content>

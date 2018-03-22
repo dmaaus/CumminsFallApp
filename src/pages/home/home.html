@@ -1,21 +1,21 @@
 <ion-header>
-  <ion-navbar>
-    <ion-title>Home</ion-title>
-  </ion-navbar>
+    <ion-navbar>
+        <ion-title>Home</ion-title>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding>
-  <h2>Cummins Falls Visitor Statistics</h2>
-  <ion-card>
-      <ion-card-header>
-        Popular Times
-      </ion-card-header>
-	  
-      <ion-card-content>
-        <canvas #barCanvas></canvas>
-		<button id="0" type="button" (click)="btnClicked('0')">Traffic per Day</button>
-		<button id="1" type="button" (click)="btnClicked('1')">Traffic per Week</button>
-      </ion-card-content>
-  </ion-card>
-  
+    <h2>Cummins Falls Visitor Statistics</h2>
+    <ion-card>
+        <ion-card-header>
+            Popular Times
+        </ion-card-header>
+
+        <ion-card-content>
+            <canvas #barCanvas></canvas>
+            <button id="0" type="button" (click)="btnClicked('0')">Traffic per Day</button>
+            <button id="1" type="button" (click)="btnClicked('1')">Traffic per Week</button>
+        </ion-card-content>
+    </ion-card>
+
 </ion-content>
