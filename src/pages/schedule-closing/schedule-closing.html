@@ -21,15 +21,15 @@
         </ion-row>
         <ion-row>
             <ion-label text-wrap>Set start time to be now</ion-label>
-            <ion-toggle [(ngModel)]="startsNow" name="startsNow" checked="false"></ion-toggle>
+            <ion-toggle [(ngModel)]="closing.startsNow" name="startsNow" checked="false"></ion-toggle>
         </ion-row>
-        <ion-row *ngIf="!startsNow">
+        <ion-row *ngIf="!closing.startsNow">
             <ion-label text-wrap>Set start time to be beginning of the day</ion-label>
-            <ion-toggle [(ngModel)]="fromOpening" name="fromOpening" checked="false"></ion-toggle>
+            <ion-toggle [(ngModel)]="closing.fromOpening" name="fromOpening" checked="false"></ion-toggle>
         </ion-row>
         <ion-row>
             <ion-label text-wrap>Set end time to be the end of the day</ion-label>
-            <ion-toggle [(ngModel)]="untilClosing" name="untilClosing" checked="true"></ion-toggle>
+            <ion-toggle [(ngModel)]="closing.untilClosing" name="untilClosing" checked="true"></ion-toggle>
         </ion-row>
         <ion-row>
             <button ion-button (click)="submit()">Submit</button>

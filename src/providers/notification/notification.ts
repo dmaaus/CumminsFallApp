@@ -11,9 +11,9 @@ export class NotificationProvider {
     // area
     static readonly WITHIN_50_MILES: string = 'Within_50_Miles_Of_Park';
     static readonly WITHIN_10_MILES: string = 'Within_10_Miles_Of_Park';
+    static readonly LOCAL: string = NotificationProvider.WITHIN_10_MILES;
     static readonly WITHIN_5_MILES: string = 'Within_5_Miles_Of_Park';
     static readonly WITHIN_PARK: string = 'Within_Park';
-    static readonly LOCAL: string = NotificationProvider.WITHIN_10_MILES;
     static readonly ALL: string = 'All';
 
     // kind
@@ -28,7 +28,12 @@ export class NotificationProvider {
     apiKey: string = '';
     googleProjectNumber: string = '386934932788';
 
-    constructor(public http: HttpClient, private oneSignal: OneSignal, private alertCtrl: AlertController, private permissions: AndroidPermissions, private platform: Platform, private storage: Storage) {
+    constructor(public http: HttpClient,
+                private oneSignal: OneSignal,
+                private alertCtrl: AlertController,
+                private permissions: AndroidPermissions,
+                private platform: Platform,
+                private storage: Storage) {
         this.oneSignal.startInit(
             this.appId,
             this.googleProjectNumber)
@@ -62,9 +67,6 @@ export class NotificationProvider {
 
             Object.assign(body, extraParams);
 
-            console.log('body');
-            console.log(body);
-
             let headers = new HttpHeaders()
                 .append('Content-Type', 'application/json; charset=utf-8')
                 .append('Authorization', 'Basic ' + this.apiKey);
@@ -79,7 +81,6 @@ export class NotificationProvider {
                 self._post(body, headers).then(() => {
                     body.included_segments = [NotificationProvider.ALL];
                     body['excluded_segments'] = body['excluded_segments'].concat([NotificationProvider.LOCATION_KNOWN]);
-                    console.log('body', body);
                     self._post(body, headers).then(() => {
                         resolve(true);
                     }).catch((error) => {

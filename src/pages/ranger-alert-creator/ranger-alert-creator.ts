@@ -1,10 +1,12 @@
 import {Component} from '@angular/core';
 import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {NotificationProvider} from "../../providers/notification/notification";
-import * as dateformat from 'dateformat';
 import {LoadingProvider} from "../../providers/loading/loading";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
-import {ScheduleClosingPage} from "../schedule-closing/schedule-closing";
+import {Closing, ScheduleClosingPage} from "../schedule-closing/schedule-closing";
+import * as moment from 'moment';
+import {HttpClient} from "@angular/common/http";
+import {DatabaseProvider} from "../../providers/database/database";
 
 @IonicPage()
 @Component({
@@ -18,7 +20,9 @@ export class RangerAlertCreatorPage {
                 private notification: NotificationProvider,
                 private loading: LoadingProvider,
                 private alertError: AlertErrorProvider,
-                private alertCtrl: AlertController) {
+                private alertCtrl: AlertController,
+                private http: HttpClient,
+                private db: DatabaseProvider) {
     }
 
     displayConfirmation(title: string = '',
@@ -36,12 +40,19 @@ export class RangerAlertCreatorPage {
     }
 
     closePark() {
-        let date = dateformat(Date.now(), 'mmm dS');
-        this.sendNotification(
-            'Park Closing',
-            `Cummins Falls is closed for the remainder of today, ${date}`,
-            NotificationProvider.PARK_CLOSING,
-            NotificationProvider.LOCAL);
+        ScheduleClosingPage.scheduleClosing(
+            new Closing(
+                moment(),
+                moment(),
+                true,
+                false,
+                true),
+            this.alertError,
+            this.sendClosingNotification.bind(this),
+            this.navCtrl,
+            this.loading,
+            this.http,
+            this.db);
     }
 
     floodWarning() {
@@ -67,29 +78,32 @@ export class RangerAlertCreatorPage {
             .catch(self.alertError.showCallback(this.loading));
     }
 
+    sendClosingNotification(sendTime: any, message: string) {
+        let extraParams = {};
+        let confirmationTitle = '';
+        let confirmationMessage = '';
+        if (sendTime.valueOf() !== 0) {
+            extraParams['send_after'] = sendTime.toString();
+            confirmationTitle = 'Notification Scheduled';
+            confirmationMessage =
+                'The notification has been scheduled to be sent out closer to the time of the actual closing.'
+        }
+
+        this.sendNotification(
+            'Park Closing',
+            message,
+            NotificationProvider.PARK_CLOSING,
+            NotificationProvider.LOCAL,
+            extraParams,
+            confirmationTitle,
+            confirmationMessage
+        );
+    }
+
     scheduleClosing() {
         let self = this;
         self.navCtrl.push(ScheduleClosingPage, {
-            'callback': (sendTime: Date, message: string) => {
-                let extraParams = {};
-                let confirmationTitle = '';
-                let confirmationMessage = '';
-                if (sendTime.getTime() !== 0) {
-                    extraParams['send_after'] = sendTime.toString();
-                    confirmationTitle = 'Notification Scheduled';
-                    confirmationMessage =
-                        'The notification has been scheduled to be sent out closer to the time of the actual closing.'
-                }
-                self.sendNotification(
-                    'Park Closing',
-                    message,
-                    NotificationProvider.PARK_CLOSING,
-                    NotificationProvider.LOCAL,
-                    extraParams,
-                    confirmationTitle,
-                    confirmationMessage
-                );
-            }
+            'callback': this.sendClosingNotification.bind(this)
         });
     }
 }

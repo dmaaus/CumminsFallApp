@@ -11,10 +11,10 @@ export class LoadingProvider {
 
     present(persistent = false, backdropDismiss = false) {
         this.loading = this.loadingCtrl.create({
-                dismissOnPageChange: !persistent,
-                content: 'Loading...',
-                enableBackdropDismiss: backdropDismiss
-            });
+            dismissOnPageChange: !persistent,
+            content: 'Loading...',
+            enableBackdropDismiss: backdropDismiss
+        });
         this.loading.present();
     }
 

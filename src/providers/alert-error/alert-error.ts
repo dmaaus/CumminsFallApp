@@ -18,7 +18,8 @@ export class AlertErrorProvider {
         }
     }
 
-    show(error, onDismiss: () => void = () => {}) {
+    show(error, onDismiss: () => void = () => {
+    }) {
         this.alertCtrl.create({
             title: 'Error',
             message: error,

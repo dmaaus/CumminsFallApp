@@ -14,10 +14,6 @@ export class RangerInfoPage {
 
     ranger: Ranger = Ranger.makeNullRanger();
 
-    lookingAtOwnInfo() {
-        return this.ranger.equals(this.auth.loggedInRanger);
-    }
-
     constructor(public navCtrl: NavController, public navParams: NavParams, private db: DatabaseProvider, private alertCtrl: AlertController, private alertError: AlertErrorProvider, private auth: AuthProvider, private loading: LoadingProvider) {
         let self = this;
         self.loading.present(true);
@@ -25,6 +21,10 @@ export class RangerInfoPage {
             self.ranger = ranger;
             self.loading.dismiss();
         }).catch(self.alertError.showCallback(self.loading));
+    }
+
+    lookingAtOwnInfo() {
+        return this.ranger.equals(this.auth.loggedInRanger);
     }
 
     deleteRanger() {

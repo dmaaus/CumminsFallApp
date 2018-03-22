@@ -35,6 +35,7 @@ import {EmailProvider} from "../providers/email/email";
 import {LoadingProvider} from '../providers/loading/loading';
 import {DatePicker} from "@ionic-native/date-picker";
 import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
+import {ViewClosingsPage} from "../pages/view-closings/view-closings";
 
 @NgModule({
     declarations: [
@@ -55,7 +56,8 @@ import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
         RangerHomePage,
         CreateRangerPage,
         ResetPasswordPage,
-        ScheduleClosingPage
+        ScheduleClosingPage,
+        ViewClosingsPage
     ],
     imports: [
         BrowserModule,
@@ -82,7 +84,8 @@ import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
         RangerHomePage,
         CreateRangerPage,
         ResetPasswordPage,
-        ScheduleClosingPage
+        ScheduleClosingPage,
+        ViewClosingsPage
     ],
     providers: [
         StatusBar,

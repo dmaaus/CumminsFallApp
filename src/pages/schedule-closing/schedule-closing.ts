@@ -2,7 +2,10 @@ import {Component} from '@angular/core';
 import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
 import {DatePicker} from "@ionic-native/date-picker";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
-import * as dateformat from 'dateformat';
+import {DatabaseProvider} from "../../providers/database/database";
+import {HttpClient} from "@angular/common/http";
+import {LoadingProvider} from "../../providers/loading/loading";
+import * as moment from 'moment';
 
 @IonicPage()
 @Component({
@@ -11,48 +14,198 @@ import * as dateformat from 'dateformat';
 })
 export class ScheduleClosingPage {
 
-    callback: (sendTime: Date, message: string) => void;
-    start: Date = new Date();
-    end: Date = new Date();
-    startsNow: boolean = false;
-    fromOpening: boolean = false;
-    untilClosing: boolean = true;
-
-    // static readonly MINIMUM_START_DELAY = 15;
+    callback: (sendTime: moment.Moment, message: string) => void;
+    closing: Closing;
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
                 private datePicker: DatePicker,
                 private alertError: AlertErrorProvider,
-                private alertCtrl: AlertController) {
+                private alertCtrl: AlertController,
+                private http: HttpClient,
+                private db: DatabaseProvider,
+                private loading: LoadingProvider) {
+
         this.callback = navParams.get('callback');
-        if (this.start.getHours() < 22) {
-            this.start.setHours(this.start.getHours() + 1);
+        this.closing = new Closing(moment(), moment(), false, false, true);
+        if (this.closing.start.hours() < 22) {
+            this.closing.start.hours(this.closing.start.hours() + 1);
         }
         else {
-            this.start.setDate(this.start.getDate() + 1);
-            this.start.setHours(6);
+            this.closing.start.date(this.closing.start.date() + 1);
+            this.closing.start.hours(6);
         }
-        this.end.setHours(23);
+        this.closing.end.hours(23);
+        this.closing.end.minutes(59);
+        this.closing.end.seconds(59);
+        this.closing.end.millisecond(999);
     }
 
+    static startTimeTooSoonMessage(): string {
+        return `Start time must be in the future.`;
+    }
 
-    isSameDay(a: Date, b: Date) {
-        if (this.startsNow) a = new Date();
-        let shortDate = 'm/d/yy';
-        return dateformat(a, shortDate) === dateformat(b, shortDate);
+    static postClosing(closing: Closing, http: HttpClient, db: DatabaseProvider): Promise<boolean> {
+        let self = this;
+        let obj = closing.toObject();
+        console.log('posting', obj);
+        return new Promise<boolean>((resolve, reject) => {
+            DatabaseProvider.api(http, 'closings', 'post', obj, db.credentials)
+                .then(() => {
+                    console.log('posted closing successfully');
+                    resolve(true);
+                }).catch(reject);
+        });
     }
 
     getMessage() {
-        let timeFormat: string = 'h:MM TT';
-        let dateFormat: string = 'ddd, m/d/yy';
-        let startDate = dateformat(this.start, dateFormat);
-        let startTime = dateformat(this.start, timeFormat);
-        let endDate = dateformat(this.end, dateFormat);
-        let endTime = dateformat(this.end, timeFormat);
+        return this.closing.getMessage();
+    }
+
+    submit() {
+        ScheduleClosingPage.scheduleClosing(
+            this.closing,
+            this.alertError,
+            this.callback,
+            this.navCtrl,
+            this.loading,
+            this.http,
+            this.db);
+    }
+
+    isTimeValid(date: moment.Moment, isEnd: boolean): string {
+        if (isEnd) {
+            return this.closing.isEndTimeValid(date);
+        }
+        return this.closing.isStartTimeValid(date);
+    }
+
+    setStart() {
+        let self = this;
+        if (self.closing.startsNow) {
+            self.closing.startsNow = false;
+        }
+        self.pickDate(false).then(date => {
+            self.closing.start = date;
+            if (self.closing.untilClosing && self.closing.end.valueOf() < self.closing.start.valueOf()) {
+                self.closing.end = moment(date.valueOf());
+            }
+        }).catch(msg => {
+            if (msg !== 'cancel') {
+                self.alertError.show(msg);
+            }
+        });
+    }
+
+    setEnd() {
+        let self = this;
+        self.pickDate(true).then(date => {
+            self.closing.end = date;
+            if ((self.closing.startsNow || self.closing.fromOpening) && self.closing.end.valueOf() < self.closing.start.valueOf()) {
+                self.closing.start = moment(self.closing.end.valueOf());
+            }
+        }).catch(msg => {
+            if (msg !== 'cancel') {
+                self.alertError.show(msg);
+            }
+        });
+    }
+
+    pickDate(isEnd: boolean): Promise<moment.Moment> {
+        let self = this;
+        return new Promise<moment.Moment>((resolve, reject) => {
+            let minDate = new Date();
+            let mode = (isEnd ? this.closing.untilClosing : this.closing.fromOpening) ? 'date' : 'datetime';
+            self.datePicker.show({
+                date: isEnd ? new Date(self.closing.end.valueOf()) : new Date(self.closing.start.valueOf()),
+                mode: mode,
+                minDate: minDate,
+                androidTheme: self.datePicker.ANDROID_THEMES.THEME_DEVICE_DEFAULT_LIGHT,
+                allowOldDates: false
+            })
+                .then(dateDate => {
+                    let date = moment(dateDate.getTime());
+                    console.log('selected date is ', date);
+                    let error = this.isTimeValid(date, isEnd);
+                    if (error !== '') {
+                        reject(error);
+                        return;
+                    }
+                    resolve(date);
+                })
+                .catch(reject);
+        });
+    }
+
+    static scheduleClosing(closing: Closing,
+                           alertError: AlertErrorProvider,
+                           callback: (sendTime: moment.Moment, message: string) => void,
+                           navCtrl: NavController,
+                           loading: LoadingProvider,
+                           http: HttpClient,
+                           db: DatabaseProvider) {
+
+        loading.present();
+        let error = closing.isStartTimeValid(closing.start);
+        if (error !== '') {
+            alertError.show(error);
+            return;
+        }
+        error = closing.isEndTimeValid(closing.end);
+        if (error !== '') {
+            alertError.show(error);
+            return;
+        }
+        let self = this;
+        self.postClosing(closing, http, db).then(() => {
+            console.log('posted');
+            navCtrl.pop().then(() => {
+                callback(closing.getSendTime(), closing.getMessage());
+            });
+        }).catch(alertError.showCallback(loading));
+    }
+}
+
+export class Closing {
+    constructor(public start, public end, public startsNow, public fromOpening, public untilClosing) {
+    }
+
+    static fromObject(start, end, startsNow, fromOpening, untilClosing): Closing {
+        return new Closing(moment(start), moment(end), !!startsNow, !!fromOpening, !!untilClosing);
+    }
+
+    toObject(): Object {
+        if (this.fromOpening) {
+            this.start.hours(0);
+            this.start.minutes(0);
+            this.start.seconds(0);
+            this.start.millisecond(0);
+        }
+        if (this.untilClosing) {
+            this.end.hours(23);
+            this.end.minutes(59);
+            this.end.seconds(59);
+            this.end.millisecond(999);
+        }
+        return {
+            start: this.start.valueOf(),
+            end: this.end.valueOf(),
+            startsNow: this.startsNow ? 1 : 0,
+            fromOpening: this.fromOpening ? 1 : 0,
+            untilClosing: this.untilClosing ? 1 : 0
+        };
+    }
+
+    getMessage() {
+        let timeFormat: string = 'h:mm a';
+        let dateFormat: string = 'ddd, M/D/YY';
+        let startDate = this.start.format(dateFormat);
+        let startTime = this.start.format(timeFormat);
+        let endDate = this.end.format(dateFormat);
+        let endTime = this.end.format(timeFormat);
 
         let message = `Cummins Falls `;
-        if (this.isSameDay(this.start, this.end)) {
+        if (this.start.isSame(this.end, 'day')) {
             if (this.startsNow) {
                 message += `is now closed `;
                 if (this.untilClosing) {
@@ -89,7 +242,7 @@ export class ScheduleClosingPage {
         }
         message += 'until ';
         if (this.untilClosing) {
-            message += ` the end of ${endDate}`;
+            message += `the end of ${endDate}`;
         }
         else {
             message += `${endDate} at ${endTime}`;
@@ -97,87 +250,22 @@ export class ScheduleClosingPage {
         return message;
     }
 
-    static isSendTimeValid(date: Date): boolean {
-        let minFutureSendDate = new Date();
-        minFutureSendDate.setMinutes(minFutureSendDate.getMinutes() + 15);
-        return minFutureSendDate.getTime() <= date.getTime();
-    }
-
-    getSendTime() {
-        if (this.startsNow) return new Date(0);
-
-        let sendTime = new Date(this.start);
-        if (this.fromOpening || this.start.getHours() < 12) {
-            // send it the evening before
-            sendTime.setDate(sendTime.getDate() - 1);
-            sendTime.setHours(16);
-        }
-        else {
-            // send it that morning
-            sendTime.setHours(7);
-        }
-        if (ScheduleClosingPage.isSendTimeValid(sendTime)) {
-            return sendTime;
-        }
-        return new Date(0);
-    }
-
-    submit() {
-        let error = this.isStartTimeValid(this.start);
-        if (error !== '') {
-            this.alertError.show(error);
-            return;
-        }
-        error = this.isEndTimeValid(this.end);
-        if (error !== '') {
-            this.alertError.show(error);
-            return;
-        }
-        this.navCtrl.pop().then(() => {
-            this.callback(this.getSendTime(), this.getMessage());
-        });
-    }
-
-    static startTimeTooSoonMessage(): string {
-        return `Start time must be in the future.`;
-    }
-
-    isTimeValid(date: Date, isEnd: boolean): string {
-        if (isEnd) {
-            return this.isEndTimeValid(date);
-        }
-        return this.isStartTimeValid(date);
-    }
-
-    isEndTimeValid(date: Date): string {
-        let minDate = new Date(this.start);
-        minDate.setMinutes(minDate.getMinutes() + 1);
-        if (minDate.getTime() < date.getTime()) {
-            return '';
-        }
-        if ((this.fromOpening || this.untilClosing) && this.isSameDay(minDate, date)) {
-            return '';
-        }
-        return 'End time must be after start time.';
-    }
-
-    isStartTimeValid(date: Date): string {
+    isStartTimeValid(date: moment.Moment): string {
         if (this.startsNow) return '';
-        console.log('testing start time ' + date.toLocaleString());
-        let minDate = new Date();
-        minDate.setMinutes(minDate.getMinutes());
-        if (minDate.getTime() > date.getTime() &&
-            !(this.fromOpening && this.isSameDay(minDate, date))) {
+        let minDate = moment();
+        minDate.minutes(minDate.minutes());
+        if (minDate.valueOf() > date.valueOf() &&
+            !(this.fromOpening && minDate.isSame(date, 'day'))) {
 
             console.log('too soon');
             return ScheduleClosingPage.startTimeTooSoonMessage();
         }
-        let maxDate = new Date(this.end);
-        if (date.getTime() < maxDate.getTime()) {
+        let maxDate = moment(this.end.valueOf());
+        if (date.valueOf() < maxDate.valueOf()) {
             console.log('well before time');
             return '';
         }
-        if (this.isSameDay(date, maxDate) && (this.fromOpening || this.untilClosing)) {
+        if (date.isSame(maxDate, 'day') && (this.fromOpening || this.untilClosing)) {
             console.log('after time, but on same day and closing/opening so it\'s fine');
             return '';
         }
@@ -185,60 +273,40 @@ export class ScheduleClosingPage {
         return 'Start time must be before end time.';
     }
 
-    setStart() {
-        let self = this;
-        if (self.startsNow) {
-            self.startsNow = false;
+    isEndTimeValid(date: moment.Moment): string {
+        let minDate = moment(this.start.valueOf());
+        minDate.minutes(minDate.minutes() + 1);
+        if (minDate.valueOf() < date.valueOf()) {
+            return '';
         }
-        self.pickDate(false).then(date => {
-            self.start = date;
-            if (self.untilClosing && self.end.getTime() < self.start.getTime()) {
-                self.end = new Date(date);
-            }
-        }).catch(msg => {
-            if (msg !== 'cancel') {
-                self.alertError.show(msg);
-            }
-        });
+        if ((this.fromOpening || this.untilClosing) && minDate.isSame(date, 'day')) {
+            return '';
+        }
+        return 'End time must be after start time.';
     }
 
-    setEnd() {
-        let self = this;
-        self.pickDate(true).then(date => {
-            self.end = date;
-            if ((self.startsNow || self.fromOpening) && self.end.getTime() < self.start.getTime()) {
-                self.start = new Date(self.end);
-            }
-        }).catch(msg => {
-            if (msg !== 'cancel') {
-                self.alertError.show(msg);
-            }
-        });
+    getSendTime() {
+        if (this.startsNow) return moment(0);
+
+        let sendTime = moment(this.start.valueOf());
+        if (this.fromOpening || this.start.hours() < 12) {
+            // send it the evening before
+            sendTime.date(sendTime.date() - 1);
+            sendTime.hours(16);
+        }
+        else {
+            // send it that morning
+            sendTime.hours(7);
+        }
+        if (Closing.isSendTimeValid(sendTime)) {
+            return sendTime;
+        }
+        return moment(0);
     }
 
-    pickDate(isEnd: boolean): Promise<Date> {
-        let self = this;
-        return new Promise<Date>((resolve, reject) => {
-            let minDate = new Date();
-            let mode = (isEnd ? this.untilClosing : this.fromOpening) ? 'date' : 'datetime';
-            self.datePicker.show({
-                date: isEnd ? self.end : self.start,
-                mode: mode,
-                minDate: minDate,
-                androidTheme: self.datePicker.ANDROID_THEMES.THEME_DEVICE_DEFAULT_LIGHT,
-                allowOldDates: false
-            })
-                .then(date => {
-                    console.log('selected date is ' + date);
-                    let error = this.isTimeValid(date, isEnd);
-                    if (error !== '') {
-                        reject(error);
-                        return;
-                    }
-                    resolve(date);
-                })
-                .catch(reject);
-        });
+    static isSendTimeValid(date: moment.Moment): boolean {
+        let minFutureSendDate = moment();
+        minFutureSendDate.minutes(minFutureSendDate.minutes() + 15);
+        return minFutureSendDate.valueOf() <= date.valueOf();
     }
-
 }
