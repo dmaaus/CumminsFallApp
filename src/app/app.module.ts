@@ -62,7 +62,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
         CreateRangerPage,
         ResetPasswordPage,
         ScheduleClosingPage,
-        ViewClosingsPage
+        ViewClosingsPage,
         EventPage
     ],
     imports: [
@@ -92,7 +92,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
         CreateRangerPage,
         ResetPasswordPage,
         ScheduleClosingPage,
-        ViewClosingsPage
+        ViewClosingsPage,
         EventPage
     ],
     providers: [
@@ -110,7 +110,7 @@ import { InAppBrowser } from '@ionic-native/in-app-browser';
         AlertErrorProvider,
         EmailProvider,
         LoadingProvider,
-        DatePicker
+        DatePicker,
     CumminsFallsEventsProvider,
     InAppBrowser
     ]

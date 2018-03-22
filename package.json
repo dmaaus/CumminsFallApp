@@ -74,9 +74,9 @@
       "cordova-sqlite-storage": {},
       "cordova-custom-config": {},
       "cordova-plugin-android-permissions": {},
-      "cordova-plugin-inappbrowser": {}
-      "cordova-plugin-datepicker": {}
+      "cordova-plugin-inappbrowser": {},
       "onesignal-cordova-plugin": {},
+      "cordova-plugin-datepicker": {}
     },
     "platforms": [
       "browser",
