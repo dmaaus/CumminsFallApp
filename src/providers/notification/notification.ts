@@ -37,10 +37,6 @@ export class NotificationProvider {
         this.oneSignal.startInit(
             this.appId,
             this.googleProjectNumber)
-            .handleNotificationOpened((jsonData) => {
-                // TODO update park closing information on home screen
-                console.log('notification opened: ' + JSON.stringify(jsonData));
-            })
             .endInit();
     }
 
