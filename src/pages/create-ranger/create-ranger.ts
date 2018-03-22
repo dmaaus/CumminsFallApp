@@ -28,13 +28,13 @@ export class CreateRangerPage {
         self.ranger.username = self.ranger.username.toLowerCase();
         self.loading.present();
         self.db.addUser(self.ranger).then((expiration) => {
-                self.loading.dismiss();
-                self.alertCtrl.create({
-                    title: 'Creation Successful',
-                    message: `A confirmation email has been sent to ${self.ranger.email} which will expire at` +
-                    ` ${expiration.toLocaleTimeString()}`,
-                    buttons: ['Ok']
-                }).present();
+            self.loading.dismiss();
+            self.alertCtrl.create({
+                title: 'Creation Successful',
+                message: `A confirmation email has been sent to ${self.ranger.email} which will expire at` +
+                ` ${expiration.toLocaleTimeString()}`,
+                buttons: ['Ok']
+            }).present();
         }).catch((msg) => {
             self.disableButton = false;
             self.loading.dismiss();

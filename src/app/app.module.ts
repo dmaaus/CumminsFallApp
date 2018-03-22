@@ -33,8 +33,12 @@ import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
 import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {EmailProvider} from "../providers/email/email";
 import {LoadingProvider} from '../providers/loading/loading';
-import { CumminsFallsEventsProvider } from '../providers/events/event';
 import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor-analytics';
+import { CumminsFallsEventsProvider } from '../providers/events/event';
+import {DatePicker} from "@ionic-native/date-picker";
+import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
+import {ViewClosingsPage} from "../pages/view-closings/view-closings";
+
 @NgModule({
     declarations: [
         MyApp,
@@ -53,7 +57,9 @@ import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor
         ManageRangerPage,
         RangerHomePage,
         CreateRangerPage,
-        ResetPasswordPage
+        ResetPasswordPage,
+        ScheduleClosingPage,
+        ViewClosingsPage
     ],
     imports: [
         BrowserModule,
@@ -79,7 +85,9 @@ import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor
         ManageRangerPage,
         RangerHomePage,
         CreateRangerPage,
-        ResetPasswordPage
+        ResetPasswordPage,
+        ScheduleClosingPage,
+        ViewClosingsPage
     ],
     providers: [
         StatusBar,
@@ -95,7 +103,8 @@ import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor
         AndroidPermissions,
         AlertErrorProvider,
         EmailProvider,
-        LoadingProvider
+        LoadingProvider,
+        DatePicker,
     CumminsFallsEventsProvider,
     VisitorAnalyticsProvider
     ]

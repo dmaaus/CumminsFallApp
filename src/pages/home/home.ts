@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {AlertController, NavController} from 'ionic-angular';
+import {NavController} from 'ionic-angular';
 import {Chart} from 'chart.js';
 
 import { HttpClient } from '@angular/common/http';
