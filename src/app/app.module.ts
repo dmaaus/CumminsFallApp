@@ -65,7 +65,7 @@ import {ViewClosingsPage} from "../pages/view-closings/view-closings";
         BrowserModule,
         IonicModule.forRoot(MyApp),
         HttpClientModule,
-        IonicStorageModule.forRoot(),
+        IonicStorageModule.forRoot()
     ],
     bootstrap: [IonicApp],
     entryComponents: [

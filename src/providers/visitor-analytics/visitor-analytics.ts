@@ -19,7 +19,6 @@ export class VisitorAnalyticsProvider {
     }
 
     public getCountByYear(year: number) : Observable<Object>  {
-        //Update the header
         this.httpHeaders = this.httpHeaders
             .set('functionName', 'CountPerYear')
             .set('dt', `${year}/01/01`);
@@ -29,7 +28,6 @@ export class VisitorAnalyticsProvider {
     }
 
     public getCountsForBusiestDay(): Observable<Object> {
-        //Update the header
         this.httpHeaders = this.httpHeaders
             .set('functionName', 'BusiestDays');
 
@@ -37,4 +35,16 @@ export class VisitorAnalyticsProvider {
             headers: this.httpHeaders
         });
     }
+
+    public getCountForSelectedDate(date: Date) : Observable<Object> {
+        this.httpHeaders = this.httpHeaders
+            .set('functionName', 'CountPerDay')
+            .set('dt', date.toDateString());
+
+            return this.http.get(AWSURL, {
+                headers: this.httpHeaders
+            });
+    }
+
+    public get  
 }
