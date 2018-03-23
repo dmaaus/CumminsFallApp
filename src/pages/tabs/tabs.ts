@@ -6,7 +6,10 @@ import {SettingsPage} from "../settings/settings";
 import { MapsPage } from '../maps/maps';
 
 @Component({
-    templateUrl: 'tabs.html'
+	selector: 'page-tabs',
+  templateUrl: 'tabs.html',
+
+
 })
 export class TabsPage {
 

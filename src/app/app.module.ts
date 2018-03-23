@@ -25,7 +25,9 @@ import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
 import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
 import { TrailsPage } from '../pages/maps/trails-page/trails-page';
-
+import {ContactPage} from '../pages/about/contact-page/contact-page';
+import {HistoryPage} from '../pages/about/history-page/history-page';
+import {TrailsInfoPage} from '../pages/about/trails-info-page/trails-info-page';
 @NgModule({
     declarations: [
         MyApp,
@@ -39,7 +41,10 @@ import { TrailsPage } from '../pages/maps/trails-page/trails-page';
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage
+        NotificationSettingsPage,
+        ContactPage,
+        HistoryPage,
+        TrailsInfoPage
     ],
     imports: [
         BrowserModule,
@@ -60,7 +65,10 @@ import { TrailsPage } from '../pages/maps/trails-page/trails-page';
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage
+        NotificationSettingsPage,
+        ContactPage,
+        HistoryPage,
+        TrailsInfoPage
     ],
     providers: [
         StatusBar,

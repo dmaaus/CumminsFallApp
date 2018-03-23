@@ -1,0 +1,12 @@
+trails-info-page {
+  ion-content .category h5 {
+    font-size: 1.1em;
+  }
+  ion-content div .category {
+    display: inline-block !important;
+    border: 3em;
+    padding : 1em;
+    float:left;
+    align-items: center;
+  }
+}
