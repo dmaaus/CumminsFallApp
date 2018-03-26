@@ -2,9 +2,6 @@ import {Component, ViewChild} from '@angular/core';
 import {NavController} from 'ionic-angular';
 import {Chart} from 'chart.js';
 
-import {HttpClient, HttpHeaders, HttpErrorResponse} from '@angular/common/http';
-
-import { EventCardComponent } from '../../components/event-card/event-card';
 @Component({
     selector: 'page-home',
     templateUrl: 'home.html',
@@ -71,11 +68,11 @@ export class HomePage {
     }
 
     btnClicked(btn) {
-        var day_data = [1, 5, 23, 30, 59, 87, 77, 43, 38, 24, 9];
-        var time_labels = ["8a", "9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p"];
-        var week_labels = ["S", "M", "T", "W", "R", "F", "Sat"];
-        var total = 0;
-        var temp = [0];
+        let day_data = [1, 5, 23, 30, 59, 87, 77, 43, 38, 24, 9];
+        let time_labels = ["8a", "9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p"];
+        let week_labels = ["S", "M", "T", "W", "R", "F", "Sat"];
+        let total = 0;
+        let temp = [0];
 
         for (let i = 0; i < day_data.length; i++) {
             total += day_data[i];

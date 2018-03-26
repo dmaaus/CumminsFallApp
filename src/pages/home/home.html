@@ -20,18 +20,15 @@
                     Busiest Times:
                     <ion-list>
 
+                        <button ion-button round small id="0" type="button" (click)="btnClicked('0')">Busiest Hour(s)
+                        </button>
 
-                        <button ion-button round small id="0" type="button" (click)="btnClicked('0')">Busiest Hour(s)</button>
-
-
-
-                        <button ion-button round small id="1" type="button" (click)="btnClicked('1')">Busiest Day(s)</button>
-
+                        <button ion-button round small id="1" type="button" (click)="btnClicked('1')">Busiest Day(s)
+                        </button>
 
                     </ion-list>
                 </ion-card-content>
             </ion-card>
-
 
 
             <ion-card>
@@ -40,9 +37,9 @@
                     <ion-list>
 
                         <button ion-button round small id="1" type="button">
-							<ion-datetime displayFormat="MMM-DD-YYYY" placeholder="Choose Date">
-							</ion-datetime>
-						</button>
+                            <ion-datetime displayFormat="MMM-DD-YYYY" placeholder="Choose Date">
+                            </ion-datetime>
+                        </button>
 
                         <button ion-button color="dark" clear small id="1" (click)="btnClicked('3')">Submit Day</button>
 
@@ -51,23 +48,22 @@
             </ion-card>
 
 
-
             <ion-card>
                 <ion-card-content>
                     Specific Month Count:
                     <ion-list>
 
                         <button ion-button round small id="1" type="button">
-							<ion-datetime displayFormat="MMM-YYYY" placeholder="Choose Month">
-							</ion-datetime>
-						</button>
+                            <ion-datetime displayFormat="MMM-YYYY" placeholder="Choose Month">
+                            </ion-datetime>
+                        </button>
 
-                        <button ion-button color="dark" clear small id="1" (click)="btnClicked('4')">Submit Month</button>
+                        <button ion-button color="dark" clear small id="1" (click)="btnClicked('4')">Submit Month
+                        </button>
 
                     </ion-list>
                 </ion-card-content>
             </ion-card>
-
 
 
             <ion-card>
@@ -75,7 +71,8 @@
                     Specific Year Count:
                     <ion-list>
 
-                        <button ion-button round small id="3" type="button" (click)="btnClicked('2')">Choose Year</button>
+                        <button ion-button round small id="3" type="button" (click)="btnClicked('2')">Choose Year
+                        </button>
 
                     </ion-list>
                 </ion-card-content>

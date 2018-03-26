@@ -1,66 +1,60 @@
-import { Component,ViewChild } from '@angular/core';
+import {Component, ViewChild} from '@angular/core';
 
-import { CumminsFallsEventsProvider, CumminsFallsHttpEvent, CumminsFallsEvent } from '../../providers/events/events';
+import {CumminsFallsEvent, CumminsFallsEventsProvider, CumminsFallsHttpEvent} from '../../providers/events/events';
 
-import { Slides, NavController } from 'ionic-angular';
-import { EventPage } from '../../pages/event/event';
+import {NavController, Slides} from 'ionic-angular';
+import {EventPage} from '../../pages/event/event';
 
-/**
- * Generated class for the EventCardComponent component.
- *
- * See https://angular.io/api/core/Component for more info on Angular
- * Components.
- */
 @Component({
-  selector: 'event-card',
-  templateUrl: 'event-card.html'
+    selector: 'event-card',
+    templateUrl: 'event-card.html'
 })
 export class EventCardComponent {
 
-  httpEvent : CumminsFallsHttpEvent;
-  
-  eventPage : EventPage;
+    httpEvent: CumminsFallsHttpEvent;
 
-  cumminsFallsDisplayEvents: Array<DisplayEvent>;
-  cumminsFallsEvents: Array<CumminsFallsEvent>;
-  header: string;
+    eventPage: EventPage;
 
-  @ViewChild(Slides) cardSlides: Slides;
+    cumminsFallsDisplayEvents: Array<DisplayEvent>;
+    cumminsFallsEvents: Array<CumminsFallsEvent>;
+    header: string;
 
-  constructor(private eventsProvider: CumminsFallsEventsProvider, public navCntrl: NavController) {
-    this.cumminsFallsDisplayEvents = new Array<DisplayEvent>(0);
-    this.cumminsFallsEvents = new Array<CumminsFallsEvent>(0);
+    @ViewChild(Slides) cardSlides: Slides;
 
-    this.header = "Upcoming Events";
-    
-    eventsProvider.getEventsFromUrl().subscribe(res => {
-      let events = res.Events.filter(event => event.Account.includes("Cummins Falls"));
-      this.cumminsFallsEvents = events;
-      events.forEach(event => {
-        let newDisplayEvent = new DisplayEvent();
-        newDisplayEvent.title = event.Title;
-        newDisplayEvent.summary = event.Summary;
-        newDisplayEvent.date = new Date(event.StartDate);
+    constructor(private eventsProvider: CumminsFallsEventsProvider, public navCntrl: NavController) {
+        this.cumminsFallsDisplayEvents = new Array<DisplayEvent>(0);
+        this.cumminsFallsEvents = new Array<CumminsFallsEvent>(0);
 
-        console.log(`${this.cumminsFallsDisplayEvents.push(newDisplayEvent)} event(s) added.`);
-      })
-      this.cardSlides.update();
-    });
-  }
+        this.header = "Upcoming Events";
 
-  loadEventPage(){
-    //Get current slide index
-    let slideIndex = this.cardSlides.getActiveIndex();
+        eventsProvider.getEventsFromUrl().subscribe(res => {
+            let events = res.Events.filter(event => event.Account.includes("Cummins Falls"));
+            this.cumminsFallsEvents = events;
+            events.forEach(event => {
+                let newDisplayEvent = DisplayEvent.fromCumminsFallsEvent(event);
+                console.log(`${this.cumminsFallsDisplayEvents.push(newDisplayEvent)} event(s) added.`);
+            });
+            this.cumminsFallsDisplayEvents.push(new DisplayEvent('Title', new Date(), 'This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. This is a long summary. '));
+            this.cardSlides.update();
+        });
+    }
 
-    //grab event from list
-    let clickedEvent = this.cumminsFallsEvents[slideIndex];
+    loadEventPage() {
+        //Get current slide index
+        let slideIndex = this.cardSlides.getActiveIndex();
 
-    this.navCntrl.push(EventPage, {clickedEvent});
-  }
+        //grab event from list
+        let clickedEvent = this.cumminsFallsEvents[slideIndex];
+
+        this.navCntrl.push(EventPage, {clickedEvent});
+    }
 }
 
 class DisplayEvent {
-  title: String;
-  date: Date;
-  summary: String;
+    constructor(public title: string, public date: Date, public summary: string) {
+    }
+
+    static fromCumminsFallsEvent(event: CumminsFallsEvent) {
+        return new DisplayEvent(event.Title, new Date(event.StartDate), event.Summary);
+    }
 }
