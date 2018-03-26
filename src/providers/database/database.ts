@@ -43,7 +43,8 @@ export class DatabaseProvider {
                             message = response['errorMessage'];
                         }
                         else if (response.hasOwnProperty('error')) {
-                            message = response['error'];
+                            reject(response['error']);
+                            return;
                         }
                         else if (!response.hasOwnProperty('statusCode')) {
                             /* sometimes, for whatever reason, AWS sends back *just* the body without the fluff
@@ -68,7 +69,12 @@ export class DatabaseProvider {
                     }
                     resolve(body);
                 }, error => {
-                    reject(error.error.message);
+                    console.log(error);
+                    let message = error.error.message;
+                    if (typeof message !== 'string') {
+                        message = 'Unknown error occurred. Are you connected to the internet?'
+                    }
+                    reject(message);
                 });
             }
         );
