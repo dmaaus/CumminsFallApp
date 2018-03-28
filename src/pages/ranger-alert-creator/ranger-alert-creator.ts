@@ -1,12 +1,13 @@
 import {Component} from '@angular/core';
 import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
-import {NotificationProvider} from "../../providers/notification/notification";
+import {Notification, NotificationProvider} from "../../providers/notification/notification";
 import {LoadingProvider} from "../../providers/loading/loading";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 import {Closing, ScheduleClosingPage} from "../schedule-closing/schedule-closing";
 import * as moment from 'moment';
 import {HttpClient} from "@angular/common/http";
 import {DatabaseProvider} from "../../providers/database/database";
+import {MakeNotificationPage} from "../make-notification/make-notification";
 
 @IonicPage()
 @Component({
@@ -17,7 +18,7 @@ export class RangerAlertCreatorPage {
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
-                private notification: NotificationProvider,
+                private notificationProvider: NotificationProvider,
                 private loading: LoadingProvider,
                 private alertError: AlertErrorProvider,
                 private alertCtrl: AlertController,
@@ -57,23 +58,21 @@ export class RangerAlertCreatorPage {
 
     floodWarning() {
         this.sendNotification(
-            'Flood Warning',
-            'Cummins Falls is or may soon be experiencing flash flooding. ' +
-            'Please exit the park immediately.',
-            NotificationProvider.FLOOD_WARNING,
-            NotificationProvider.WITHIN_PARK);
+            new Notification(
+                'Flood Warning',
+                'Cummins Falls is or may soon be experiencing flash flooding. ' +
+                'Please exit the park immediately.',
+                NotificationProvider.FLOOD_WARNING,
+                NotificationProvider.WITHIN_PARK));
     }
 
-    sendNotification(title: string,
-                     message: string,
-                     kind: string,
-                     area: string,
+    sendNotification(notification: Notification,
                      extraParams: Object = {},
                      confirmationTitle: string = '',
                      confirmationMessage: string = '') {
         let self = this;
         self.loading.present();
-        self.notification.post(title, message, kind, area, extraParams)
+        self.notificationProvider.post(notification, extraParams)
             .then(self.displayConfirmation.bind(self, confirmationTitle, confirmationMessage))
             .catch(self.alertError.showCallback(this.loading));
     }
@@ -90,10 +89,11 @@ export class RangerAlertCreatorPage {
         }
 
         this.sendNotification(
-            'Park Closing',
-            message,
-            NotificationProvider.PARK_CLOSING,
-            NotificationProvider.LOCAL,
+            new Notification(
+                'Park Closing',
+                message,
+                NotificationProvider.PARK_CLOSING,
+                NotificationProvider.LOCAL),
             extraParams,
             confirmationTitle,
             confirmationMessage
@@ -104,6 +104,13 @@ export class RangerAlertCreatorPage {
         let self = this;
         self.navCtrl.push(ScheduleClosingPage, {
             'callback': this.sendClosingNotification.bind(this)
+        });
+    }
+
+    compose() {
+        let self = this;
+        self.navCtrl.push(MakeNotificationPage, {
+            'callback': this.sendNotification.bind(this)
         });
     }
 }

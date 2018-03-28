@@ -42,6 +42,7 @@ import {ComponentsModule} from '../components/components.module';
 import {EventPage} from '../pages/event/event';
 
 import {InAppBrowser} from '@ionic-native/in-app-browser';
+import {MakeNotificationPage} from "../pages/make-notification/make-notification";
 
 @NgModule({
     declarations: [
@@ -64,7 +65,8 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
         ResetPasswordPage,
         ScheduleClosingPage,
         ViewClosingsPage,
-        EventPage
+        EventPage,
+        MakeNotificationPage
     ],
     imports: [
         BrowserModule,
@@ -94,7 +96,8 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
         ResetPasswordPage,
         ScheduleClosingPage,
         ViewClosingsPage,
-        EventPage
+        EventPage,
+        MakeNotificationPage
     ],
     providers: [
         StatusBar,

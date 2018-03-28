@@ -41,13 +41,10 @@ export class NotificationProvider {
     }
 
     /**
-     * @param {string} title The title of the notification
-     * @param {string} message The message of the notification
-     * @param {string} kind An indication of the kind of message to be sent.
-     * @param {string} segment The segment to send it to (one of the static readonly variables of this class). Note that it will also be sent to anyone whose location is unknown.
+     * @param notification the notification to be sent out.
      * @param {Object} extraParams parameters that will be passed directly to the API call
      */
-    post(title: string, message: string, kind: string, segment: string, extraParams: Object = {}): Promise<boolean> {
+    post(notification: Notification, extraParams: Object = {}): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
             if (this.apiKey === '') {
                 reject('apiKey has not been set, so how was post called?');
@@ -55,10 +52,10 @@ export class NotificationProvider {
             }
             let body = {
                 app_id: this.appId,
-                contents: {'en': message},
-                headings: {'en': title},
-                included_segments: [segment],
-                excluded_segments: [kind]
+                contents: {'en': notification.message},
+                headings: {'en': notification.title},
+                included_segments: [notification.area],
+                excluded_segments: [notification.kind]
             };
 
             Object.assign(body, extraParams);
@@ -68,7 +65,7 @@ export class NotificationProvider {
                 .append('Authorization', 'Basic ' + this.apiKey);
 
             let self = this;
-            if (segment === NotificationProvider.ALL) {
+            if (notification.area === NotificationProvider.ALL) {
                 self._post(body, headers).then(() => {
                     resolve(true);
                 }).catch(reject);
@@ -184,5 +181,35 @@ export class NotificationProvider {
                 return true;
             }
         });
+    }
+}
+
+export class Notification {
+    static readonly DEFAULT_KIND: string = 'Other';
+    static readonly DEFAULT_AREA: string = 'Everyone';
+
+    constructor(public title: string,
+                public message: string,
+                public kind: string,
+                public area: string) {
+    }
+
+    static readonly humanReadableKinds: Object = {
+        'Park Closing': NotificationProvider.PARK_CLOSING,
+        'Flood Warning': NotificationProvider.FLOOD_WARNING,
+        'Other': NotificationProvider.OTHER
+    };
+
+    static readonly humanReadableAreas: Object = {
+        '50 miles': NotificationProvider.WITHIN_50_MILES,
+        '10 miles': NotificationProvider.WITHIN_10_MILES,
+        '5 miles': NotificationProvider.WITHIN_5_MILES,
+        'Within the park': NotificationProvider.WITHIN_PARK,
+        'Everyone': NotificationProvider.ALL,
+    };
+
+    fromHumanReadable(kind: string, area: string) {
+        this.kind = Notification.humanReadableKinds[kind];
+        this.area = Notification.humanReadableAreas[area];
     }
 }
