@@ -1,0 +1,28 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>Event</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+    <ion-grid>
+        <ion-row id="eventHeader">
+            <h2>{{event.Title}}</h2>
+        </ion-row>
+
+        <ion-row id="eventDate">
+            <span><b>{{startDate.toLocaleString()}}</b></span>
+        </ion-row>
+
+        <ion-row id="eventSummary">
+            <span>{{event.Summary}}</span>
+        </ion-row>
+
+        <ion-row id="eventPage">
+            <ion-col col-8></ion-col>
+            <ion-col col-4>
+                <button ion-button (click)="goToPage()">Go To Page</button>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

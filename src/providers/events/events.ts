@@ -1,6 +1,5 @@
-import { Injectable } from '@angular/core';
-import { Storage } from '@ionic/storage';
-import { HttpClient } from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
 
 /*
@@ -47,35 +46,35 @@ const EVENTURL = 'https://tsp.itinio.com/events/events.html';
 
 @Injectable()
 export class CumminsFallsEventsProvider {
-    
-    constructor(public http: HttpClient){}
 
-    getEventsFromUrl() : Observable<CumminsFallsHttpEvent> {
+    constructor(public http: HttpClient) {
+    }
+
+    getEventsFromUrl(): Observable<CumminsFallsHttpEvent> {
         return this.http.get<CumminsFallsHttpEvent>(EVENTURL, {responseType: 'json'});
     }
-    
 }
 
-    export class CumminsFallsHttpEvent {
-        Events: CumminsFallsEvent[];
-    }
+export class CumminsFallsHttpEvent {
+    Events: CumminsFallsEvent[];
+}
 
-    export class CumminsFallsEvent {
-        Account: string;
-        Title: string;
-        EventUrl: string;
-        Summary: string;
-        StartDate: number;
-        EndDate: number;
-        Time: string;
-        Duration: any;
-        Audience: any;
-        Interests: any;
-        Majors: any;
-        StateParks: any;
-        Recurring: boolean;
-        Region: string;
-        Status: string;
-        Calendar: string;
-        Available: string;
-    }
+export class CumminsFallsEvent {
+    Account: string;
+    Title: string;
+    EventURL: string;
+    Summary: string;
+    StartDate: number;
+    EndDate: number;
+    Time: string;
+    Duration: any;
+    Audience: any;
+    Interests: any;
+    Majors: any;
+    StateParks: any;
+    Recurring: boolean;
+    Region: string;
+    Status: string;
+    Calendar: string;
+    Available: string;
+}

@@ -39,6 +39,12 @@ import {DatePicker} from "@ionic-native/date-picker";
 import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
 import {ViewClosingsPage} from "../pages/view-closings/view-closings";
 
+import {CumminsFallsEventsProvider} from '../providers/events/events';
+import {ComponentsModule} from '../components/components.module';
+import {EventPage} from '../pages/event/event';
+
+import {InAppBrowser} from '@ionic-native/in-app-browser';
+
 @NgModule({
     declarations: [
         MyApp,
@@ -59,13 +65,15 @@ import {ViewClosingsPage} from "../pages/view-closings/view-closings";
         CreateRangerPage,
         ResetPasswordPage,
         ScheduleClosingPage,
-        ViewClosingsPage
+        ViewClosingsPage,
+        EventPage
     ],
     imports: [
         BrowserModule,
         IonicModule.forRoot(MyApp),
         HttpClientModule,
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        ComponentsModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -87,7 +95,8 @@ import {ViewClosingsPage} from "../pages/view-closings/view-closings";
         CreateRangerPage,
         ResetPasswordPage,
         ScheduleClosingPage,
-        ViewClosingsPage
+        ViewClosingsPage,
+        EventPage
     ],
     providers: [
         StatusBar,
@@ -105,7 +114,8 @@ import {ViewClosingsPage} from "../pages/view-closings/view-closings";
         EmailProvider,
         LoadingProvider,
         DatePicker,
-    CumminsFallsEventsProvider,
+        CumminsFallsEventsProvider,
+        InAppBrowser,
     VisitorAnalyticsProvider
     ]
 })

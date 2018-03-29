@@ -1,0 +1,20 @@
+<ion-card>
+    <ion-card-header>
+        {{header}}
+    </ion-card-header>
+
+    <ion-card-content>
+        <ion-slides pager>
+            <ion-slide tappable (click)="loadEventPage()" *ngFor="let event of cumminsFallsDisplayEvents">
+                <ion-row id="eventDate">{{event.date.toLocaleDateString()}}</ion-row>
+                <ion-row id="eventTitle">{{event.title}}</ion-row>
+                <ion-row id="eventSummary">
+                    {{(event.summary | slice:0:192) + (event.summary.length > 192 ? '...' : '')}}
+                </ion-row>
+            </ion-slide>
+            <ion-slide *ngIf="cumminsFallsEvents.length == 0">
+                <span id="eventError">No events currently available. Check again tomorrow!</span>
+            </ion-slide>
+        </ion-slides>
+    </ion-card-content>
+</ion-card>

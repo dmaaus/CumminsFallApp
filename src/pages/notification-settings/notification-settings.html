@@ -11,8 +11,8 @@
     <ion-list>
         <ion-item>
             <ion-label text-wrap>{{allowLocationMessage()}}</ion-label>
-            <button ion-button *ngIf="!locationAllowed" (click)="promptLocation()">Yes</button>
         </ion-item>
+        <button ion-button *ngIf="!locationAllowed" (click)="promptLocation()">Yes</button>
         <ion-item *ngIf="loaded">
             <ion-label text-wrap>Receive notifications when the park will be closed outside the normal schedule.
             </ion-label>

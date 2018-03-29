@@ -99,10 +99,13 @@ export class NotificationProvider {
                 .subscribe(() => {
                     resolve(true);
                 }, (error: HttpErrorResponse) => {
+                    let message = 'Unknown error. Are you connected to the internet?';
                     console.log('error');
                     console.log(error);
-                    console.log(error.error);
-                    reject(error.error.errors[0]);
+                    if (typeof error.error.errors[0] === 'string') {
+                        message = error.error.errors[0];
+                    }
+                    reject(message);
                 });
         });
     }
