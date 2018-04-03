@@ -37,6 +37,9 @@ export class NotificationProvider {
         this.oneSignal.startInit(
             this.appId,
             this.googleProjectNumber)
+            .handleNotificationOpened(jsonData => {
+                console.log(JSON.stringify(jsonData));
+            })
             .endInit();
     }
 

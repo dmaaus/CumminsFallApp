@@ -14,7 +14,7 @@ import * as moment from 'moment';
 })
 export class ScheduleClosingPage {
 
-    callback: (sendTime: moment.Moment, message: string) => void;
+    callback: (sendTime: moment.Moment, message: string, closing: Closing) => void;
     closing: Closing;
 
     constructor(public navCtrl: NavController,
@@ -58,7 +58,7 @@ export class ScheduleClosingPage {
 
     static scheduleClosing(closing: Closing,
                            alertError: AlertErrorProvider,
-                           callback: (sendTime: moment.Moment, message: string) => void,
+                           callback: (sendTime: moment.Moment, message: string, closing: Closing) => void,
                            navCtrl: NavController,
                            loading: LoadingProvider,
                            http: HttpClient,
@@ -79,7 +79,7 @@ export class ScheduleClosingPage {
         self.postClosing(closing, http, db).then(() => {
             console.log('posted');
             navCtrl.pop().then(() => {
-                callback(closing.getSendTime(), closing.getMessage());
+                callback(closing.getSendTime(), closing.getMessage(), closing);
             });
         }).catch(alertError.showCallback(loading));
     }
