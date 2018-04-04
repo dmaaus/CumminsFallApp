@@ -1,133 +1,225 @@
-import {HttpClient} from '@angular/common/http';
-import {Injectable, OnDestroy} from '@angular/core';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {EmailProvider} from "../email/email";
+import {NotificationProvider} from "../notification/notification";
 
-import * as bcrypt from 'bcryptjs';
-import {SQLite, SQLiteObject} from "@ionic-native/sqlite";
 
-/*
-  Generated class for the DatabaseProvider provider.
-
-  See https://angular.io/guide/dependency-injection for more info on providers
-  and Angular DI.
-*/
 @Injectable()
-export class DatabaseProvider implements OnDestroy {
-    // TODO the app needs to send the credentials to the remote server rather than storing them locally
-    db: any;
+export class DatabaseProvider {
+    static readonly AWS_URL: string = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/';
+    static readonly API_KEY: string = 'cdIRFxmAYK3JctGIHCyQE82XM3Nv5cwT9gJXzqiU';
 
-    constructor(public http: HttpClient, private sqlite: SQLite) {
-        let self = this;
-        this.sqlite.create({
-            name: 'database.db',
-            location: 'default',
-        })
-            .then((db: SQLiteObject) => {
-                console.log('creating table');
-                self.db = db;
-                db.executeSql(
-                    `CREATE TABLE IF NOT EXISTS ${Ranger.TABLE_NAME} (` +
-                    `  ${Ranger.USERNAME} VARCHAR(128) PRIMARY KEY NOT NULL,` +
-                    `  ${Ranger.PASSWORD} CHAR(60) NOT NULL` +
-                    `)`, []).catch(self.error);
-            }).catch(self.error);
+    db: any = null;
+    credentials: Credentials = null;
+
+    constructor(public http: HttpClient,
+                private email: EmailProvider,
+                private notification: NotificationProvider) {
     }
 
-    ngOnDestroy() {
-        this.db.close();
-    }
+    static api(http: HttpClient, lambda: string, functionName: string, args: Object = {}, otherHeaders: Object = {}): Promise<Object> {
+        let headersObj = {
+            'x-api-key': DatabaseProvider.API_KEY,
+            'function-name': functionName,
+            'args': JSON.stringify(args)
+        };
 
-    resetPassword(username: string, oldPassword: string, newPassword: string): Promise<boolean> {
-        let self = this;
-        return new Promise<boolean>((resolve, reject) => {
-            if (oldPassword === newPassword) {
-                reject('New password must not match current password');
-            }
-            self.authenticateUser(username, oldPassword).then((valid) => {
-                if (!valid) {
-                    reject('Invalid username or password');
-                    return;
-                }
-                self.deleteUser(username).then((valid) => {
-                    if (!valid) {
-                        reject('Unable to change password');
+        Object.assign(headersObj, otherHeaders);
+
+        let headers = new HttpHeaders(headersObj);
+
+        return new Promise<Object>((resolve, reject) => {
+                http.post(
+                    DatabaseProvider.AWS_URL + lambda,
+                    {},
+                    {headers: headers}
+                ).subscribe((response: Object) => {
+                    if (!response.hasOwnProperty('body')) {
+                        let message = '';
+                        if (response.hasOwnProperty('message')) {
+                            message = response['message'];
+                        }
+                        else if (response.hasOwnProperty('errorMessage')) {
+                            message = response['errorMessage'];
+                        }
+                        else if (response.hasOwnProperty('error')) {
+                            reject(response['error']);
+                            return;
+                        }
+                        else if (!response.hasOwnProperty('statusCode')) {
+                            /* sometimes, for whatever reason, AWS sends back *just* the body without the fluff
+                            around it. In this case, the whole response is really just the body. */
+                            console.log('response', response);
+                            resolve(response);
+                            return;
+                        }
+                        else {
+                            message = 'unknown error occurred. response: ' + JSON.stringify(response);
+                        }
+                        console.error(message);
+                        reject(
+                            'An error has occurred while attempting to process your request. Please try again later. ' +
+                            'If the error persists, contact your IT administrator.');
                         return;
                     }
-                    self.registerUser(username, newPassword).then((valid) => {
-                        resolve(valid);
-                    }).catch(reject);
+                    let body = JSON.parse(response['body']);
+                    if (body.hasOwnProperty('error')) {
+                        reject(body.error);
+                        return;
+                    }
+                    resolve(body);
+                }, error => {
+                    console.log(error);
+                    let message = error.error.message;
+                    if (typeof message !== 'string') {
+                        message = 'Unknown error occurred. Are you connected to the internet?'
+                    }
+                    reject(message);
+                });
+            }
+        );
+    }
+
+    setCredentials(username: string, password: string = null) {
+        if (username === null) {
+            this.credentials = null;
+        }
+        else {
+            this.credentials = new Credentials(username, password);
+        }
+    }
+
+    _api(functionName: string, args: Object): Promise<Object> {
+        return DatabaseProvider.api(this.http, 'ranger', functionName, args, this.credentials);
+    }
+
+    sendConfirmationEmail(ranger: Ranger, password: string, expiration: Date): Promise<boolean> {
+        return this.email.send(
+            'no-reply@cumminsfalls.com',
+            ranger.email,
+            'Confirm Account Registration',
+            `You have been added as a ranger of Cummins Falls. ` +
+            `Please download the app and confirm your account registration. ` +
+            `To do so, go to Settings > Ranger Login and use the code ${password}\n\n` +
+            `Note that this code expires at ${expiration.toLocaleTimeString()}`);
+    }
+
+    resendConfirmationCode(ranger: Ranger): Promise<boolean> {
+        let self = this;
+        return new Promise<boolean>((resolve, reject) => {
+            let args = {
+                username: ranger.username
+            };
+            self._api('resetUnconfirmedPassword', args)
+                .then((result) => {
+                    self.sendConfirmationEmail(ranger, result['password'], result['expiration'])
+                        .then(resolve).catch(reject);
                 }).catch(reject);
+        });
+    }
+
+    resetPassword(ranger: Ranger, newPassword: string): Promise<Ranger> {
+        let self = this;
+        return new Promise<Ranger>((resolve, reject) => {
+            if (newPassword.length < 8) {
+                reject('Password must be at least 8 characters in length');
+                return;
+            }
+            if (self.credentials.password === newPassword) {
+                reject('New password must not match current password');
+                return;
+            }
+            let args = {
+                newPassword: newPassword
+            };
+            self._api('resetPassword', args).then(() => {
+                ranger.state = Ranger.VALID;
+                resolve(ranger);
             }).catch(reject);
         });
     }
 
-    deleteUser(username: string): Promise<boolean> {
+    deleteUser(ranger: Ranger): Promise<boolean> {
         let self = this;
         return new Promise<boolean>((resolve, reject) => {
-            self.db.executeSql(
-                `DELETE FROM ${Ranger.TABLE_NAME} ` +
-                `  WHERE ${Ranger.USERNAME} = ?`, [username]
-            )
-                .then(resolve(true))
-                .catch(reject);
-        });
-    }
-
-    registerUser(username: string, password: string): Promise<boolean> {
-        // TODO only valid rangers should be able to register...
-        // TODO confirm with email?
-        console.log('registerUser');
-        let self = this;
-        return new Promise<boolean>((resolve, reject) => {
-            let salt = bcrypt.genSaltSync();
-            let hash = bcrypt.hashSync(password, salt);
-            console.log('hash: ' + hash);
-            let count = 'count';
-            self.db.executeSql(
-                `SELECT COUNT(*) AS ${count} FROM ${Ranger.TABLE_NAME}` +
-                `  WHERE ${Ranger.USERNAME} = ?`,
-                [username])
-                .then((result) => {
-                    if (result.rows.item(0)[count] > 0) {
-                        reject(`There is already an account associated with ${username}.`);
-                        return;
-                    }
-                    self.db.executeSql(
-                        `INSERT INTO ${Ranger.TABLE_NAME}` +
-                        `  (${Ranger.USERNAME}, ${Ranger.PASSWORD}) ` +
-                        `  VALUES ` +
-                        `  (?, ?)`,
-                        [username, hash])
-                        .then(() => {
-                            resolve(true);
-                        }).catch(reject);
+            self._api('deleteUser', {username: ranger.username})
+                .then(() => {
+                    resolve(true);
                 }).catch(reject);
         });
     }
 
-    authenticateUser(username: string, password: string): Promise<boolean> {
-        console.log('authenticateUser');
+    addUser(ranger: Ranger): Promise<Date> {
         let self = this;
-        return new Promise<boolean>((resolve, reject) => {
-            self.db.executeSql(
-                `SELECT ${Ranger.PASSWORD} FROM ${Ranger.TABLE_NAME}` +
-                ` WHERE ${Ranger.USERNAME} = ?`, [username])
-                .then((resultSet) => {
-                    let rows = resultSet.rows;
-                    if (rows.length < 1) {
-                        // user is not present
-                        // TODO remove log for production
-                        console.log('user is not present');
-                        resolve(false);
-                        return;
-                    }
-                    console.log(`password: ${rows.item(0).password}`);
-                    resolve(bcrypt.compareSync(password, rows.item(0)[Ranger.PASSWORD]));
-                })
-                .catch((msg) => {
-                        self.taskFailed('user authentication');
-                        reject(msg);
-                    }
-                );
+        return new Promise<Date>((resolve, reject) => {
+            self._api('addUser', {ranger: ranger})
+                .then((result) => {
+                    let expiration = new Date(result['expiration']);
+                    this.sendConfirmationEmail(
+                        ranger,
+                        result['password'],
+                        expiration)
+
+                        .then(() => {
+                            resolve(expiration);
+                        }).catch((msg) => {
+                        reject(`A confirmation email could not be sent to ${ranger.name}` +
+                            `because of the following error: ${msg}\n` +
+                            `Please try again later.`);
+                    });
+                }).catch(reject);
+        });
+    }
+
+    getRangerNames(): Promise<string[]> {
+        let self = this;
+        return new Promise<string[]>((resolve, reject) => {
+            self._api('getRangerNames', {}).then((result) => {
+                resolve(result['names']);
+            }).catch(reject);
+        });
+    }
+
+    getRangerWithName(name: string): Promise<Ranger> {
+        let self = this;
+        return new Promise<Ranger>((resolve, reject) => {
+            self._api('getRangerWithName', {name: name})
+                .then(ranger => {
+                    resolve(Ranger.fromObject(ranger));
+                }).catch(reject);
+        });
+    }
+
+    authenticate(): Promise<Ranger> {
+        let self = this;
+        return new Promise<Ranger>((resolve, reject) => {
+            self._api('authenticate', {}).then(result => {
+                let ranger = Ranger.fromObject(result['ranger']);
+                self.email.apiKey = result['emailKey'];
+                self.notification.apiKey = result['notificationKey'];
+                if (ranger.state === Ranger.EXPIRED) {
+                    reject('Temporary code has expired. Please have an admin recreate the account');
+                }
+                else {
+                    resolve(ranger);
+                }
+            }).catch(msg => {
+                console.error(msg);
+                reject(msg);
+            });
+        });
+    }
+
+    updateAdminRights(ranger: Ranger, isAdmin: boolean): Promise<Ranger> {
+        let self = this;
+        return new Promise<Ranger>((resolve, reject) => {
+            self._api(
+                'updateAdminRights',
+                {username: ranger.username, isAdmin: isAdmin})
+                .then(() => {
+                    ranger.isAdmin = isAdmin;
+                    resolve(ranger);
+                }).catch(reject);
         });
     }
 
@@ -152,8 +244,54 @@ export class DatabaseProvider implements OnDestroy {
     }
 }
 
-class Ranger {
-    static readonly TABLE_NAME: string = 'Ranger';
-    static readonly USERNAME: string = 'username';
-    static readonly PASSWORD: string = 'password';
+export class Ranger {
+
+    static readonly VALID: number = 1;
+    static readonly EXPIRED: number = 2;
+    static readonly NEEDS_CONFIRMATION: number = 0;
+    static readonly NULL_RANGER: Ranger = Ranger.makeNullRanger();
+
+    constructor(public name: string,
+                public username: string,
+                public email: string,
+                public isAdmin: boolean,
+                public state: number = Ranger.VALID) {
+    }
+
+    static makeNullRanger(): Ranger {
+        return new Ranger('', '', '', false, Ranger.EXPIRED);
+    }
+
+    static fromObject(obj): Ranger {
+        return new Ranger(obj.name, obj.username, obj.email, obj.isAdmin, obj.state);
+    }
+
+    isExpired() {
+        return this.state === Ranger.EXPIRED;
+    }
+
+    needsToResetPassword() {
+        return this.state === Ranger.NEEDS_CONFIRMATION;
+    }
+
+    toString(): string {
+        let result = '[Ranger: {\n';
+        Object.keys(this).forEach((key) => {
+            if (this.hasOwnProperty(key)) {
+                result += `  ${key}: ${this[key]},\n`;
+            }
+        });
+        return result + '}]';
+    }
+
+    equals(ranger: Ranger): boolean {
+        return !Object.keys(this).some((key) => {
+            return this.hasOwnProperty(key) && this[key] !== ranger[key];
+        });
+    }
+}
+
+export class Credentials {
+    constructor(public username: string, public password: string) {
+    }
 }

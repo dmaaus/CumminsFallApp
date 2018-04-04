@@ -1,13 +1,8 @@
 import {Component} from '@angular/core';
 import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {NotificationProvider} from "../../providers/notification/notification";
-
-/**
- * Generated class for the NotificationSettingsPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
+import {OneSignal} from "@ionic-native/onesignal";
+import {LoadingProvider} from "../../providers/loading/loading";
 
 @IonicPage()
 @Component({
@@ -16,10 +11,27 @@ import {NotificationProvider} from "../../providers/notification/notification";
 })
 export class NotificationSettingsPage {
 
-    locationAllowed: boolean;
+    static readonly OPT_OUT_FLOOD_TAG = 'opt_out_of_flood_warnings';
+    static readonly OPT_OUT_PARK_TAG = 'opt_out_of_park_closings';
+    locationAllowed: boolean = false;
+    optOutPark: boolean = false;
+    optOutFlood: boolean = false;
     timer: any;
+    loaded: boolean = false;
+
+    constructor(public navCtrl: NavController,
+                public navParams: NavParams,
+                private notification: NotificationProvider,
+                private oneSignal: OneSignal,
+                private loading: LoadingProvider) {
+        /* Although I'm following the documentation, OneSignal does not seem to respect the tags that are sent through
+        the API. Thus, this code is commented uout ntil it can be figured out how to make it work. */
+        // this.getTags();
+        this.updateLocationAllowed();
+    }
 
     allowLocationMessage() {
+        console.log('locationAllowed?', this.locationAllowed);
         if (this.locationAllowed) {
             return 'You are only receiving location-based notifications when near Cummins Falls';
         }
@@ -27,18 +39,27 @@ export class NotificationSettingsPage {
             return 'Receive location-based notifications only when near Cummins Falls?';
         }
     }
+
     updateLocationAllowed() {
         let self = this;
         this.notification.locationAllowed().then((allowed) => {
             self.locationAllowed = allowed;
+            console.log('setting lA to ' + self.locationAllowed);
         }).catch((err) => {
             console.error(err);
             self.locationAllowed = false;
         });
     }
 
-    constructor(public navCtrl: NavController, public navParams: NavParams, private notification: NotificationProvider) {
-        this.updateLocationAllowed();
+    getTags() {
+        let self = this;
+        self.loading.present(true, true);
+        self.oneSignal.getTags().then((tags: Object) => {
+            self.optOutPark = tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_PARK_TAG);
+            self.optOutFlood = tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_FLOOD_TAG);
+            self.loading.dismiss();
+            self.loaded = true;
+        })
     }
 
     ngOnDestroy() {
@@ -52,6 +73,24 @@ export class NotificationSettingsPage {
         this.timer = setInterval(() => {
             console.log('checking');
             this.updateLocationAllowed();
-        }, 1000);
+        }, 100);
+    }
+
+    optOutParkNotify() {
+        if (this.optOutPark) {
+            this.oneSignal.sendTag(NotificationSettingsPage.OPT_OUT_PARK_TAG, 'tag');
+        }
+        else {
+            this.oneSignal.deleteTag(NotificationSettingsPage.OPT_OUT_PARK_TAG);
+        }
+    }
+
+    optOutFloodNotify() {
+        if (this.optOutFlood) {
+            this.oneSignal.sendTag(NotificationSettingsPage.OPT_OUT_FLOOD_TAG, 'tag');
+        }
+        else {
+            this.oneSignal.deleteTag(NotificationSettingsPage.OPT_OUT_FLOOD_TAG);
+        }
     }
 }

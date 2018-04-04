@@ -1,4 +1,4 @@
-import { MapsPage } from './../pages/maps/maps';
+import {MapsPage} from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
@@ -25,9 +25,27 @@ import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
 import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
 import { TrailsPage } from '../pages/maps/trails-page/trails-page';
+import {CumminsFallsEventsProvider} from '../providers/events/events';
+import {ViewClosingsPage} from "../pages/view-closings/view-closings";
+import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
+import {DatePicker} from "@ionic-native/date-picker";
+import {LoadingProvider} from '../providers/loading/loading';
+import {EmailProvider} from "../providers/email/email";
+import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
+import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
+import {RangerHomePage} from "../pages/ranger-home/ranger-home";
+import {CreateRangerPage} from "../pages/create-ranger/create-ranger";
+import {ResetPasswordPage} from "../pages/reset-password/reset-password";
+import {AlertErrorProvider} from '../providers/alert-error/alert-error';
 import {ContactPage} from '../pages/about/contact-page/contact-page';
 import {HistoryPage} from '../pages/about/history-page/history-page';
 import {TrailsInfoPage} from '../pages/about/trails-info-page/trails-info-page';
+
+import {ComponentsModule} from '../components/components.module';
+import {EventPage} from '../pages/event/event';
+
+import {InAppBrowser} from '@ionic-native/in-app-browser';
+
 @NgModule({
     declarations: [
         MyApp,
@@ -41,16 +59,25 @@ import {TrailsInfoPage} from '../pages/about/trails-info-page/trails-info-page';
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
-        NotificationSettingsPage,
-        ContactPage,
+        RangerInfoPage,
+        ManageRangerPage,
+        RangerHomePage,
+        CreateRangerPage,
+        ResetPasswordPage,
+        ScheduleClosingPage,
+        ViewClosingsPage,
+        EventPage,
+		    ContactPage,
         HistoryPage,
-        TrailsInfoPage
+        TrailsInfoPage,
+        NotificationSettingsPage
     ],
     imports: [
         BrowserModule,
         IonicModule.forRoot(MyApp),
         HttpClientModule,
-        IonicStorageModule.forRoot()
+        IonicStorageModule.forRoot(),
+        ComponentsModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
@@ -65,8 +92,16 @@ import {TrailsInfoPage} from '../pages/about/trails-info-page/trails-info-page';
         RangerLoginPage,
         RangerRegisterPage,
         RangerAlertCreatorPage,
+        ViewClosingsPage,
+        ScheduleClosingPage,
+        ResetPasswordPage,
+        CreateRangerPage,
+        RangerHomePage,
+        ManageRangerPage,
+        RangerInfoPage,
         NotificationSettingsPage,
-        ContactPage,
+        EventPage,
+		    ContactPage,
         HistoryPage,
         TrailsInfoPage
     ],
@@ -81,7 +116,13 @@ import {TrailsInfoPage} from '../pages/about/trails-info-page/trails-info-page';
         SQLite,
         OneSignal,
         NotificationProvider,
-        AndroidPermissions
+        AndroidPermissions,
+        AlertErrorProvider,
+        EmailProvider,
+        LoadingProvider,
+        DatePicker,
+        CumminsFallsEventsProvider,
+        InAppBrowser
     ]
 })
 export class AppModule {
