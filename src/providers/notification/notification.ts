@@ -38,7 +38,8 @@ export class NotificationProvider {
             this.appId,
             this.googleProjectNumber)
             .handleNotificationOpened(jsonData => {
-                console.log(JSON.stringify(jsonData));
+                let data = jsonData['notification']['payload']['additionalData'];
+                console.log(JSON.stringify(data));
             })
             .endInit();
     }

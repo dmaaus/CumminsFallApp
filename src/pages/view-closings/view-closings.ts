@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {IonicPage, NavController, NavParams} from 'ionic-angular';
-import {DatabaseProvider} from "../../providers/database/database";
 import {HttpClient} from "@angular/common/http";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 import {LoadingProvider} from "../../providers/loading/loading";
@@ -26,21 +25,9 @@ export class ViewClosingsPage {
     getClosings() {
         let self = this;
         self.loading.present(true, true);
-        DatabaseProvider.api(this.http, 'closings', 'get')
-            .then((results: Object[]) => {
-                self.closings = results.map(closing => {
-                    return Closing.fromObject(
-                        closing['start'],
-                        closing['end'],
-                        closing['startsNow'],
-                        closing['fromOpening'],
-                        closing['untilClosing']
-                    );
-                });
-                console.log('closings', self.closings);
-                self.loading.dismiss();
-            })
-            .catch(self.alertError.showCallback(self.loading));
+        Closing.getClosings(this.http).then(closings => {
+            self.closings = closings;
+            self.loading.dismiss();
+        }).catch(self.alertError.showCallback(self.loading));
     }
-
 }

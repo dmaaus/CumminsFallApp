@@ -32,7 +32,6 @@ export class EventCardComponent {
             this.cumminsFallsEvents = events;
             events.forEach(event => {
                 let newDisplayEvent = DisplayEvent.fromCumminsFallsEvent(event);
-                console.log(`${this.cumminsFallsDisplayEvents.push(newDisplayEvent)} event(s) added.`);
             });
             this.cardSlides.update();
         });

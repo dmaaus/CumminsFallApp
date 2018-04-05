@@ -79,7 +79,7 @@ export class RangerAlertCreatorPage {
 
     sendClosingNotification(sendTime: any, message: string, closing: Closing) {
         let extraParams = {
-            data: closing
+            data: closing.toObject()
         };
         let confirmationTitle = '';
         let confirmationMessage = '';

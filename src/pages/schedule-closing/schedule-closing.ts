@@ -179,7 +179,7 @@ export class Closing {
     }
 
     toObject(): Object {
-        if (this.fromOpening) {
+        if (this.fromOpening || this.startsNow) {
             this.start.hours(0);
             this.start.minutes(0);
             this.start.seconds(0);
@@ -306,5 +306,23 @@ export class Closing {
             return sendTime;
         }
         return moment(0);
+    }
+
+    static getClosings(http: HttpClient, ): Promise<Closing[]> {
+        return new Promise<Closing[]>((resolve, reject) => {
+            DatabaseProvider.api(http, 'closings', 'get')
+                .then((results: Object[]) => {
+                    resolve(results.map(closing => {
+                        return Closing.fromObject(
+                            closing['start'],
+                            closing['end'],
+                            closing['startsNow'],
+                            closing['fromOpening'],
+                            closing['untilClosing']
+                        );
+                    }));
+                })
+                .catch(reject);
+        });
     }
 }
