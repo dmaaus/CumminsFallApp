@@ -17,16 +17,18 @@ export class HoursMessageComponent {
 
     static GETTING_CLOSINGS = 'Retrieving park closures...';
 
-    loading: any = null;
+    loading: boolean = false;
     text: string;
     timer: any;
 
     constructor(private http: HttpClient, private alertError: AlertErrorProvider) {
         this.text = HoursMessageComponent.GETTING_CLOSINGS;
-        this.getClosingsAndCalculateHours();
+        this.getClosingsAndCalculateTimes();
         this.timer = setInterval(() => {
             this.calculateText();
-        }, 30000);
+        }, 10000);
+
+        document.addEventListener('resume', this.refresh.bind(this), false);
     }
 
     ngOnDestroy() {
@@ -54,69 +56,93 @@ export class HoursMessageComponent {
         return result
     }
 
+    static calculateNextClosing(closings: Closing[]) {
+        let now = moment();
+        let nextClosing = this.defaultClosingTime();
+        closings.some(closing => {
+            if (closing.start < nextClosing) {
+                while (closing.end > nextClosing) {
+                    nextClosing.day(nextClosing.day() + 1);
+                }
+            }
+            if (closing.start >= now) {
+                if (closing.start >= nextClosing) {
+                    return true;
+                }
+                else if (closing.start.hours() >= 8) {
+                    nextClosing = closing.start;
+                    return true;
+                }
+                else {
+                    while (closing.end > nextClosing) {
+                        nextClosing.day(nextClosing.day() + 1);
+                    }
+                }
+            }
+            return false;
+        });
+        this.closingTime = nextClosing;
+    }
 
-    static calculateHours(closings: Closing[] = null) {
+    static calculateNextOpening(closings: Closing[]) {
+        let nextOpening = this.defaultOpeningTime();
+        closings.some(closing => {
+            if (closing.start < nextOpening && closing.end > nextOpening) {
+                nextOpening = closing.end;
+                return true;
+            }
+            return false;
+        });
+        this.openingTime = nextOpening;
+    }
+
+    static calculateTimes(closings: Closing[] = null) {
         if (closings === null) {
             closings = this.cachedClosings;
         }
-        if (closings.length === 0) {
-            this.openingTime = this.defaultOpeningTime();
-            this.closingTime = this.defaultClosingTime();
-            return;
-        }
-        let now = moment();
-        let start = closings[0].start;
-        if (start < now) {
-            // park is currently closed
-            // the end of this closing will be when they open, unless it is the end of the day
-            if (!start.untilClosing) {
-
-            }
-        }
-        let daysTillNextClose = start.diff(now, 'days', true);
-        if (daysTillNextClose >= 2) {
-            this.openingTime = this.defaultOpeningTime();
-        }
-        if (start.day() == now.day()) {
-            // the closing is for today
-
-        }
+        this.calculateNextClosing(closings);
+        this.calculateNextOpening(closings);
     }
 
-    getClosingsAndCalculateHours(useCached: boolean = true) {
+    refresh() {
+        this.getClosingsAndCalculateTimes(false);
+    }
+
+    getClosingsAndCalculateTimes(useCached: boolean = true) {
         let self = this;
         if (useCached && HoursMessageComponent.cachedClosings !== null) {
-            HoursMessageComponent.calculateHours();
+            HoursMessageComponent.calculateTimes();
+            return;
         }
-        self.loading.show();
+        self.loading = true;
         Closing.getClosings(self.http).then((closings: Closing[]) => {
             HoursMessageComponent.cachedClosings = closings;
-            HoursMessageComponent.calculateHours(closings);
-            self.loading.hide();
+            HoursMessageComponent.calculateTimes(closings);
+            self.calculateText();
+            self.loading = false;
         }).catch(error => {
             self.alertError.show(error);
-            self.loading.hide();
+            self.loading = false;
         });
     }
 
     /*
     check for closings whenever
-    onResume
-    onRefresh
+    ✓ onResume
+    - onRefresh
 
     update according to closings whenever
-    checked
-    notificationOpened
+    - notificationOpened
 
     update normally
-    every 30 seconds
+    ✓ every 10 seconds
      */
 
     static timeTillMessage(time: moment.Moment) {
         let now = moment();
-        if (time.day() === now.day()) {
+        if (time.isSame(now, 'day')) {
             let hours = time.diff(now, 'hours');
-            let minutes = time.diff(now, 'minutes');
+            let minutes = time.diff(now, 'minutes') % 60;
             let hourPart = `${hours} hours and`;
             if (hours === 0) {
                 hourPart = ' ';
@@ -143,7 +169,7 @@ export class HoursMessageComponent {
 
         if (closingTime < now || openingTime < now) {
             if (this.text !== HoursMessageComponent.GETTING_CLOSINGS) {
-                this.getClosingsAndCalculateHours();
+                this.getClosingsAndCalculateTimes();
                 this.text = HoursMessageComponent.GETTING_CLOSINGS;
             }
             return;

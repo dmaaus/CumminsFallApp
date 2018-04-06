@@ -164,8 +164,28 @@ export class ScheduleClosingPage {
     }
 }
 
+export interface ClosingListener {
+    newClosings: (closings: Closing[]) => void;
+}
+
 export class Closing {
-    constructor(public start, public end, public startsNow, public fromOpening, public untilClosing) {
+
+    static listeners: ClosingListener[] = [];
+    static cachedClosings: Closing[] = null;
+
+    static register(listener: ClosingListener) {
+        this.listeners.push(listener);
+    }
+
+    static unregister(listener: ClosingListener) {
+        let index = this.listeners.indexOf(listener);
+    }
+
+    constructor(public start: moment.Moment,
+                public end: moment.Moment,
+                public startsNow: boolean,
+                public fromOpening: boolean,
+                public untilClosing: boolean) {
     }
 
     static fromObject(start, end, startsNow, fromOpening, untilClosing): Closing {
@@ -308,11 +328,16 @@ export class Closing {
         return moment(0);
     }
 
-    static getClosings(http: HttpClient, ): Promise<Closing[]> {
+    static getClosings(http: HttpClient, useCached: boolean = true): Promise<Closing[]> {
+        let self = this;
         return new Promise<Closing[]>((resolve, reject) => {
+            if (useCached && self.cachedClosings !== null) {
+                resolve(self.cachedClosings);
+                return;
+            }
             DatabaseProvider.api(http, 'closings', 'get')
                 .then((results: Object[]) => {
-                    resolve(results.map(closing => {
+                    self.cachedClosings = results.map(closing => {
                         return Closing.fromObject(
                             closing['start'],
                             closing['end'],
@@ -320,7 +345,8 @@ export class Closing {
                             closing['fromOpening'],
                             closing['untilClosing']
                         );
-                    }));
+                    });
+                    resolve(self.cachedClosings);
                 })
                 .catch(reject);
         });

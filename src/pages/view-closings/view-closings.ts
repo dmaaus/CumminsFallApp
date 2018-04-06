@@ -22,6 +22,14 @@ export class ViewClosingsPage {
         this.getClosings();
     }
 
+    /**
+     * in constructor, you register with Closing
+     * in ngOnDestroy, you unregister with Closing
+     * whenever you receive a notification, Closing is called to add the closing to its list
+     * whenever you resume the app, Closing is called to add the closing to its list
+     * whenever Closing updates its list, it calls everyone who is registered with it to update their stuff.
+     */
+
     getClosings() {
         let self = this;
         self.loading.present(true, true);
