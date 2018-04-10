@@ -77,26 +77,44 @@ export class RangerAlertCreatorPage {
             .catch(self.alertError.showCallback(this.loading));
     }
 
-    sendClosingNotification(sendTime: any, message: string, closing: Closing) {
-        let extraParams = {
+    sendNotificationWithSilentData(notification: Notification,
+                                   audibleData: Object = {},
+                                   silentData: Object = {},
+                                   confirmationTitle: string = '',
+                                   confirmationMessage: string = '') {
+        let self = this;
+        self.loading.present();
+        self.notificationProvider.post(null, silentData)
+            .then(() => {
+                self.notificationProvider.post(notification, audibleData)
+                    .then(self.displayConfirmation.bind(self, confirmationTitle, confirmationMessage))
+                    .catch(self.alertError.showCallback(self.loading));
+            })
+            .catch(self.alertError.showCallback(self.loading));
+    }
+
+    sendClosingNotification(sendTime: moment.Moment, message: string, closing: Closing) {
+        let silentData = {
             data: closing.toObject()
         };
+        let visibleData = {};
         let confirmationTitle = '';
         let confirmationMessage = '';
         if (sendTime.valueOf() !== 0) {
-            extraParams['send_after'] = sendTime.toString();
+            visibleData['send_after'] = sendTime.toString();
             confirmationTitle = 'Notification Scheduled';
             confirmationMessage =
                 'The notification has been scheduled to be sent out closer to the time of the actual closing.'
         }
 
-        this.sendNotification(
+        this.sendNotificationWithSilentData(
             new Notification(
                 'Park Closing',
                 message,
                 NotificationProvider.PARK_CLOSING,
                 NotificationProvider.LOCAL),
-            extraParams,
+            visibleData,
+            silentData,
             confirmationTitle,
             confirmationMessage
         );

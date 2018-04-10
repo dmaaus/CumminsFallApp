@@ -41,7 +41,7 @@ Example of event object
 //the TN State park website.
 //This module will also use caching to minimize requests to the
 //web for a list of events
-const STORAGE_KEY = 'cumminsFallsEvents';
+// const STORAGE_KEY = 'cumminsFallsEvents';
 const EVENTURL = 'https://tsp.itinio.com/events/events.html';
 
 @Injectable()

@@ -4,6 +4,7 @@ import {AlertController, Platform} from 'ionic-angular';
 import {OneSignal} from '@ionic-native/onesignal';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {Storage} from '@ionic/storage'
+import {Closing} from "../../pages/schedule-closing/schedule-closing";
 
 @Injectable()
 export class NotificationProvider {
@@ -17,9 +18,9 @@ export class NotificationProvider {
     static readonly ALL: string = 'All';
 
     // kind
-    static readonly PARK_CLOSING = 'Opt_Out_Of_Park_Closings';
-    static readonly FLOOD_WARNING = 'Opt_Out_Of_Flood_Warnings';
-    static readonly OTHER = 'Opt_Out_Of_Other';
+    static readonly PARK_CLOSING: string = 'Opt_Out_Of_Park_Closings';
+    static readonly FLOOD_WARNING: string = 'Opt_Out_Of_Flood_Warnings';
+    static readonly OTHER: string = 'Opt_Out_Of_Other';
 
     private static readonly LOCATION_KNOWN: string = 'Location_Allowed';
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = 'times_asked_for_location';
@@ -27,6 +28,7 @@ export class NotificationProvider {
     appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
     apiKey: string = '';
     googleProjectNumber: string = '386934932788';
+    static readonly NO_ONE: string = 'Everyone_Should_Get_This';
 
     constructor(public http: HttpClient,
                 private oneSignal: OneSignal,
@@ -37,15 +39,18 @@ export class NotificationProvider {
         this.oneSignal.startInit(
             this.appId,
             this.googleProjectNumber)
-            .handleNotificationOpened(jsonData => {
-                let data = jsonData['notification']['payload']['additionalData'];
-                console.log(JSON.stringify(data));
+            .handleNotificationReceived(jsonData => {
+                let data = jsonData['payload']['additionalData'];
+                let closing = Closing.fromObject(data);
+                Closing.cacheClosing(closing);
             })
             .endInit();
     }
 
+
     /**
-     * @param notification the notification to be sent out.
+     * @param notification the notification to be sent out. If notification is null,
+     * the extraParams will be used as a silent notification.
      * @param {Object} extraParams parameters that will be passed directly to the API call
      */
     post(notification: Notification, extraParams: Object = {}): Promise<boolean> {
@@ -54,6 +59,10 @@ export class NotificationProvider {
                 reject('apiKey has not been set, so how was post called?');
                 return;
             }
+            let silent = notification === null;
+            if (silent) {
+                notification = new Notification('', '', '', NotificationProvider.ALL);
+            }
             let body = {
                 app_id: this.appId,
                 contents: {'en': notification.message},
@@ -61,6 +70,18 @@ export class NotificationProvider {
                 included_segments: [notification.area],
                 excluded_segments: [notification.kind]
             };
+
+            if (silent) {
+                delete body['excluded_segments'];
+                body['content_available'] = true;
+                let contentAvailable = {'content_available': true};
+                if (extraParams['data'] === undefined) {
+                    extraParams['data'] = contentAvailable;
+                }
+                else {
+                    Object.assign(extraParams['data'], contentAvailable);
+                }
+            }
 
             Object.assign(body, extraParams);
 
@@ -71,6 +92,7 @@ export class NotificationProvider {
             let self = this;
             if (notification.area === NotificationProvider.ALL) {
                 self._post(body, headers).then(() => {
+                    console.log('sent a notification to everyone', body, headers);
                     resolve(true);
                 }).catch(reject);
             }

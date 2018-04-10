@@ -67,6 +67,7 @@ export class DatabaseProvider {
                         reject(body.error);
                         return;
                     }
+                    console.log('returned from api:', body);
                     resolve(body);
                 }, error => {
                     console.log(error);

@@ -6,6 +6,7 @@ import {DatabaseProvider} from "../../providers/database/database";
 import {HttpClient} from "@angular/common/http";
 import {LoadingProvider} from "../../providers/loading/loading";
 import * as moment from 'moment';
+import {HoursMessageComponent} from "../../components/hours-message/hours-message";
 
 @IonicPage()
 @Component({
@@ -27,12 +28,14 @@ export class ScheduleClosingPage {
 
         this.callback = navParams.get('callback');
         this.closing = new Closing(moment(), moment(), false, false, true);
-        if (this.closing.start.hours() < 22) {
-            this.closing.start.hours(this.closing.start.hours() + 1);
+        if (this.closing.start.hours() > 17) {
+            HoursMessageComponent.changeDay(this.closing.start, 1);
+            HoursMessageComponent.changeDay(this.closing.end, 1);
+            HoursMessageComponent.resetToHour(this.closing.start, 8);
+            this.closing.fromOpening = true;
         }
         else {
-            this.closing.start.date(this.closing.start.date() + 1);
-            this.closing.start.hours(6);
+            HoursMessageComponent.changeHours(this.closing.start, 1);
         }
         this.closing.end.hours(23);
         this.closing.end.minutes(59);
@@ -63,7 +66,18 @@ export class ScheduleClosingPage {
                            loading: LoadingProvider,
                            http: HttpClient,
                            db: DatabaseProvider) {
-
+        if (closing.startsNow) {
+            closing.start = moment();
+        }
+        if ((closing.start.hours() > 17 || closing.start.hours() < 8) && !closing.fromOpening) {
+            if (closing.startsNow) {
+                alertError.show('Cummins Falls is already closed');
+            }
+            else {
+                alertError.show('Cummins Falls will already be closed at that time.');
+            }
+            return;
+        }
         loading.present();
         let error = closing.isStartTimeValid(closing.start);
         if (error !== '') {
@@ -174,11 +188,16 @@ export class Closing {
     static cachedClosings: Closing[] = null;
 
     static register(listener: ClosingListener) {
+        console.log('register', listener);
         this.listeners.push(listener);
+        console.log('listeners', this.listeners);
     }
 
     static unregister(listener: ClosingListener) {
+        console.log('unregister', listener);
         let index = this.listeners.indexOf(listener);
+        this.listeners.splice(index, 1);
+        console.log('listeners', this.listeners);
     }
 
     constructor(public start: moment.Moment,
@@ -188,8 +207,15 @@ export class Closing {
                 public untilClosing: boolean) {
     }
 
-    static fromObject(start, end, startsNow, fromOpening, untilClosing): Closing {
-        return new Closing(moment(start), moment(end), !!startsNow, !!fromOpening, !!untilClosing);
+    static fromObject(closing): Closing {
+        console.log('end:', closing['end'], moment(closing['end']));
+        return new Closing(
+            moment(closing['start']),
+            moment(closing['end']),
+            !!(closing['startsNow']),
+            !!(closing['fromOpening']),
+            !!(closing['untilClosing'])
+        );
     }
 
     static isSendTimeValid(date: moment.Moment): boolean {
@@ -299,6 +325,9 @@ export class Closing {
 
     isEndTimeValid(date: moment.Moment): string {
         let minDate = moment(this.start.valueOf());
+        if (this.startsNow) {
+            minDate = moment();
+        }
         minDate.minutes(minDate.minutes() + 1);
         if (minDate.valueOf() < date.valueOf()) {
             return '';
@@ -328,7 +357,20 @@ export class Closing {
         return moment(0);
     }
 
-    static getClosings(http: HttpClient, useCached: boolean = true): Promise<Closing[]> {
+    static notifyListeners(except: ClosingListener = null) {
+        console.log('notifying listeners');
+        this.listeners.forEach(listener => {
+            if (listener !== except) {
+                console.log('notifying...');
+                listener.newClosings(this.cachedClosings);
+            }
+            else {
+                console.log('not sending it to listener who requested');
+            }
+        });
+    }
+
+    static getClosings(http: HttpClient, useCached: boolean = true, listenerWhoRequested: ClosingListener = null): Promise<Closing[]> {
         let self = this;
         return new Promise<Closing[]>((resolve, reject) => {
             if (useCached && self.cachedClosings !== null) {
@@ -337,18 +379,23 @@ export class Closing {
             }
             DatabaseProvider.api(http, 'closings', 'get')
                 .then((results: Object[]) => {
-                    self.cachedClosings = results.map(closing => {
-                        return Closing.fromObject(
-                            closing['start'],
-                            closing['end'],
-                            closing['startsNow'],
-                            closing['fromOpening'],
-                            closing['untilClosing']
-                        );
-                    });
+                    console.log('first result:', results[0]);
+                    self.cachedClosings = results.map(Closing.fromObject);
+                    self.notifyListeners(listenerWhoRequested);
                     resolve(self.cachedClosings);
                 })
                 .catch(reject);
         });
+    }
+
+    static cacheClosing(closing: Closing) {
+        if (this.cachedClosings === null) {
+            this.cachedClosings = [];
+        }
+        this.cachedClosings.push(closing);
+        this.cachedClosings.sort((a, b) => {
+            return a.start.valueOf() - b.start.valueOf();
+        });
+        this.notifyListeners();
     }
 }
