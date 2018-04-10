@@ -1,6 +1,5 @@
 import {Component} from '@angular/core';
 import {NavController} from 'ionic-angular';
-import {ViewClosingsPage} from "../view-closings/view-closings";
 
 import {ContactPage} from './contact-page/contact-page';
 import {HistoryPage} from './history-page/history-page';
@@ -14,7 +13,4 @@ export class AboutPage {
     historyPage = HistoryPage;
     trailsInfoPage = TrailsInfoPage;
     constructor(public navCtrl: NavController) {}
-    goToClosings() {
-        this.navCtrl.push(ViewClosingsPage);
-    }
 }
