@@ -6,10 +6,10 @@ import {HoursMessageComponent} from './hours-message/hours-message';
 
 @NgModule({
     declarations: [EventCardComponent,
-    HoursMessageComponent],
+        HoursMessageComponent],
     imports: [IonicModule, CommonModule],
     exports: [EventCardComponent,
-    HoursMessageComponent]
+        HoursMessageComponent]
 })
 export class ComponentsModule {
 }

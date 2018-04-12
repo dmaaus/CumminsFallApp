@@ -9,6 +9,12 @@ import {Notification} from "../../providers/notification/notification";
 })
 export class MakeNotificationPage {
 
+    kindOptions: Object = {
+        title: 'Kind'
+    };
+    areaOptions: Object = {
+        title: 'Range'
+    };
     private notification: Notification = new Notification('', '', '', '');
     private kind: string = '';
     private area: string = '';
@@ -29,14 +35,6 @@ export class MakeNotificationPage {
     humanReadableAreas(): string[] {
         return Object.keys(Notification.humanReadableAreas);
     }
-
-    kindOptions: Object = {
-        title: 'Kind'
-    };
-
-    areaOptions: Object = {
-        title: 'Range'
-    };
 
     details(): string {
         return `<p>Title: ${this.notification.title}</p>` +

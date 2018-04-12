@@ -30,14 +30,6 @@ export class HoursMessageComponent implements ClosingListener {
         }, 10000);
     }
 
-    ngOnDestroy() {
-        Closing.unregister(this);
-        if (this.timer) {
-            clearInterval(this.timer);
-        }
-    }
-
-
     // today at 8 is default opening time.
     static normalOpeningTime(): moment.Moment {
         let result = moment('8', 'hh');
@@ -135,39 +127,6 @@ export class HoursMessageComponent implements ClosingListener {
         this.calculateNextOpening(closings);
     }
 
-    newClosings(closings: Closing[]) {
-        HoursMessageComponent.cachedClosings = closings;
-        this.getClosingsAndCalculateTimes();
-    }
-
-    refresh() {
-        this.getClosingsAndCalculateTimes(false);
-    }
-
-    getClosingsAndCalculateTimes(useCached: boolean = true) {
-        let self = this;
-        self.loading = true;
-        if (useCached && HoursMessageComponent.cachedClosings !== null) {
-            console.log('recalculating closings from cached');
-            HoursMessageComponent.calculateTimes();
-            self.calculateText();
-            console.log('text should be good');
-            self.loading = false;
-            return;
-        }
-        console.log('getting closings from AWS');
-        Closing.getClosings(self.http).then((closings: Closing[]) => {
-            HoursMessageComponent.cachedClosings = closings;
-            HoursMessageComponent.calculateTimes(closings);
-            self.calculateText();
-            console.log('text should be good');
-            self.loading = false;
-        }).catch(error => {
-            self.alertError.show(error);
-            self.loading = false;
-        });
-    }
-
     static pluralS(quantity: number) {
         return quantity === 1 ? '' : 's';
     }
@@ -206,8 +165,43 @@ export class HoursMessageComponent implements ClosingListener {
         }
     }
 
+    ngOnDestroy() {
+        Closing.unregister(this);
+        if (this.timer) {
+            clearInterval(this.timer);
+        }
+    }
+
+    newClosings(closings: Closing[]) {
+        HoursMessageComponent.cachedClosings = closings;
+        this.getClosingsAndCalculateTimes();
+    }
+
+    refresh() {
+        this.getClosingsAndCalculateTimes(false);
+    }
+
+    getClosingsAndCalculateTimes(useCached: boolean = true) {
+        let self = this;
+        self.loading = true;
+        if (useCached && HoursMessageComponent.cachedClosings !== null) {
+            HoursMessageComponent.calculateTimes();
+            self.calculateText();
+            self.loading = false;
+            return;
+        }
+        Closing.getClosings(self.http).then((closings: Closing[]) => {
+            HoursMessageComponent.cachedClosings = closings;
+            HoursMessageComponent.calculateTimes(closings);
+            self.calculateText();
+            self.loading = false;
+        }).catch(error => {
+            self.alertError.show(error);
+            self.loading = false;
+        });
+    }
+
     calculateText() {
-        console.log('calculating text');
         let openingTime = HoursMessageComponent.openingTime;
         let closingTime = HoursMessageComponent.closingTime;
         let now = moment();

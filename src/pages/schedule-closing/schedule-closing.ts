@@ -49,11 +49,9 @@ export class ScheduleClosingPage {
 
     static postClosing(closing: Closing, http: HttpClient, db: DatabaseProvider): Promise<boolean> {
         let obj = closing.toObject();
-        console.log('posting', obj);
         return new Promise<boolean>((resolve, reject) => {
             DatabaseProvider.api(http, 'closings', 'post', obj, db.credentials)
                 .then(() => {
-                    console.log('posted closing successfully');
                     resolve(true);
                 }).catch(reject);
         });
@@ -91,7 +89,6 @@ export class ScheduleClosingPage {
         }
         let self = this;
         self.postClosing(closing, http, db).then(() => {
-            console.log('posted');
             navCtrl.pop().then(() => {
                 callback(closing.getSendTime(), closing.getMessage(), closing);
             });
@@ -165,7 +162,6 @@ export class ScheduleClosingPage {
             })
                 .then(dateDate => {
                     let date = moment(dateDate.getTime());
-                    console.log('selected date is ', date);
                     let error = this.isTimeValid(date, isEnd);
                     if (error !== '') {
                         reject(error);
@@ -187,19 +183,6 @@ export class Closing {
     static listeners: ClosingListener[] = [];
     static cachedClosings: Closing[] = null;
 
-    static register(listener: ClosingListener) {
-        console.log('register', listener);
-        this.listeners.push(listener);
-        console.log('listeners', this.listeners);
-    }
-
-    static unregister(listener: ClosingListener) {
-        console.log('unregister', listener);
-        let index = this.listeners.indexOf(listener);
-        this.listeners.splice(index, 1);
-        console.log('listeners', this.listeners);
-    }
-
     constructor(public start: moment.Moment,
                 public end: moment.Moment,
                 public startsNow: boolean,
@@ -207,8 +190,16 @@ export class Closing {
                 public untilClosing: boolean) {
     }
 
+    static register(listener: ClosingListener) {
+        this.listeners.push(listener);
+    }
+
+    static unregister(listener: ClosingListener) {
+        let index = this.listeners.indexOf(listener);
+        this.listeners.splice(index, 1);
+    }
+
     static fromObject(closing): Closing {
-        console.log('end:', closing['end'], moment(closing['end']));
         return new Closing(
             moment(closing['start']),
             moment(closing['end']),
@@ -222,6 +213,42 @@ export class Closing {
         let minFutureSendDate = moment();
         minFutureSendDate.minutes(minFutureSendDate.minutes() + 15);
         return minFutureSendDate.valueOf() <= date.valueOf();
+    }
+
+    static notifyListeners(except: ClosingListener = null) {
+        this.listeners.forEach(listener => {
+            if (listener !== except) {
+                listener.newClosings(this.cachedClosings);
+            }
+        });
+    }
+
+    static getClosings(http: HttpClient, useCached: boolean = true, listenerWhoRequested: ClosingListener = null): Promise<Closing[]> {
+        let self = this;
+        return new Promise<Closing[]>((resolve, reject) => {
+            if (useCached && self.cachedClosings !== null) {
+                resolve(self.cachedClosings);
+                return;
+            }
+            DatabaseProvider.api(http, 'closings', 'get')
+                .then((results: Object[]) => {
+                    self.cachedClosings = results.map(Closing.fromObject);
+                    self.notifyListeners(listenerWhoRequested);
+                    resolve(self.cachedClosings);
+                })
+                .catch(reject);
+        });
+    }
+
+    static cacheClosing(closing: Closing) {
+        if (this.cachedClosings === null) {
+            this.cachedClosings = [];
+        }
+        this.cachedClosings.push(closing);
+        this.cachedClosings.sort((a, b) => {
+            return a.start.valueOf() - b.start.valueOf();
+        });
+        this.notifyListeners();
     }
 
     toObject(): Object {
@@ -307,19 +334,15 @@ export class Closing {
         if (minDate.valueOf() > date.valueOf() &&
             !(this.fromOpening && minDate.isSame(date, 'day'))) {
 
-            console.log('too soon');
             return ScheduleClosingPage.startTimeTooSoonMessage();
         }
         let maxDate = moment(this.end.valueOf());
         if (date.valueOf() < maxDate.valueOf()) {
-            console.log('well before time');
             return '';
         }
         if (date.isSame(maxDate, 'day') && (this.fromOpening || this.untilClosing)) {
-            console.log('after time, but on same day and closing/opening so it\'s fine');
             return '';
         }
-        console.log('definitely not fine');
         return 'Start time must be before end time.';
     }
 
@@ -355,47 +378,5 @@ export class Closing {
             return sendTime;
         }
         return moment(0);
-    }
-
-    static notifyListeners(except: ClosingListener = null) {
-        console.log('notifying listeners');
-        this.listeners.forEach(listener => {
-            if (listener !== except) {
-                console.log('notifying...');
-                listener.newClosings(this.cachedClosings);
-            }
-            else {
-                console.log('not sending it to listener who requested');
-            }
-        });
-    }
-
-    static getClosings(http: HttpClient, useCached: boolean = true, listenerWhoRequested: ClosingListener = null): Promise<Closing[]> {
-        let self = this;
-        return new Promise<Closing[]>((resolve, reject) => {
-            if (useCached && self.cachedClosings !== null) {
-                resolve(self.cachedClosings);
-                return;
-            }
-            DatabaseProvider.api(http, 'closings', 'get')
-                .then((results: Object[]) => {
-                    console.log('first result:', results[0]);
-                    self.cachedClosings = results.map(Closing.fromObject);
-                    self.notifyListeners(listenerWhoRequested);
-                    resolve(self.cachedClosings);
-                })
-                .catch(reject);
-        });
-    }
-
-    static cacheClosing(closing: Closing) {
-        if (this.cachedClosings === null) {
-            this.cachedClosings = [];
-        }
-        this.cachedClosings.push(closing);
-        this.cachedClosings.sort((a, b) => {
-            return a.start.valueOf() - b.start.valueOf();
-        });
-        this.notifyListeners();
     }
 }

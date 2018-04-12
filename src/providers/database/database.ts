@@ -223,26 +223,6 @@ export class DatabaseProvider {
                 }).catch(reject);
         });
     }
-
-    callbacks(task: string) {
-        return [this.success(task), this.taskFailed(task)];
-    }
-
-    success(task: string) {
-        return function () {
-            console.log(task + ' completed successfully');
-        }
-    }
-
-    error(msg: string) {
-        console.error(msg);
-    }
-
-    taskFailed(task: string) {
-        return function (msg) {
-            console.error(task + ' encountered error: ' + msg);
-        }
-    }
 }
 
 export class Ranger {

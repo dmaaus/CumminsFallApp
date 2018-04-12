@@ -2,7 +2,7 @@ import {MapsPage} from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
-import {MyApp} from './app.component';
+import {App} from './app.component';
 
 import {AboutPage} from '../pages/about/about';
 import {HomePage} from '../pages/home/home';
@@ -46,7 +46,7 @@ import {MakeNotificationPage} from "../pages/make-notification/make-notification
 
 @NgModule({
     declarations: [
-        MyApp,
+        App,
         AboutPage,
         HomePage,
         TabsPage,
@@ -70,14 +70,14 @@ import {MakeNotificationPage} from "../pages/make-notification/make-notification
     ],
     imports: [
         BrowserModule,
-        IonicModule.forRoot(MyApp),
+        IonicModule.forRoot(App),
         HttpClientModule,
         IonicStorageModule.forRoot(),
         ComponentsModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
-        MyApp,
+        App,
         AboutPage,
         HomePage,
         TabsPage,

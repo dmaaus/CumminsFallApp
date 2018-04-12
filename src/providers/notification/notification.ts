@@ -1,10 +1,10 @@
 import {HttpClient, HttpErrorResponse, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {AlertController, Platform} from 'ionic-angular';
-import {OneSignal} from '@ionic-native/onesignal';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {Storage} from '@ionic/storage'
 import {Closing} from "../../pages/schedule-closing/schedule-closing";
+import {OneSignal} from "@ionic-native/onesignal";
 
 @Injectable()
 export class NotificationProvider {
@@ -21,24 +21,21 @@ export class NotificationProvider {
     static readonly PARK_CLOSING: string = 'Opt_Out_Of_Park_Closings';
     static readonly FLOOD_WARNING: string = 'Opt_Out_Of_Flood_Warnings';
     static readonly OTHER: string = 'Opt_Out_Of_Other';
-
     private static readonly LOCATION_KNOWN: string = 'Location_Allowed';
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = 'times_asked_for_location';
-
-    appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
+    public static appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
     apiKey: string = '';
-    googleProjectNumber: string = '386934932788';
-    static readonly NO_ONE: string = 'Everyone_Should_Get_This';
+    public static googleProjectNumber: string = '386934932788';
 
     constructor(public http: HttpClient,
-                private oneSignal: OneSignal,
                 private alertCtrl: AlertController,
                 private permissions: AndroidPermissions,
                 private platform: Platform,
-                private storage: Storage) {
+                private storage: Storage,
+                private oneSignal: OneSignal) {
         this.oneSignal.startInit(
-            this.appId,
-            this.googleProjectNumber)
+            NotificationProvider.appId,
+            NotificationProvider.googleProjectNumber)
             .handleNotificationReceived(jsonData => {
                 let data = jsonData['payload']['additionalData'];
                 let closing = Closing.fromObject(data);
@@ -46,7 +43,6 @@ export class NotificationProvider {
             })
             .endInit();
     }
-
 
     /**
      * @param notification the notification to be sent out. If notification is null,
@@ -64,7 +60,7 @@ export class NotificationProvider {
                 notification = new Notification('', '', '', NotificationProvider.ALL);
             }
             let body = {
-                app_id: this.appId,
+                app_id: NotificationProvider.appId,
                 contents: {'en': notification.message},
                 headings: {'en': notification.title},
                 included_segments: [notification.area],
@@ -92,7 +88,6 @@ export class NotificationProvider {
             let self = this;
             if (notification.area === NotificationProvider.ALL) {
                 self._post(body, headers).then(() => {
-                    console.log('sent a notification to everyone', body, headers);
                     resolve(true);
                 }).catch(reject);
             }
@@ -123,8 +118,7 @@ export class NotificationProvider {
                     resolve(true);
                 }, (error: HttpErrorResponse) => {
                     let message = 'Unknown error. Are you connected to the internet?';
-                    console.log('error');
-                    console.log(error);
+                    console.log('error', error);
                     if (typeof error.error.errors[0] === 'string') {
                         message = error.error.errors[0];
                     }
@@ -151,13 +145,14 @@ export class NotificationProvider {
 
 
     requestLocation() {
+        let self = this;
         this.alertCtrl.create({
                 title: 'Location',
                 message: 'Cummins Falls sends notifications through this app about park closings and flash floods. We would like permission to access your location so we can avoid sending you these notifications when you are not near the park. We will never store your location or sell your data.',
                 buttons: [{
                     text: 'Sure',
                     handler: () => {
-                        this.oneSignal.promptLocation();
+                        self.oneSignal.promptLocation();
                     }
                 }, {
                     text: 'No Thanks',
@@ -213,19 +208,11 @@ export class NotificationProvider {
 export class Notification {
     static readonly DEFAULT_KIND: string = 'Other';
     static readonly DEFAULT_AREA: string = 'Everyone';
-
-    constructor(public title: string,
-                public message: string,
-                public kind: string,
-                public area: string) {
-    }
-
     static readonly humanReadableKinds: Object = {
         'Park Closing': NotificationProvider.PARK_CLOSING,
         'Flood Warning': NotificationProvider.FLOOD_WARNING,
         'Other': NotificationProvider.OTHER
     };
-
     static readonly humanReadableAreas: Object = {
         '50 miles': NotificationProvider.WITHIN_50_MILES,
         '10 miles': NotificationProvider.WITHIN_10_MILES,
@@ -233,6 +220,12 @@ export class Notification {
         'Within the park': NotificationProvider.WITHIN_PARK,
         'Everyone': NotificationProvider.ALL,
     };
+
+    constructor(public title: string,
+                public message: string,
+                public kind: string,
+                public area: string) {
+    }
 
     fromHumanReadable(kind: string, area: string) {
         this.kind = Notification.humanReadableKinds[kind];

@@ -33,7 +33,7 @@ export class EmailProvider {
                     resolve(true);
                 }, (error: HttpErrorResponse) => {
                     console.log(error.error.message);
-                    reject('Unable to send confirmation email. Please make sure you are connected to the Internet ' +
+                    reject('Unable to send confirmation email. Please make sure you are connected to the internet ' +
                         'and the email address is valid.');
                 });
         });
