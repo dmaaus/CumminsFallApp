@@ -9,4 +9,13 @@ trails-info-page {
     float:left;
     align-items: center;
   }
+  .scroll-content {
+            background-color: map-get($colors, light);
+        }
+ 
+        ion-card-header {
+            font-weight: bold;
+        }
+		
+		ion-scroll { white-space: nowrap; }
 }

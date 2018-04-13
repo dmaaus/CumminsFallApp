@@ -10,7 +10,9 @@
     <div class='body'>
       <div class='category'>
         <h5>Distance</h5>
-        <p>1.1 miles</p>
+        <p>Trail 1: 1.1 miles (~1 hour)</p>
+		<p>Trail 2: 1.5 miles (~1 hour)</p>
+		<p>Route to the Overlook: ~5 minute walk</p>
       </div>
       <div class='category'>
         <h5>Elevation Gain</h5>
@@ -25,4 +27,143 @@
         <p>Moderate</p>
       </div>
     </div>
+	
+	<br/>
+	
+	<h3>Rules and Regulations</h3>
+	<div padding>
+		<ion-segment [(ngModel)]="rules">
+			<ion-segment-button value="allowed">
+				Allowed
+			</ion-segment-button>
+			<ion-segment-button value="prohibited">
+				Prohibited
+			</ion-segment-button>
+			<ion-segment-button value="advised">
+				Advised
+			</ion-segment-button>
+			
+		</ion-segment>
+		
+		<ion-segment [(ngModel)]="rules">
+			<ion-segment-button value="AllRules">
+				TN Park Rules
+			</ion-segment-button>
+			<ion-segment-button value="SS">
+				Swim Safe Tips
+			</ion-segment-button>
+		</ion-segment>
+	</div>
+	
+	<ion-scroll scrollY="true" zoom="true" style="width: 95vw; height: 250px" overflow-scroll="false">
+	<div [ngSwitch]="rules">
+		<ion-list *ngSwitchCase="'allowed'">
+			<ion-item>
+					<p>Pets are allowed, but must<br/>
+					be on a leash and under control.<br/>
+					Please remember to clean up after<br/>
+					your pet.</p>
+			</ion-item>
+			<ion-item>
+					<p>Have fun!</p>
+			</ion-item>
+		</ion-list>
+
+		<ion-list *ngSwitchCase="'prohibited'">
+			<ion-item>
+					<p>Alcoholic beverages are not<br/>
+					allowed in the park.</p>
+			</ion-item>
+			<ion-item>
+					<p>Coolers are not allowed in the gorge.</p>
+			</ion-item>
+			<ion-item>
+					<p>Pool floats are not allowed in<br/>
+					the plunge pool.</p>
+			</ion-item>
+			<ion-item>
+					<p>No camping is allowed at Cummins<br/>
+					Falls.</p>
+			</ion-item>
+		</ion-list>
+		
+		<ion-list *ngSwitchCase="'advised'">
+			<ion-item>
+					<p>Use good judgment and common<br/>
+					sense.</p>
+			</ion-item>
+			<ion-item>
+					<p>The hike to the gorge is not an<br/>
+					improved trail. This is an<br/>
+					adventurous hike and is not suitable<br/>
+					for small children.</p>
+			</ion-item>
+			<ion-item>
+					<p>USCG approved life jackets are<br/>
+					advised if you plan to get in the<br/>
+					water below the falls. While some<br/>
+					life jackets are available at the park,<br/>
+					we recommend bringing your own.</p>
+			</ion-item>
+			<ion-item>
+					<p>The less you take to the bottom of<br/>
+					the waterfall the better. It is best to<br/>
+					limit belongings to items that will fit<br/>
+					in a small back pack.</p>
+			</ion-item>
+			<ion-item>
+					<p>Keep your hands free.</p>
+			</ion-item>
+			<ion-item>
+					<p>Wear sturdy shoes. Flipflops are<br/>
+					not recommended.</p>
+			</ion-item>
+			<ion-item>
+					<p>Rather than try to take a picnic<br/>
+					to the gorge area, plan to eat in the<br/>
+					designated picnic area and just take<br/>
+					snacks and water to the gorge.</p>
+			</ion-item>
+			<ion-item>
+					<p>Wadding in knee deep water while<br/>
+					crossing the stream to get to the<br/>
+					bottom of the waterfall may be okay,<br/>
+					as long as the water is no higher than<br/>
+					your knee. But getting in water where<br/>
+					most of body is immersed is dangerous.<br/>
+					Swimming in cold water can be fatal. To<br/>
+					learn more: www.coldwatersafety.org.</p>
+			</ion-item>
+			<ion-item>
+					<p>Keep in mind the weather when<br/>
+					planning your visit. Sudden heavy rainfalls<br/>
+					can result in flash floods and streams<br/>
+					can become very dangerous.</p>
+			</ion-item>
+		</ion-list>
+		
+		<ion-list *ngSwitchCase="'AllRules'">
+			<pdf-viewer [src]="pdfSrc1" 
+					  [render-text]="true"
+					  [zoom]="1.3"
+					  [fit-to-page]="true"
+					  [show-all]="true"
+					  style="display: block;"
+			></pdf-viewer>
+		</ion-list>
+		
+		<ion-list *ngSwitchCase="'SS'">
+			<pdf-viewer [src]="pdfSrc2" 
+					  [render-text]="true"
+					  [zoom]="1.3"
+					  [fit-to-page]="true"
+					  [show-all]="true"
+					  style="display: block;"
+			></pdf-viewer>
+		</ion-list>
+	</div>
+	
+	</ion-scroll>
+	
+	<br/>
 </ion-content>
