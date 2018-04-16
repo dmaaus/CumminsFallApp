@@ -148,7 +148,7 @@ export class NotificationProvider {
         let self = this;
         this.alertCtrl.create({
                 title: 'Location',
-                message: 'Cummins Falls sends notifications through this app about park closings and flash floods. We would like permission to access your location so we can avoid sending you these notifications when you are not near the park. We will never store your location or sell your data.',
+                message: 'Cummins Falls sends notifications through this app about park closings and flash floods. We would like permission to access your location so we can avoid sending you these notifications when you are not near the park.',
                 buttons: [{
                     text: 'Sure',
                     handler: () => {
