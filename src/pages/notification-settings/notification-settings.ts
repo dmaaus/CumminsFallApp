@@ -15,9 +15,11 @@ export class NotificationSettingsPage {
 
     static readonly OPT_OUT_FLOOD_TAG = 'opt_out_of_flood_warnings';
     static readonly OPT_OUT_PARK_TAG = 'opt_out_of_park_closings';
+    static readonly OPT_OUT_OTHER = 'opt_out_of_other';
     locationAllowed: boolean = false;
-    optOutPark: boolean = false;
-    optOutFlood: boolean = false;
+    optInPark: boolean = true;
+    optInFlood: boolean = true;
+    optInOther: boolean = true;
     timer: any;
     loaded: boolean = false;
     static id: string = '';
@@ -68,6 +70,7 @@ export class NotificationSettingsPage {
     getTags() {
         let self = this;
         let headers = new HttpHeaders().append('Content-Type', 'application/json; charset=utf-8');
+        console.log('getting tags');
         self.loading.present();
         this.getId().then(id => {
             this.http.get(
@@ -76,9 +79,11 @@ export class NotificationSettingsPage {
                 .subscribe(response => {
                     console.log('response', response);
                     let tags = response['tags'];
-                    self.optOutPark = tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_PARK_TAG);
-                    self.optOutFlood = tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_FLOOD_TAG);
+                    self.optInPark = !tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_PARK_TAG);
+                    self.optInFlood = !tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_FLOOD_TAG);
+                    self.optInOther = !tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_OTHER);
                     self.loading.dismiss();
+                    console.log('got tags');
                     self.loaded = true;
                 }, (error: HttpErrorResponse) => {
                     let message = 'Unknown error. Are you connected to the internet?';
@@ -87,6 +92,7 @@ export class NotificationSettingsPage {
                         message = error.error.errors[0];
                     }
                     self.loading.dismiss();
+                    console.log('error in getting tags');
                     self.alertError.show(error);
                 });
         }).catch(self.alertError.showCallback(self.loading));
@@ -106,15 +112,20 @@ export class NotificationSettingsPage {
     }
 
     optFlood() {
-        this.opt(NotificationSettingsPage.OPT_OUT_FLOOD_TAG, this.optOutFlood);
+        this.opt(NotificationSettingsPage.OPT_OUT_FLOOD_TAG, this.optInFlood);
     }
 
     optPark() {
-        this.opt(NotificationSettingsPage.OPT_OUT_PARK_TAG, this.optOutPark);
+        this.opt(NotificationSettingsPage.OPT_OUT_PARK_TAG, this.optInPark);
+    }
+
+    optOther() {
+        console.log('optInOther', this.optInOther);
+        this.opt(NotificationSettingsPage.OPT_OUT_OTHER, this.optInOther);
     }
 
     /**
-     * @param {string} tag one of [OPT_OUT_FLOOD_TAG, OPT_OUT_PARK_TAG]
+     * @param {string} tag one of [OPT_OUT_FLOOD_TAG, OPT_OUT_PARK_TAG, OPT_OUT_OTHER]
      * @param {boolean} inOrOut opts you in to tag if true, otherwise opts you out
      */
     opt(tag: string, inOrOut: boolean) {
@@ -128,6 +139,7 @@ export class NotificationSettingsPage {
         };
         console.log('body', body);
         self.loading.present();
+        console.log('opting');
         this.getId().then(id => {
             this.http.put(
                 `https://onesignal.com/api/v1/players/${id}`,
@@ -136,6 +148,7 @@ export class NotificationSettingsPage {
                 .subscribe(response => {
                     console.log('response', response);
                     self.loading.dismiss();
+                    console.log('opted');
                 }, (error: HttpErrorResponse) => {
                     let message = 'Unknown error. Are you connected to the internet?';
                     console.log('error', error);
@@ -143,8 +156,12 @@ export class NotificationSettingsPage {
                         message = error.error.errors[0];
                     }
                     self.loading.dismiss();
+                    console.log('error in opting');
                     self.alertError.show(message);
                 });
-        }).catch(self.alertError.showCallback(self.loading));
+        }).catch(error => {
+            self.alertError.show(error);
+            self.loading.dismiss();
+        });
     }
 }

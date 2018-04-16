@@ -5,6 +5,7 @@ import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {Storage} from '@ionic/storage'
 import {Closing} from "../../pages/schedule-closing/schedule-closing";
 import {OneSignal} from "@ionic-native/onesignal";
+
 @Injectable()
 export class NotificationProvider {
 
@@ -26,7 +27,7 @@ export class NotificationProvider {
 
    public static appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
     apiKey: string = '';
-    public staticgoogleProjectNumber: string = '386934932788';
+    public static googleProjectNumber: string = '386934932788';
 
     constructor(public http: HttpClient,
                 private  alertCtrl: AlertController,
