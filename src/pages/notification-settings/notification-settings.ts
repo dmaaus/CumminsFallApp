@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {AlertController, IonicPage, NavController, NavParams} from 'ionic-angular';
+import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {NotificationProvider} from "../../providers/notification/notification";
 import {LoadingProvider} from "../../providers/loading/loading";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
@@ -42,8 +42,7 @@ export class NotificationSettingsPage {
                 private notification: NotificationProvider,
                 private loading: LoadingProvider,
                 private alertError: AlertErrorProvider,
-                private oneSignal: OneSignal,
-                private alertCtrl: AlertController) {
+                private oneSignal: OneSignal) {
         this.getTags();
         this.updateLocationAllowed();
     }
@@ -93,7 +92,7 @@ export class NotificationSettingsPage {
                     }
                     self.loading.dismiss();
                     console.log('error in getting tags');
-                    self.alertError.show(error);
+                    self.alertError.show(message);
                 });
         }).catch(self.alertError.showCallback(self.loading));
     }

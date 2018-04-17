@@ -4,8 +4,7 @@ import * as querystring from 'query-string';
 
 @Injectable()
 export class EmailProvider {
-
-    domain: string = 'sandboxff0637d7099b4069b7410adb473f3bfd.mailgun.org';
+    domain: string = 'sandbox8fd351ad785b4e0287aeb59146fc88f6.mailgun.org';
     apiKey: string = '';
 
     constructor(public http: HttpClient) {
