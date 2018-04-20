@@ -41,19 +41,43 @@ export class RangerAlertCreatorPage {
     }
 
     closePark() {
-        ScheduleClosingPage.scheduleClosing(
-            new Closing(
-                moment(),
-                moment(),
-                true,
-                false,
-                true),
-            this.alertError,
-            this.sendClosingNotification.bind(this),
-            this.navCtrl,
-            this.loading,
-            this.http,
-            this.db);
+        this.alertCtrl.create()
+            .setTitle('Area Closed')
+            .addInput({
+                type: 'radio',
+                label: Closing.JUST_GORGE,
+                value: Closing.JUST_GORGE,
+                checked: true
+            })
+            .addInput({
+                type: 'radio',
+                label: Closing.WHOLE_PARK,
+                value: Closing.WHOLE_PARK
+            })
+            .addButton({
+                text: 'Ok',
+                handler: area => {
+                    ScheduleClosingPage.scheduleClosing(
+                        new Closing(
+                            moment(),
+                            moment(),
+                            true,
+                            false,
+                            true,
+                            area),
+                        this.alertError,
+                        this.sendClosingNotification.bind(this),
+                        this.navCtrl,
+                        this.loading,
+                        this.http,
+                        this.db);
+                }
+            })
+            .addButton({
+                text: 'Cancel',
+                role: 'cancel'
+            })
+            .present();
     }
 
     floodWarning() {

@@ -72,7 +72,7 @@ import {TrailsInfoPage} from "../pages/about/trails-info-page/trails-info-page";
         MakeNotificationPage,
         ContactPage,
         HistoryPage,
-        TrailsInfoPage,
+        TrailsInfoPage
     ],
     imports: [
         BrowserModule,

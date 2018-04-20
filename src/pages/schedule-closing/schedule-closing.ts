@@ -18,6 +18,14 @@ export class ScheduleClosingPage {
     callback: (sendTime: moment.Moment, message: string, closing: Closing) => void;
     closing: Closing;
 
+    areaOptions: Object = {
+        title: 'Area Closed'
+    };
+
+    areas(): string[] {
+        return [Closing.JUST_GORGE, Closing.WHOLE_PARK];
+    }
+
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
                 private datePicker: DatePicker,
@@ -27,7 +35,13 @@ export class ScheduleClosingPage {
                 private loading: LoadingProvider) {
 
         this.callback = navParams.get('callback');
-        this.closing = new Closing(moment(), moment(), false, false, true);
+        this.closing = new Closing(
+            moment(),
+            moment(),
+            false,
+            false,
+            true,
+            Closing.JUST_GORGE);
         if (this.closing.start.hours() > 17) {
             HoursMessageComponent.changeDay(this.closing.start, 1);
             HoursMessageComponent.changeDay(this.closing.end, 1);
@@ -187,7 +201,8 @@ export class Closing {
                 public end: moment.Moment,
                 public startsNow: boolean,
                 public fromOpening: boolean,
-                public untilClosing: boolean) {
+                public untilClosing: boolean,
+                public area: string) {
     }
 
     static register(listener: ClosingListener) {
@@ -205,7 +220,8 @@ export class Closing {
             moment(closing['end']),
             !!(closing['startsNow']),
             !!(closing['fromOpening']),
-            !!(closing['untilClosing'])
+            !!(closing['untilClosing']),
+            (!!closing['area']) ? Closing.WHOLE_PARK : Closing.JUST_GORGE
         );
     }
 
@@ -269,7 +285,8 @@ export class Closing {
             end: this.end.valueOf(),
             startsNow: this.startsNow ? 1 : 0,
             fromOpening: this.fromOpening ? 1 : 0,
-            untilClosing: this.untilClosing ? 1 : 0
+            untilClosing: this.untilClosing ? 1 : 0,
+            area: this.area === Closing.WHOLE_PARK ? 1 : 0
         };
     }
 
@@ -281,7 +298,13 @@ export class Closing {
         let endDate = this.end.format(dateFormat);
         let endTime = this.end.format(timeFormat);
 
-        let message = `Cummins Falls `;
+        let message = '';
+        if (this.area === Closing.WHOLE_PARK) {
+            message += 'Cummins Falls ';
+        }
+        else {
+            message += 'The gorge at Cummins Falls ';
+        }
         if (this.start.isSame(this.end, 'day')) {
             if (this.startsNow) {
                 message += `is now closed `;
@@ -379,4 +402,7 @@ export class Closing {
         }
         return moment(0);
     }
+
+    static readonly JUST_GORGE: string = 'Just the gorge';
+    static readonly WHOLE_PARK: string = 'The whole park.';
 }
