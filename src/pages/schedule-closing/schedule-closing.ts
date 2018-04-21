@@ -6,6 +6,7 @@ import {DatabaseProvider} from "../../providers/database/database";
 import {HttpClient} from "@angular/common/http";
 import {LoadingProvider} from "../../providers/loading/loading";
 import * as moment from 'moment';
+import {HoursMessageComponent} from "../../components/hours-message/hours-message";
 
 @IonicPage()
 @Component({
@@ -14,7 +15,7 @@ import * as moment from 'moment';
 })
 export class ScheduleClosingPage {
 
-    callback: (sendTime: moment.Moment, message: string) => void;
+    callback: (sendTime: moment.Moment, message: string, closing: Closing) => void;
     closing: Closing;
 
     constructor(public navCtrl: NavController,
@@ -27,12 +28,14 @@ export class ScheduleClosingPage {
 
         this.callback = navParams.get('callback');
         this.closing = new Closing(moment(), moment(), false, false, true);
-        if (this.closing.start.hours() < 22) {
-            this.closing.start.hours(this.closing.start.hours() + 1);
+        if (this.closing.start.hours() > 17) {
+            HoursMessageComponent.changeDay(this.closing.start, 1);
+            HoursMessageComponent.changeDay(this.closing.end, 1);
+            HoursMessageComponent.resetToHour(this.closing.start, 8);
+            this.closing.fromOpening = true;
         }
         else {
-            this.closing.start.date(this.closing.start.date() + 1);
-            this.closing.start.hours(6);
+            HoursMessageComponent.changeHours(this.closing.start, 1);
         }
         this.closing.end.hours(23);
         this.closing.end.minutes(59);
@@ -46,11 +49,9 @@ export class ScheduleClosingPage {
 
     static postClosing(closing: Closing, http: HttpClient, db: DatabaseProvider): Promise<boolean> {
         let obj = closing.toObject();
-        console.log('posting', obj);
         return new Promise<boolean>((resolve, reject) => {
             DatabaseProvider.api(http, 'closings', 'post', obj, db.credentials)
                 .then(() => {
-                    console.log('posted closing successfully');
                     resolve(true);
                 }).catch(reject);
         });
@@ -58,12 +59,23 @@ export class ScheduleClosingPage {
 
     static scheduleClosing(closing: Closing,
                            alertError: AlertErrorProvider,
-                           callback: (sendTime: moment.Moment, message: string) => void,
+                           callback: (sendTime: moment.Moment, message: string, closing: Closing) => void,
                            navCtrl: NavController,
                            loading: LoadingProvider,
                            http: HttpClient,
                            db: DatabaseProvider) {
-
+        if (closing.startsNow) {
+            closing.start = moment();
+        }
+        if ((closing.start.hours() > 17 || closing.start.hours() < 8) && !closing.fromOpening) {
+            if (closing.startsNow) {
+                alertError.show('Cummins Falls is already closed');
+            }
+            else {
+                alertError.show('Cummins Falls will already be closed at that time.');
+            }
+            return;
+        }
         loading.present();
         let error = closing.isStartTimeValid(closing.start);
         if (error !== '') {
@@ -77,9 +89,8 @@ export class ScheduleClosingPage {
         }
         let self = this;
         self.postClosing(closing, http, db).then(() => {
-            console.log('posted');
             navCtrl.pop().then(() => {
-                callback(closing.getSendTime(), closing.getMessage());
+                callback(closing.getSendTime(), closing.getMessage(), closing);
             });
         }).catch(alertError.showCallback(loading));
     }
@@ -151,7 +162,6 @@ export class ScheduleClosingPage {
             })
                 .then(dateDate => {
                     let date = moment(dateDate.getTime());
-                    console.log('selected date is ', date);
                     let error = this.isTimeValid(date, isEnd);
                     if (error !== '') {
                         reject(error);
@@ -164,12 +174,39 @@ export class ScheduleClosingPage {
     }
 }
 
+export interface ClosingListener {
+    newClosings: (closings: Closing[]) => void;
+}
+
 export class Closing {
-    constructor(public start, public end, public startsNow, public fromOpening, public untilClosing) {
+
+    static listeners: ClosingListener[] = [];
+    static cachedClosings: Closing[] = null;
+
+    constructor(public start: moment.Moment,
+                public end: moment.Moment,
+                public startsNow: boolean,
+                public fromOpening: boolean,
+                public untilClosing: boolean) {
     }
 
-    static fromObject(start, end, startsNow, fromOpening, untilClosing): Closing {
-        return new Closing(moment(start), moment(end), !!startsNow, !!fromOpening, !!untilClosing);
+    static register(listener: ClosingListener) {
+        this.listeners.push(listener);
+    }
+
+    static unregister(listener: ClosingListener) {
+        let index = this.listeners.indexOf(listener);
+        this.listeners.splice(index, 1);
+    }
+
+    static fromObject(closing): Closing {
+        return new Closing(
+            moment(closing['start']),
+            moment(closing['end']),
+            !!(closing['startsNow']),
+            !!(closing['fromOpening']),
+            !!(closing['untilClosing'])
+        );
     }
 
     static isSendTimeValid(date: moment.Moment): boolean {
@@ -178,8 +215,44 @@ export class Closing {
         return minFutureSendDate.valueOf() <= date.valueOf();
     }
 
+    static notifyListeners(except: ClosingListener = null) {
+        this.listeners.forEach(listener => {
+            if (listener !== except) {
+                listener.newClosings(this.cachedClosings);
+            }
+        });
+    }
+
+    static getClosings(http: HttpClient, useCached: boolean = true, listenerWhoRequested: ClosingListener = null): Promise<Closing[]> {
+        let self = this;
+        return new Promise<Closing[]>((resolve, reject) => {
+            if (useCached && self.cachedClosings !== null) {
+                resolve(self.cachedClosings);
+                return;
+            }
+            DatabaseProvider.api(http, 'closings', 'get')
+                .then((results: Object[]) => {
+                    self.cachedClosings = results.map(Closing.fromObject);
+                    self.notifyListeners(listenerWhoRequested);
+                    resolve(self.cachedClosings);
+                })
+                .catch(reject);
+        });
+    }
+
+    static cacheClosing(closing: Closing) {
+        if (this.cachedClosings === null) {
+            this.cachedClosings = [];
+        }
+        this.cachedClosings.push(closing);
+        this.cachedClosings.sort((a, b) => {
+            return a.start.valueOf() - b.start.valueOf();
+        });
+        this.notifyListeners();
+    }
+
     toObject(): Object {
-        if (this.fromOpening) {
+        if (this.fromOpening || this.startsNow) {
             this.start.hours(0);
             this.start.minutes(0);
             this.start.seconds(0);
@@ -261,24 +334,23 @@ export class Closing {
         if (minDate.valueOf() > date.valueOf() &&
             !(this.fromOpening && minDate.isSame(date, 'day'))) {
 
-            console.log('too soon');
             return ScheduleClosingPage.startTimeTooSoonMessage();
         }
         let maxDate = moment(this.end.valueOf());
         if (date.valueOf() < maxDate.valueOf()) {
-            console.log('well before time');
             return '';
         }
         if (date.isSame(maxDate, 'day') && (this.fromOpening || this.untilClosing)) {
-            console.log('after time, but on same day and closing/opening so it\'s fine');
             return '';
         }
-        console.log('definitely not fine');
         return 'Start time must be before end time.';
     }
 
     isEndTimeValid(date: moment.Moment): string {
         let minDate = moment(this.start.valueOf());
+        if (this.startsNow) {
+            minDate = moment();
+        }
         minDate.minutes(minDate.minutes() + 1);
         if (minDate.valueOf() < date.valueOf()) {
             return '';

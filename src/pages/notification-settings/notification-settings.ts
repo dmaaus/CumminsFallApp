@@ -1,8 +1,10 @@
 import {Component} from '@angular/core';
 import {IonicPage, NavController, NavParams} from 'ionic-angular';
 import {NotificationProvider} from "../../providers/notification/notification";
-import {OneSignal} from "@ionic-native/onesignal";
 import {LoadingProvider} from "../../providers/loading/loading";
+import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
+import {HttpClient, HttpErrorResponse, HttpHeaders} from "@angular/common/http";
+import {OneSignal} from "@ionic-native/onesignal";
 
 @IonicPage()
 @Component({
@@ -13,25 +15,39 @@ export class NotificationSettingsPage {
 
     static readonly OPT_OUT_FLOOD_TAG = 'opt_out_of_flood_warnings';
     static readonly OPT_OUT_PARK_TAG = 'opt_out_of_park_closings';
+    static readonly OPT_OUT_OTHER = 'opt_out_of_other';
     locationAllowed: boolean = false;
-    optOutPark: boolean = false;
-    optOutFlood: boolean = false;
+    optInPark: boolean = true;
+    optInFlood: boolean = true;
+    optInOther: boolean = true;
     timer: any;
     loaded: boolean = false;
+    static id: string = '';
+
+    getId(): Promise<string> {
+        return new Promise<string>((resolve, reject) => {
+            if (NotificationSettingsPage.id !== '') {
+                resolve(NotificationSettingsPage.id);
+            }
+            this.oneSignal.getPermissionSubscriptionState().then(status => {
+                NotificationSettingsPage.id = status.subscriptionStatus.userId;
+                resolve(NotificationSettingsPage.id);
+            }).catch(reject);
+        })
+    }
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
+                private http: HttpClient,
                 private notification: NotificationProvider,
-                private oneSignal: OneSignal,
-                private loading: LoadingProvider) {
-        /* Although I'm following the documentation, OneSignal does not seem to respect the tags that are sent through
-        the API. Thus, this code is commented uout ntil it can be figured out how to make it work. */
-        // this.getTags();
+                private loading: LoadingProvider,
+                private alertError: AlertErrorProvider,
+                private oneSignal: OneSignal) {
+        this.getTags();
         this.updateLocationAllowed();
     }
 
     allowLocationMessage() {
-        console.log('locationAllowed?', this.locationAllowed);
         if (this.locationAllowed) {
             return 'You are only receiving location-based notifications when near Cummins Falls';
         }
@@ -44,7 +60,6 @@ export class NotificationSettingsPage {
         let self = this;
         this.notification.locationAllowed().then((allowed) => {
             self.locationAllowed = allowed;
-            console.log('setting lA to ' + self.locationAllowed);
         }).catch((err) => {
             console.error(err);
             self.locationAllowed = false;
@@ -53,13 +68,33 @@ export class NotificationSettingsPage {
 
     getTags() {
         let self = this;
-        self.loading.present(true, true);
-        self.oneSignal.getTags().then((tags: Object) => {
-            self.optOutPark = tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_PARK_TAG);
-            self.optOutFlood = tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_FLOOD_TAG);
-            self.loading.dismiss();
-            self.loaded = true;
-        })
+        let headers = new HttpHeaders().append('Content-Type', 'application/json; charset=utf-8');
+        console.log('getting tags');
+        self.loading.present();
+        this.getId().then(id => {
+            this.http.get(
+                `https://onesignal.com/api/v1/players/${id}`,
+                {headers: headers})
+                .subscribe(response => {
+                    console.log('response', response);
+                    let tags = response['tags'];
+                    self.optInPark = !tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_PARK_TAG);
+                    self.optInFlood = !tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_FLOOD_TAG);
+                    self.optInOther = !tags.hasOwnProperty(NotificationSettingsPage.OPT_OUT_OTHER);
+                    self.loading.dismiss();
+                    console.log('got tags');
+                    self.loaded = true;
+                }, (error: HttpErrorResponse) => {
+                    let message = 'Unknown error. Are you connected to the internet?';
+                    console.log('error', error);
+                    if (typeof error.error.errors[0] === 'string') {
+                        message = error.error.errors[0];
+                    }
+                    self.loading.dismiss();
+                    console.log('error in getting tags');
+                    self.alertError.show(message);
+                });
+        }).catch(self.alertError.showCallback(self.loading));
     }
 
     ngOnDestroy() {
@@ -71,26 +106,61 @@ export class NotificationSettingsPage {
     promptLocation() {
         this.notification.requestLocation();
         this.timer = setInterval(() => {
-            console.log('checking');
             this.updateLocationAllowed();
         }, 100);
     }
 
-    optOutParkNotify() {
-        if (this.optOutPark) {
-            this.oneSignal.sendTag(NotificationSettingsPage.OPT_OUT_PARK_TAG, 'tag');
-        }
-        else {
-            this.oneSignal.deleteTag(NotificationSettingsPage.OPT_OUT_PARK_TAG);
-        }
+    optFlood() {
+        this.opt(NotificationSettingsPage.OPT_OUT_FLOOD_TAG, this.optInFlood);
     }
 
-    optOutFloodNotify() {
-        if (this.optOutFlood) {
-            this.oneSignal.sendTag(NotificationSettingsPage.OPT_OUT_FLOOD_TAG, 'tag');
-        }
-        else {
-            this.oneSignal.deleteTag(NotificationSettingsPage.OPT_OUT_FLOOD_TAG);
-        }
+    optPark() {
+        this.opt(NotificationSettingsPage.OPT_OUT_PARK_TAG, this.optInPark);
+    }
+
+    optOther() {
+        console.log('optInOther', this.optInOther);
+        this.opt(NotificationSettingsPage.OPT_OUT_OTHER, this.optInOther);
+    }
+
+    /**
+     * @param {string} tag one of [OPT_OUT_FLOOD_TAG, OPT_OUT_PARK_TAG, OPT_OUT_OTHER]
+     * @param {boolean} inOrOut opts you in to tag if true, otherwise opts you out
+     */
+    opt(tag: string, inOrOut: boolean) {
+        let self = this;
+        let headers = new HttpHeaders().append('Content-Type', 'application/json; charset=utf-8');
+        let tags = {};
+        tags[tag] = (inOrOut ? '' : 'true');
+        let body = {
+            'app_id': NotificationProvider.appId,
+            'tags': tags
+        };
+        console.log('body', body);
+        self.loading.present();
+        console.log('opting');
+        this.getId().then(id => {
+            this.http.put(
+                `https://onesignal.com/api/v1/players/${id}`,
+                body,
+                {headers: headers})
+                .subscribe(response => {
+                    console.log('response', response);
+                    self.loading.dismiss();
+                    console.log('opted');
+                }, (error: HttpErrorResponse) => {
+                    let message = 'Unknown error. Are you connected to the internet?';
+                    console.log('error', error);
+                    if (typeof error.error.errors[0] === 'string') {
+                        message = error.error.errors[0];
+                    }
+                    self.loading.dismiss();
+                    console.log('error in opting');
+                    self.alertError.show(message);
+                });
+        }).catch(error => {
+            self.alertError.show(error);
+            self.loading.dismiss();
+        });
     }
 }

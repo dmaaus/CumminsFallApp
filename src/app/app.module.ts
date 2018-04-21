@@ -2,7 +2,7 @@ import {MapsPage} from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
-import {MyApp} from './app.component';
+import {App} from './app.component';
 
 import {AboutPage} from '../pages/about/about';
 import {HomePage} from '../pages/home/home';
@@ -43,10 +43,14 @@ import {ComponentsModule} from '../components/components.module';
 import {EventPage} from '../pages/event/event';
 
 import {InAppBrowser} from '@ionic-native/in-app-browser';
+import {MakeNotificationPage} from "../pages/make-notification/make-notification";
+import {ContactPage} from "../pages/about/contact-page/contact-page";
+import {HistoryPage} from "../pages/about/history-page/history-page";
+import {TrailsInfoPage} from "../pages/about/trails-info-page/trails-info-page";
 
 @NgModule({
     declarations: [
-        MyApp,
+        App,
         AboutPage,
         HomePage,
         TabsPage,
@@ -65,18 +69,22 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
         ResetPasswordPage,
         ScheduleClosingPage,
         ViewClosingsPage,
-        EventPage
+        EventPage,
+        MakeNotificationPage,
+        ContactPage,
+        HistoryPage,
+        TrailsInfoPage,
     ],
     imports: [
         BrowserModule,
-        IonicModule.forRoot(MyApp),
+        IonicModule.forRoot(App),
         HttpClientModule,
         IonicStorageModule.forRoot(),
         ComponentsModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
-        MyApp,
+        App,
         AboutPage,
         HomePage,
         TabsPage,
@@ -95,7 +103,11 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
         ResetPasswordPage,
         ScheduleClosingPage,
         ViewClosingsPage,
-        EventPage
+        EventPage,
+        MakeNotificationPage,
+        ContactPage,
+        HistoryPage,
+        TrailsInfoPage
     ],
     providers: [
         StatusBar,
