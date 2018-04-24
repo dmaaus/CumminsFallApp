@@ -32,7 +32,6 @@ export class ResetPasswordPage {
         this.auth.resetPassword(this.oldPassword, this.newPassword).then(() => {
             self.loading.dismiss();
             self.showError('');
-            console.log('reset: ' + self.auth.loggedInRanger.toString());
             self.alertCtrl.create({
                 title: 'Password Reset',
                 message: 'Your password has successfully been reset.',

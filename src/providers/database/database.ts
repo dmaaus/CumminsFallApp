@@ -67,6 +67,7 @@ export class DatabaseProvider {
                         reject(body.error);
                         return;
                     }
+                    console.log('returned from api:', body);
                     resolve(body);
                 }, error => {
                     console.log(error);
@@ -221,26 +222,6 @@ export class DatabaseProvider {
                     resolve(ranger);
                 }).catch(reject);
         });
-    }
-
-    callbacks(task: string) {
-        return [this.success(task), this.taskFailed(task)];
-    }
-
-    success(task: string) {
-        return function () {
-            console.log(task + ' completed successfully');
-        }
-    }
-
-    error(msg: string) {
-        console.error(msg);
-    }
-
-    taskFailed(task: string) {
-        return function (msg) {
-            console.error(task + ' encountered error: ' + msg);
-        }
     }
 }
 
