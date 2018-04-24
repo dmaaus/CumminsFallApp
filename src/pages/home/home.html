@@ -58,7 +58,7 @@
                     <ion-list>
 
                         <button ion-button round small id="1" type="button">
-							<ion-datetime displayFormat="MMM-YYYY" placeholder="Choose Month" [(ngModel)]="selectedMonth">
+							<ion-datetime displayFormat="MMM-YYYY" pickFormat="MMMM YYYY" placeholder="Choose Month" [(ngModel)]="selectedMonth">
 							</ion-datetime>
 						</button>
 
@@ -74,6 +74,12 @@
                 <ion-card-content>
                     Specific Year Count:
                     <ion-list>
+                        <ion-item>
+                            <ion-label>Year</ion-label>
+                            <ion-select [(ngModel)]="selectedYear">
+                                <ion-option *ngFor="let year of yearRange">{{year}}</ion-option>
+                            </ion-select>
+                        </ion-item>
 
                         <button ion-button round small id="3" type="button" (click)="btnClicked('2')">Choose Year</button>
 
