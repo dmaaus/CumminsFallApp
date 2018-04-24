@@ -40,6 +40,7 @@ import {AlertErrorProvider} from '../providers/alert-error/alert-error';
 import {ContactPage} from '../pages/about/contact-page/contact-page';
 import {HistoryPage} from '../pages/about/history-page/history-page';
 import {TrailsInfoPage} from '../pages/about/trails-info-page/trails-info-page';
+import {PlacePicProvider} from '../providers/place-pic/place-pic';
 
 import {ComponentsModule} from '../components/components.module';
 import {EventPage} from '../pages/event/event';
@@ -122,7 +123,8 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
         LoadingProvider,
         DatePicker,
         CumminsFallsEventsProvider,
-        InAppBrowser
+        InAppBrowser,
+        PlacePicProvider
     ]
 })
 export class AppModule {
