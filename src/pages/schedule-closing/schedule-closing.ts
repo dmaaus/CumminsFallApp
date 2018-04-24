@@ -405,4 +405,8 @@ export class Closing {
 
     static readonly JUST_GORGE: string = 'Just the gorge';
     static readonly WHOLE_PARK: string = 'The whole park.';
+
+    justGorge() {
+        return this.area === Closing.JUST_GORGE;
+    }
 }

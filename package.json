@@ -35,7 +35,7 @@
     "StatusBar": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "chart.js": "^2.7.1",
-    "cordova-android": "^7.0.0",
+    "cordova-android": "7.0.0",
     "cordova-browser": "5.0.3",
     "cordova-custom-config": "^5.0.2",
     "cordova-ios": "4.5.4",
@@ -53,7 +53,9 @@
     "query-string": "^6.0.0",
     "rxjs": "5.5.2",
     "sw-toolbox": "3.6.0",
-    "zone.js": "0.8.18"
+    "zone.js": "0.8.18",
+    "cordova-plugin-datepicker": "~0.9.3",
+    "cordova-plugin-inappbrowser": "~2.0.2"
   },
   "devDependencies": {
     "@ionic/app-scripts": "^3.1.8",
