@@ -2,7 +2,7 @@ import {MapsPage} from './../pages/maps/maps';
 import {ErrorHandler, NgModule} from '@angular/core';
 import {BrowserModule} from '@angular/platform-browser';
 import {AlertController, IonicApp, IonicErrorHandler, IonicModule} from 'ionic-angular';
-import {MyApp} from './app.component';
+import {App} from './app.component';
 
 import {AboutPage} from '../pages/about/about';
 import {HomePage} from '../pages/home/home';
@@ -23,8 +23,8 @@ import {NotificationProvider} from '../providers/notification/notification';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
-import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
-import { TrailsPage } from '../pages/maps/trails-page/trails-page';
+import {GoogleMapsPage} from '../pages/maps/google-maps-page/google-maps-page';
+import {TrailsPage} from '../pages/maps/trails-page/trails-page';
 import {CumminsFallsEventsProvider} from '../providers/events/events';
 import {ViewClosingsPage} from "../pages/view-closings/view-closings";
 import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
@@ -48,7 +48,7 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
 
 @NgModule({
     declarations: [
-        MyApp,
+        App,
         AboutPage,
         HomePage,
         TabsPage,
@@ -74,14 +74,14 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
     ],
     imports: [
         BrowserModule,
-        IonicModule.forRoot(MyApp),
+        IonicModule.forRoot(App),
         HttpClientModule,
         IonicStorageModule.forRoot(),
         ComponentsModule
     ],
     bootstrap: [IonicApp],
     entryComponents: [
-        MyApp,
+        App,
         AboutPage,
         HomePage,
         TabsPage,

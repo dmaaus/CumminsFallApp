@@ -9,7 +9,7 @@ import {NotificationProvider} from "../providers/notification/notification";
 @Component({
     templateUrl: 'app.html',
 })
-export class MyApp {
+export class App {
     rootPage: any = TabsPage;
 
     constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen, private notification: NotificationProvider) {
