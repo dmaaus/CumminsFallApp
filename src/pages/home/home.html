@@ -5,10 +5,11 @@
 </ion-header>
 
 <ion-content padding>
+    <hours-message></hours-message>
     <ion-card>
         <ion-card-header>Cummins Falls Visitor Statistics</ion-card-header>
         <ion-card-content>
-            <canvas #barCanvas></canvas>
+            <canvas #chart></canvas>
             <ion-grid>
               <ion-row>
                 <ion-col>
@@ -34,7 +35,7 @@
                           <ion-list>
 
                               <button ion-button round small id="1" type="button">
-                                  <ion-datetime displayFormat="MMM-DD-YYYY" placeholder="Choose Date">
+                                  <ion-datetime displayFormat="MMM-DD-YYYY" placeholder="Choose Date" [(ngModel)]="selectedDate">
                                   </ion-datetime>
                               </button>
 
@@ -53,7 +54,7 @@
                           <ion-list>
 
                               <button ion-button round small id="1" type="button">
-                                  <ion-datetime displayFormat="MMM-YYYY" placeholder="Choose Month">
+                                  <ion-datetime displayFormat="MMM-YYYY" placeholder="Choose Month" [(ngModel)]="selectedMonth">
                                   </ion-datetime>
                               </button>
 
@@ -69,7 +70,13 @@
                       <ion-card-content>
                           Specific Year Count:
                           <ion-list>
-
+                              <ion-item>
+                                <ion-label>Year</ion-label>
+                                <ion-select [(ngModel)]="selectedYear">
+                                  <ion-option *ngFor="let year of yearRange">{{year}}</ion-option>
+                                </ion-select>
+                                
+                              </ion-item>
                               <button ion-button round small id="3" type="button" (click)="btnClicked('2')">Choose Year
                               </button>
 

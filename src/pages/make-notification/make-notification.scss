@@ -1,0 +1,19 @@
+page-make-notification {
+  ion-select {
+    min-width: 100% !important;
+    max-width: 100% !important;
+    width: 100%;
+  }
+
+  .alert-ios .alert-radio-label {
+    white-space: pre-line;
+  }
+
+  .alert-md .alert-radio-label {
+    white-space: pre-line;
+  }
+
+  .alert-wp .alert-radio-label {
+    white-space: pre-line;
+  }
+}
