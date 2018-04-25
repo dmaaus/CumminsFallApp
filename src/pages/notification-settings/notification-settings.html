@@ -16,14 +16,20 @@
         <ion-item *ngIf="loaded">
             <ion-label text-wrap>Receive notifications when the park will be closed outside the normal schedule.
             </ion-label>
-            <ion-toggle [(ngModel)]="!optOutPark" (ionChange)="optOutParkNotify()"></ion-toggle>
+            <ion-toggle [(ngModel)]="optInPark" (ionChange)="optPark()"></ion-toggle>
         </ion-item>
         <ion-item *ngIf="loaded">
             <ion-label text-wrap>Receive notifications when there is a flood warning at Cummins Falls and you are in the
                 park. It is highly recommended you leave this enabled for your safety.
             </ion-label>
-            <ion-toggle [(ngModel)]="!optOutFlood" (ionChange)="optOutFloodNotify()"></ion-toggle>
+            <ion-toggle [(ngModel)]="optInFlood" (ionChange)="optFlood()"></ion-toggle>
         </ion-item>
+        <ion-item *ngIf="loaded">
+            <ion-label text-wrap>Receive miscellaneous notifications.
+            </ion-label>
+            <ion-toggle [(ngModel)]="optInOther" (ionChange)="optOther()"></ion-toggle>
+        </ion-item>
+
     </ion-list>
 
 

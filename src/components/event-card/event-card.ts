@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 
-import {CumminsFallsEvent, CumminsFallsEventsProvider, CumminsFallsHttpEvent} from '../../providers/events/events';
+import {CumminsFallsEvent, CumminsFallsEventsProvider} from '../../providers/events/events';
 
 import {NavController, Slides} from 'ionic-angular';
 import {EventPage} from '../../pages/event/event';
@@ -11,9 +11,9 @@ import {EventPage} from '../../pages/event/event';
 })
 export class EventCardComponent {
 
-    httpEvent: CumminsFallsHttpEvent;
+    // httpEvent: CumminsFallsHttpEvent;
 
-    eventPage: EventPage;
+    // eventPage: EventPage;
 
     cumminsFallsDisplayEvents: Array<DisplayEvent>;
     cumminsFallsEvents: Array<CumminsFallsEvent>;
@@ -30,10 +30,7 @@ export class EventCardComponent {
         this.eventsProvider.getEventsFromUrl().subscribe(res => {
             let events = res.Events.filter(event => event.Account.includes("Cummins Falls"));
             this.cumminsFallsEvents = events;
-            events.forEach(event => {
-                let newDisplayEvent = DisplayEvent.fromCumminsFallsEvent(event);
-                console.log(`${this.cumminsFallsDisplayEvents.push(newDisplayEvent)} event(s) added.`);
-            });
+            this.cumminsFallsDisplayEvents = events.map(DisplayEvent.fromCumminsFallsEvent);
             this.cardSlides.update();
         });
     }
