@@ -6,6 +6,7 @@
 
 <ion-content padding>
     <hours-message></hours-message>
+    <weather-card></weather-card>
     <ion-card>
         <ion-card-header>Cummins Falls Visitor Statistics</ion-card-header>
         <ion-card-content>
@@ -17,13 +18,10 @@
                       <ion-card-content>
                           Busiest Times:
                           <ion-list>
-
                               <button ion-button round small id="0" type="button" (click)="btnClicked('0')">Busiest Hour(s)
                               </button>
-
                               <button ion-button round small id="1" type="button" (click)="btnClicked('1')">Busiest Day(s)
                               </button>
-
                           </ion-list>
                       </ion-card-content>
                   </ion-card>
@@ -75,7 +73,7 @@
                                 <ion-select [(ngModel)]="selectedYear">
                                   <ion-option *ngFor="let year of yearRange">{{year}}</ion-option>
                                 </ion-select>
-                                
+
                               </ion-item>
                               <button ion-button round small id="3" type="button" (click)="btnClicked('2')">Choose Year
                               </button>

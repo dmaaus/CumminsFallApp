@@ -35,7 +35,7 @@ export class NotificationProvider {
                 private platform: Platform,
                 private storage: Storage,
                 private oneSignal: OneSignal) {
-        this.oneSignal.startInit(
+        /*this.oneSignal.startInit(
             NotificationProvider.appId,
             NotificationProvider.googleProjectNumber)
             .handleNotificationReceived(jsonData => {
@@ -43,7 +43,7 @@ export class NotificationProvider {
                 let closing = Closing.fromObject(data);
                 Closing.cacheClosing(closing);
             })
-            .endInit();
+            .endInit();*/
     }
 
     /**
