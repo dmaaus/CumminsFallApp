@@ -23,8 +23,8 @@ import {NotificationProvider} from '../providers/notification/notification';
 import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {IonicStorageModule} from "@ionic/storage";
 import {NotificationSettingsPage} from "../pages/notification-settings/notification-settings";
-import { GoogleMapsPage } from '../pages/maps/google-maps-page/google-maps-page';
-import { TrailsPage } from '../pages/maps/trails-page/trails-page';
+import {GoogleMapsPage} from '../pages/maps/google-maps-page/google-maps-page';
+import {TrailsPage} from '../pages/maps/trails-page/trails-page';
 import {CumminsFallsEventsProvider} from '../providers/events/events';
 import {ViewClosingsPage} from "../pages/view-closings/view-closings";
 import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
@@ -40,12 +40,12 @@ import {AlertErrorProvider} from '../providers/alert-error/alert-error';
 import {ContactPage} from '../pages/about/contact-page/contact-page';
 import {HistoryPage} from '../pages/about/history-page/history-page';
 import {TrailsInfoPage} from '../pages/about/trails-info-page/trails-info-page';
-import { PdfViewerModule } from 'ng2-pdf-viewer';
-
 import {ComponentsModule} from '../components/components.module';
 import {EventPage} from '../pages/event/event';
 
 import {InAppBrowser} from '@ionic-native/in-app-browser';
+
+// import { PdfViewerModule } from 'ng2-pdf-viewer';
 
 @NgModule({
     declarations: [
@@ -75,7 +75,7 @@ import {InAppBrowser} from '@ionic-native/in-app-browser';
     ],
     imports: [
         BrowserModule,
-		PdfViewerModule,
+		// PdfViewerModule,
         IonicModule.forRoot(MyApp),
         HttpClientModule,
         IonicStorageModule.forRoot(),
