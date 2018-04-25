@@ -6,6 +6,7 @@ import {NavController} from 'ionic-angular';
     templateUrl: 'trails-info-page.html'
 })
 export class TrailsInfoPage {
+    rules: string = 'advised';
     constructor(navCtrl: NavController) {}
 
 	/*onFileSelected() {
