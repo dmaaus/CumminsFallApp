@@ -7,7 +7,6 @@ import {TabsPage} from '../pages/tabs/tabs';
 import {NotificationProvider} from "../providers/notification/notification";
 import {HttpClient} from "@angular/common/http";
 import {Closing} from "../pages/schedule-closing/schedule-closing";
-import {OneSignal} from "@ionic-native/onesignal";
 
 @Component({
     templateUrl: 'app.html',
@@ -19,8 +18,7 @@ export class App {
                 statusBar: StatusBar,
                 splashScreen: SplashScreen,
                 private notification: NotificationProvider,
-                private http: HttpClient,
-                private oneSignal: OneSignal) {
+                private http: HttpClient) {
         let self = this;
         platform.ready().then(() => {
             // Okay, so the platform is ready and our plugins are available.
