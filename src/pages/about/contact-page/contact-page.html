@@ -6,20 +6,32 @@
     </ion-navbar>
 </ion-header>
 <ion-content padding>
-    <h3>Park Hours</h3>
-    <p>Cummins Falls State Park is open from 8 AM to 6 PM.<br/>
-        Please remember to leave the waterfall area by 5 PM to make it to the parking area by closing time.</p>
-    <p>The Gorge closes at 5 PM</p>
-	<ion-item detail-push outline (click)="goToClosings()">Ongoing & Future Closings</ion-item>
-	
-    <h3>Park Location</h3>
-    <p>The park address is:<br/>390 Cummins Falls Lane<br/>Cookeville, Tennessee 38501</p>
-    <p>Take the GPS directions to Cummins Mill Road. Drive about 1/2 mile past the point shown on the GPS and turn left
-        on Blackburn Fork Road. Drive about 300 yards and turn left.</p>
-		
-	<br/>
-	
-	<h3>Amenities</h3>
+  <ion-card>
+    <ion-card-header>Park Hours</ion-card-header>
+    <ion-card-content>
+      <p>Cummins Falls State Park is open from 8 AM to 6 PM.<br/>
+          Please remember to leave the waterfall area by 5 PM to make it to the parking area by closing time.</p>
+      <p>The Gorge closes at 5 PM</p>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+	   <ion-item detail-push outline (click)="goToClosings()">Ongoing & Future Closings</ion-item>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-header>Park Location</ion-card-header>
+    <ion-card-content>
+      <p>The park address is:<br/>390 Cummins Falls Lane<br/>Cookeville, Tennessee 38501</p>
+      <p>Take the GPS directions to Cummins Mill Road. Drive about 1/2 mile past the point shown on the GPS and turn left
+          on Blackburn Fork Road. Drive about 300 yards and turn left.
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+  
+	<ion-card-header>Amenities</ion-card-header>
+	<ion-card-content>
 	<p>- Restrooms<br/>
 		- Water Fountains<br/>
 		- Free Parking<br/>
@@ -27,6 +39,6 @@
 		- ADA access available upon request (Overlook only)<br/>
 		- Designated picnic area above the falls<br/>
 	</p>
-	
-	<br/>
+	</ion-card-content>
+	</ion-card>
 </ion-content>

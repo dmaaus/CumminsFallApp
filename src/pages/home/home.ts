@@ -44,14 +44,14 @@ export class HomePage {
 	time_labels: Array<string> = ["8a", "9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p"];
 	background_colors: Array<string> = ['rgba(54,162,235,0.3)'];
 	borderColors: Array<string> = ['rgba(54,162,255,1)'];
-	
+
 
 	selectedDate: string;
 	selectedMonth: string;
 
     constructor(public navCtrl: NavController, public http: HttpClient, private visitorAnalytic: VisitorAnalyticsProvider) {
 	}
-	
+
     ionViewDidLoad() {
 		this.chart = new Chart(this.chartCanvas.nativeElement, {
 			type: this.chartType,
@@ -80,30 +80,32 @@ export class HomePage {
 							res['6pm']
 						],
 						backgroundColor: [
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)'
+							'rgba(58, 177, 93, 0.3)',
+							'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)'
+
+
 						],
 						borderColor: [
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)'
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)'
 						],
 						borderWidth: 1
 					};
@@ -111,20 +113,20 @@ export class HomePage {
 				})
 				.catch(err => alert(err));
     }
-	
+
 	btnClicked(btn){
 		var day_data = [1, 5, 23, 30, 59, 87, 77, 43, 38, 24, 9];
 		var total = 0;
 		var temp = [0];
 		var tempTot = [0];
 		var temp2 = [5, 10, 15, 20, 25, 30, 35];
-		
+
 		for (let i = 0; i < day_data.length; i++){
 		total += day_data[i];
 		}
-		
+
 		tempTot = [total, 124, 234, 115, 167, 255, 111];
-	
+
 		if (btn == '0') {
 			/** Busiest hour */
 			this.visitorAnalytic.getCountsForBusiestHours()
@@ -145,30 +147,31 @@ export class HomePage {
 							res['6pm']
 						],
 						backgroundColor: [
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)',
-							'rgba(54, 162, 235, 0.3)'
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)',
+              'rgba(58, 177, 93, 0.3)'
+
 						],
 						borderColor: [
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)',
-							'rgba(54, 162, 235, 1)'
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)',
+              'rgba(58, 177, 93, 1)'
 						],
 						borderWidth: 1
 					};
@@ -192,22 +195,23 @@ export class HomePage {
 						res['Sat'] ? res['Sat'] : 0
 					],
 					backgroundColor: [
-						'rgba(54, 162, 235, 0.3)',
-                        'rgba(54, 162, 235, 0.3)',
-                        'rgba(54, 162, 235, 0.3)',
-                        'rgba(54, 162, 235, 0.3)',
-						'rgba(54, 162, 235, 0.3)',
-						'rgba(54, 162, 235, 0.3)',
-						'rgba(54, 162, 235, 0.3)'
+            'rgba(58, 177, 93, 0.3)',
+            'rgba(58, 177, 93, 0.3)',
+            'rgba(58, 177, 93, 0.3)',
+            'rgba(58, 177, 93, 0.3)',
+            'rgba(58, 177, 93, 0.3)',
+            'rgba(58, 177, 93, 0.3)',
+            'rgba(58, 177, 93, 0.3)'
 					],
 					borderColor: [
-						'rgba(54, 162, 235, 1)',
-						'rgba(54, 162, 235, 1)',
-						'rgba(54, 162, 235, 1)',
-						'rgba(54, 162, 235, 1)',
-						'rgba(54, 162, 235, 1)',
-						'rgba(54, 162, 235, 1)',
-						'rgba(54, 162, 235, 1)'
+            'rgba(58, 177, 93, 1)',
+            'rgba(58, 177, 93, 1)',
+            'rgba(58, 177, 93, 1)',
+            'rgba(58, 177, 93, 1)',
+            'rgba(58, 177, 93, 1)',
+            'rgba(58, 177, 93, 1)',
+            'rgba(58, 177, 93, 1)'
+
 					],
 					borderWidth: 1
 				};
@@ -217,7 +221,7 @@ export class HomePage {
 				alert(reason);
 			});
 		}
-		
+
 		else if (btn == '2') {
 			/** Specific Year Count */
 			this.visitorAnalytic.getCountByYear(this.selectedYear)
@@ -226,10 +230,12 @@ export class HomePage {
 						label: `${this.selectedYear} Count`,
 						data: [res],
 						backgroundColor: [
-							'rgba(54, 162, 235, 0.3)'
+              'rgba(58, 177, 93, 0.3)'
+
 						],
 						borderColor: [
-							'rgba(54, 162, 235, 1)'
+              'rgba(58, 177, 93, 1)'
+
 						],
 						borderWidth: 1
 					};
@@ -240,7 +246,7 @@ export class HomePage {
 					alert(res);
 				});
 		}
-		
+
 		else if (btn == '3') {
 		/** Specific Day */
 		const date = new Date(this.selectedDate);
@@ -251,10 +257,12 @@ export class HomePage {
 					label: `${this.selectedDate}`,
 					data: [res],
 					backgroundColor: [
-						'rgba(54, 162, 235, 0.3)'
+            'rgba(58, 177, 93, 0.3)'
+
 					],
 					borderColor: [
-						'rgba(54, 162, 235, 1)'
+            'rgba(58, 177, 93, 1)'
+
 					],
 					borderWidth: 1
 				};
@@ -263,7 +271,7 @@ export class HomePage {
 			})
 			.catch(err => alert(err));
 		}
-		
+
 		else if (btn == '4') {
 			console.log(new Date(this.selectedMonth).toDateString());
 			const date = new Date(this.selectedMonth);
@@ -277,10 +285,12 @@ export class HomePage {
 					label : `${this.selectedMonth}`,
 					data: [res],
 					backgroundColor: [
-						'rgba(54, 162, 235, 0.3)'
+            'rgba(58, 177, 93, 0.3)'
+
 					],
 					borderColor: [
-						'rgba(54, 162, 235, 1)'
+            'rgba(58, 177, 93, 1)',
+
 					],
 					borderWidth: 1
 				};
@@ -290,13 +300,13 @@ export class HomePage {
 			})
 			.catch(err => alert(err));
 		}
-				
+
 		else {
 		// this.barChart.config.data.datasets[0].data = temp2;
 		// this.barChart.config.data.labels = week_labels;
 		// this.barChart.update();
 		}
-			
+
 	}
 
 	updateChart(chart: Chart, dataLabels : string[], dataSets: DataSet[]) {

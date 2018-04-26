@@ -48,6 +48,7 @@ import {MakeNotificationPage} from "../pages/make-notification/make-notification
 import {ContactPage} from "../pages/about/contact-page/contact-page";
 import {HistoryPage} from "../pages/about/history-page/history-page";
 import {TrailsInfoPage} from "../pages/about/trails-info-page/trails-info-page";
+import { WeatherProvider } from '../providers/weather/weather';
 
 // import { PdfViewerModule } from 'ng2-pdf-viewer';
 
@@ -132,7 +133,8 @@ import {TrailsInfoPage} from "../pages/about/trails-info-page/trails-info-page";
         CumminsFallsEventsProvider,
         InAppBrowser,
         PlacePicProvider,
-    VisitorAnalyticsProvider
+    VisitorAnalyticsProvider,
+    WeatherProvider
     ]
 })
 export class AppModule {
