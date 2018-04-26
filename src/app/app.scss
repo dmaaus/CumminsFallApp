@@ -48,10 +48,22 @@ ion-title .toolbar-title-md {
   color: #222;
 }
 
+.swiper-pagination-bullet-active {
+  background-color: #3AB15D;
+}
+
 ion-datetime .datetime-text {
   color: #222 !important;
 }
 
-
-
+ion-card-header {
+  font-size: 2em;
+  font-weight: bold;
+}
 //$img-placeholder-background : #9da6b5;
+
+
+//Maybe send back to trail-page.scss
+.tabbar .show-tabbar {
+  top: 2.6em !important;
+}

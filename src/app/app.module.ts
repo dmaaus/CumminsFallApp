@@ -38,6 +38,7 @@ import { CumminsFallsEventsProvider } from '../providers/events/events';
 import {DatePicker} from "@ionic-native/date-picker";
 import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
 import {ViewClosingsPage} from "../pages/view-closings/view-closings";
+import {PlacePicProvider} from '../providers/place-pic/place-pic';
 
 import {ComponentsModule} from '../components/components.module';
 import {EventPage} from '../pages/event/event';
@@ -130,6 +131,7 @@ import {TrailsInfoPage} from "../pages/about/trails-info-page/trails-info-page";
         DatePicker,
         CumminsFallsEventsProvider,
         InAppBrowser,
+        PlacePicProvider,
     VisitorAnalyticsProvider
     ]
 })
