@@ -25,15 +25,26 @@ $app-direction: ltr;
 // It's highly recommended to change the default colors
 // to match your app's branding. Ionic uses a Sass map of
 // colors so you can add, rename and remove colors as needed.
-// The "primary" color is the only required color in the map.
+// // The "primary" color is the only required color in the map.
 
 $colors: (
-        primary: #ffffff,
-        secondary: #3AB15D,
+        secondary: #ffffff,
+        primary: #6eac3f,
         danger: #f53d3d,
         light: #f4f4f4,
         dark: #222
 );
+
+$toolbar-ios-title-text-color: color($colors, secondary);
+$toolbar-md-title-text-color: color($colors, secondary);
+
+$datetime-md-placeholder-color: color($colors, secondary);
+$datetime-ios-placeholder-color: color($colors, secondary);
+
+$tabs-ios-tab-text-color-active: color($colors, secondary);
+$tabs-md-tab-text-color-active: color($colors, secondary);
+$tabs-ios-tab-icon-color-active: color($colors, secondary);
+$tabs-md-tab-icon-color-active: color($colors, secondary);
 
 $fab-content-margin: 20px;
 

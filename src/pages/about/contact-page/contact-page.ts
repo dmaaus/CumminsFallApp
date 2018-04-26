@@ -7,9 +7,10 @@ import {ViewClosingsPage} from "../../view-closings/view-closings";
     templateUrl: 'contact-page.html',
 })
 export class ContactPage {
-    constructor(public navCtrl: NavController){}
+    constructor(public navCtrl: NavController) {
+    }
 
     goToClosings() {
-    	this.navCtrl.push(ViewClosingsPage);
+        this.navCtrl.push(ViewClosingsPage);
     }
 }

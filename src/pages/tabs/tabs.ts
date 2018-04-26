@@ -6,8 +6,8 @@ import {MapsPage} from '../maps/maps';
 import {HomePage} from "../home/home";
 
 @Component({
-	selector: 'page-tabs',
-  templateUrl: 'tabs.html',
+    selector: 'page-tabs',
+    templateUrl: 'tabs.html',
 
 
 })

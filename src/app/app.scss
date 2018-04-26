@@ -14,6 +14,8 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+@import '../theme/variables';
+
 div.scroll.padding {
   -webkit-transform: initial !important;
 }
@@ -26,32 +28,16 @@ div.scroll.padding {
 #errorString:empty {
   display: none;
 }
-.toolbar-background {
-  background-color: #3AB15D;
+
+.toolbar-background, .swiper-pagination-bullet-active {
+   background-color: color($colors, primary);
 }
 
 .tab-button {
-  background-color: #3AB15D;
-  color: "white";
+   background-color: color($colors, primary);
 }
 
-ion-title .toolbar-title-md {
-  color: #ffffff;
+ion-card-header {
+  font-size: 2em;
+  font-weight: bold;
 }
-
-.alert-button-default-md {
-  color: #222 !important;
-}
-
-.button{
-  background-color: #3AB15D;
-  color: #222;
-}
-
-ion-datetime .datetime-text {
-  color: #222 !important;
-}
-
-
-
-//$img-placeholder-background : #9da6b5;

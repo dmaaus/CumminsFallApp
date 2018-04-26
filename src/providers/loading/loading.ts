@@ -13,7 +13,7 @@ export class LoadingProvider {
         this.loading = this.loadingCtrl.create({
             dismissOnPageChange: !persistent,
             content: 'Loading...',
-            enableBackdropDismiss: backdropDismiss
+            enableBackdropDismiss: backdropDismiss,
         });
         this.loading.present();
     }
@@ -24,6 +24,4 @@ export class LoadingProvider {
             this.loading = null;
         }
     }
-
-
 }

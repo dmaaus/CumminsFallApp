@@ -27,7 +27,7 @@ export class EventCardComponent {
 
         this.header = "Upcoming Events";
 
-        eventsProvider.getEventsFromUrl().subscribe(res => {
+        this.eventsProvider.getEventsFromUrl().subscribe(res => {
             let events = res.Events.filter(event => event.Account.includes("Cummins Falls"));
             this.cumminsFallsEvents = events;
             this.cumminsFallsDisplayEvents = events.map(DisplayEvent.fromCumminsFallsEvent);
