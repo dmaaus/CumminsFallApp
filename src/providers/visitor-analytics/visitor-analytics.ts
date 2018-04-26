@@ -2,9 +2,10 @@ import { Injectable } from "@angular/core";
 //import {HTTP, HTTPResponse} from '@ionic-native/http';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs/Observable';
+import * as config from '../../assets/config.json';
 
-const AWSURL = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/visitorinfo';
-const APIKEY = 'mgpLtp0bwP6XX3wFUOK2673KxF3mVrm6aVzqMfbv';
+const AWSURL = (config['VisitorAnalytics'])['url'];
+const APIKEY = (config['VisitorAnalytics'])['apiKey'];
 
 @Injectable()
 export class VisitorAnalyticsProvider {

@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
 import {Observable} from 'rxjs/Observable';
-
+import * as config from '../../assets/config.json';
 /*
 Example of event object
 {
@@ -42,7 +42,7 @@ Example of event object
 //This module will also use caching to minimize requests to the
 //web for a list of events
 // const STORAGE_KEY = 'cumminsFallsEvents';
-const EVENT_URL = 'https://tsp.itinio.com/events/events.html';
+const EVENT_URL = (config['Events'])['url'];
 
 @Injectable()
 export class CumminsFallsEventsProvider {
