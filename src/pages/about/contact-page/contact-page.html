@@ -6,6 +6,7 @@
     </ion-navbar>
 </ion-header>
 <ion-content>
+  <ion-card><ion-item detail-push outline (click)="goToClosings()">Ongoing & Future Closings</ion-item></ion-card>
   <ion-card>
     <ion-card-header>Park Hours</ion-card-header>
     <ion-card-content>
@@ -13,10 +14,6 @@
           Please remember to leave the waterfall area by 5 PM to make it to the parking area by closing time.</p>
       <p>The Gorge closes at 5 PM</p>
     </ion-card-content>
-  </ion-card>
-
-  <ion-card>
-	   <ion-item detail-push outline (click)="goToClosings()">Ongoing & Future Closings</ion-item>
   </ion-card>
 
   <ion-card>

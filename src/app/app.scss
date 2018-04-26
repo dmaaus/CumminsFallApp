@@ -26,33 +26,37 @@ div.scroll.padding {
 #errorString:empty {
   display: none;
 }
-.toolbar-background {
-  background-color: #3AB15D;
+.toolbar-background, .swiper-pagination-bullet-active {
+  background-color: #6eac3f;
 }
 
 .tab-button {
-  background-color: #3AB15D;
-  color: "white";
+  background-color: #6eac3f;
+  color: #ffffff;
 }
 
 ion-title .toolbar-title-md {
   color: #ffffff;
 }
 
-.alert-button-default-md {
-  color: #222 !important;
+button[aria-checked='true'] .alert-radio-inner{
+  background-color:  #6eac3f;
+
+}
+button[aria-checked='true'] .alert-radio-icon{
+    border-color: #787878 !important;
 }
 
 .button{
-  background-color: #3AB15D;
+  background-color: #6eac3f;
   color: #222;
 }
 
-.swiper-pagination-bullet-active {
-  background-color: #3AB15D;
+ion-segment-button.segment-button.segment-activated, .picker-opt.picker-opt-selected, .alert-radio-label {
+  color: #6eac3f !important;
 }
 
-ion-datetime .datetime-text {
+ion-datetime .datetime-text, .alert-button-default-md {
   color: #222 !important;
 }
 
@@ -64,9 +68,3 @@ ion-card-header {
 ion-segment-button {
   color: #222 !important;
 }
-
-ion-segment-button.segment-button.segment-activated {
-  border-bottom-color: #3AB15D !important;
-}
-
-//$img-placeholder-background : #9da6b5;
