@@ -14,6 +14,8 @@
 // for the .md, .ios, or .wp mode classes. The mode class is
 // automatically applied to the <body> element in the app.
 
+@import '../theme/variables';
+
 div.scroll.padding {
   -webkit-transform: initial !important;
 }
@@ -26,45 +28,33 @@ div.scroll.padding {
 #errorString:empty {
   display: none;
 }
+
 .toolbar-background, .swiper-pagination-bullet-active {
-  background-color: #6eac3f;
+   background-color: color($colors, primary);
 }
 
 .tab-button {
-  background-color: #6eac3f;
-  color: #ffffff;
+   background-color: color($colors, primary);
 }
 
-ion-title .toolbar-title-md {
-  color: #ffffff;
-}
-
-button[aria-checked='true'] .alert-radio-inner{
-  background-color:  #6eac3f;
+button[aria-checked='true'] .alert-radio-inner {
+//   background-color: color($colors, secondary);
 
 }
-button[aria-checked='true'] .alert-radio-icon{
-    border-color: #787878 !important;
+
+button[aria-checked='true'] .alert-radio-icon {
+//   border-color: #787878 !important;
 }
 
-.button{
-  background-color: #6eac3f;
-  color: #222;
-}
-
-ion-segment-button.segment-button.segment-activated, .picker-opt.picker-opt-selected, .alert-radio-label {
-  color: #6eac3f !important;
+.picker-opt.picker-opt-selected, .alert-radio-label {
+//   color: color($colors, secondary);
 }
 
 ion-datetime .datetime-text, .alert-button-default-md {
-  color: #222 !important;
+//   color: color($colors, dark) !important;
 }
 
 ion-card-header {
   font-size: 2em;
   font-weight: bold;
-}
-
-ion-segment-button {
-  color: #222 !important;
 }

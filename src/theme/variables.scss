@@ -25,24 +25,49 @@ $app-direction: ltr;
 // It's highly recommended to change the default colors
 // to match your app's branding. Ionic uses a Sass map of
 // colors so you can add, rename and remove colors as needed.
-// The "primary" color is the only required color in the map.
+// // The "primary" color is the only required color in the map.
 
 $colors: (
-        primary: #ffffff,
-        secondary: #6eac3f,
+        secondary: #ffffff,
+        primary: #6eac3f,
         danger: #f53d3d,
         light: #f4f4f4,
         dark: #222
 );
 
 
-$toggle-ios-background-color-off: #f4f4f4;
+// $toggle-ios-background-color-off: color($colors, light);
+// $toggle-md-track-background-color-off: color($colors, light);
 
-$toggle-ios-border-color-off: #f4f4f4;
+// $toggle-ios-border-color-off: color($colors, light);
 
-$toggle-ios-background-color-on: #6eac3f;
+// $toggle-ios-background-color-on: color($colors, secondary);
+// $toggle-md-track-background-color-on: color($colors, secondary);
+
+// $loading-ios-spinner-color: color($colors, secondary);
+// $loading-md-spinner-color: color($colors, secondary);
+
+$toolbar-ios-title-text-color: color($colors, secondary);
+$toolbar-md-title-text-color: color($colors, secondary);
+
+$datetime-md-placeholder-color: color($colors, secondary);
+$datetime-ios-placeholder-color: color($colors, secondary);
+
+$tabs-ios-tab-text-color-active: color($colors, secondary);
+$tabs-md-tab-text-color-active: color($colors, secondary);
+$tabs-ios-tab-icon-color-active: color($colors, secondary);
+$tabs-md-tab-icon-color-active: color($colors, secondary);
 
 $fab-content-margin: 20px;
+
+// $fab-ios-background-color: color($colors, secondary);
+// $fab-md-background-color: color($colors, secondary);
+// $fab-ios-text-color: color($colors, primary);
+// $fab-md-text-color: color($colors, primary);
+// $button-ios-background-color: color($colors, secondary);
+// $button-md-background-color: color($colors, secondary);
+// $button-ios-text-color: color($colors, primary);
+// $button-md-text-color: color($colors, primary);
 
 $font-size-base: 1.7rem;
 

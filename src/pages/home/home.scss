@@ -1,10 +1,9 @@
+@import '../../theme/variables.scss';
+
 page-home {
 
-  .datetime-md .datetime-placeholder {
-    color: #FFFFFF;
-  }
   .scroll-content {
-    background-color: map-get($colors, light);
+     background-color: color($colors, light);
   }
 
   ion-card-header {
