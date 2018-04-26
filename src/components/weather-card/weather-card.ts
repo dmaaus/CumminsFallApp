@@ -14,7 +14,7 @@ export class WeatherCardComponent {
         this.header = 'Current Weather';
         this.weatherInfo = new WeatherInfo;
 
-        weatherProvider.getEventsFromUrl().subscribe(res => {
+        this.weatherProvider.getEventsFromUrl().subscribe(res => {
             const weatherResult = res['weather'];
             this.weatherInfo.icon_id = weatherResult[0].icon;
             this.weatherInfo.weather_desc = weatherResult[0].description;

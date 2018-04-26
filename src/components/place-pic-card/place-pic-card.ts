@@ -24,7 +24,7 @@ export class PlacePicCardComponent {
         this.url = 'https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=';
         this.header = "Cummins Fall State Parks Photos"
 
-        eventsProvider.getEventsFromUrl().subscribe(res => {
+        this.eventsProvider.getEventsFromUrl().subscribe(res => {
             const result = res['result'];
             let photos = result.photos;
             photos.forEach(p => {

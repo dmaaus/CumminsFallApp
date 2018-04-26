@@ -36,7 +36,7 @@ export class HomePage {
         2016,
         2017,
         2018
-    ]
+    ];
 
     selectedYear: number = this.yearRange[0];
 
@@ -115,17 +115,12 @@ export class HomePage {
     }
 
     btnClicked(btn) {
-        var day_data = [1, 5, 23, 30, 59, 87, 77, 43, 38, 24, 9];
-        var total = 0;
-        var temp = [0];
-        var tempTot = [0];
-        var temp2 = [5, 10, 15, 20, 25, 30, 35];
+        let day_data = [1, 5, 23, 30, 59, 87, 77, 43, 38, 24, 9];
+        let total = 0;
 
         for (let i = 0; i < day_data.length; i++) {
             total += day_data[i];
         }
-
-        tempTot = [total, 124, 234, 115, 167, 255, 111];
 
         if (btn == '0') {
             /** Busiest hour */
