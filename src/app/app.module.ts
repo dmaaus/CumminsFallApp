@@ -33,11 +33,12 @@ import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
 import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {EmailProvider} from "../providers/email/email";
 import {LoadingProvider} from '../providers/loading/loading';
+import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor-analytics';
+import { CumminsFallsEventsProvider } from '../providers/events/events';
 import {DatePicker} from "@ionic-native/date-picker";
 import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
 import {ViewClosingsPage} from "../pages/view-closings/view-closings";
 
-import {CumminsFallsEventsProvider} from '../providers/events/events';
 import {ComponentsModule} from '../components/components.module';
 import {EventPage} from '../pages/event/event';
 
@@ -128,7 +129,8 @@ import {TrailsInfoPage} from "../pages/about/trails-info-page/trails-info-page";
         LoadingProvider,
         DatePicker,
         CumminsFallsEventsProvider,
-        InAppBrowser
+        InAppBrowser,
+    VisitorAnalyticsProvider
     ]
 })
 export class AppModule {
