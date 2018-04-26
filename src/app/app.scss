@@ -37,23 +37,6 @@ div.scroll.padding {
    background-color: color($colors, primary);
 }
 
-button[aria-checked='true'] .alert-radio-inner {
-//   background-color: color($colors, secondary);
-
-}
-
-button[aria-checked='true'] .alert-radio-icon {
-//   border-color: #787878 !important;
-}
-
-.picker-opt.picker-opt-selected, .alert-radio-label {
-//   color: color($colors, secondary);
-}
-
-ion-datetime .datetime-text, .alert-button-default-md {
-//   color: color($colors, dark) !important;
-}
-
 ion-card-header {
   font-size: 2em;
   font-weight: bold;
