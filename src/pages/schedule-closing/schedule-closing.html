@@ -32,6 +32,16 @@
             <ion-toggle [(ngModel)]="closing.untilClosing" name="untilClosing" checked="true"></ion-toggle>
         </ion-row>
         <ion-row>
+            <p>Area Closed:</p>
+            <ion-item>
+                <ion-select [selectOptions]="areaOptions" name="area" [(ngModel)]="closing.area">
+                    <ion-option text-wrap *ngFor="let a of areas()" value="{{a}}">
+                        {{a}}
+                    </ion-option>
+                </ion-select>
+            </ion-item>
+        </ion-row>
+        <ion-row>
             <button ion-button (click)="submit()">Submit</button>
         </ion-row>
     </ion-col>

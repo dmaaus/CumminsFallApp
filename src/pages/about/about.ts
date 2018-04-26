@@ -4,6 +4,7 @@ import {NavController} from 'ionic-angular';
 import {ContactPage} from './contact-page/contact-page';
 import {HistoryPage} from './history-page/history-page';
 import {TrailsInfoPage} from './trails-info-page/trails-info-page';
+
 @Component({
     selector: 'page-about',
     templateUrl: 'about.html'
@@ -12,5 +13,7 @@ export class AboutPage {
     contactPage = ContactPage;
     historyPage = HistoryPage;
     trailsInfoPage = TrailsInfoPage;
-    constructor(public navCtrl: NavController) {}
+
+    constructor(public navCtrl: NavController) {
+    }
 }

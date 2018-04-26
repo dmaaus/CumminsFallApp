@@ -7,19 +7,21 @@ import {NavController} from 'ionic-angular';
 })
 export class TrailsInfoPage {
     rules: string = 'advised';
-    constructor(navCtrl: NavController) {}
 
-	/*onFileSelected() {
-		let $img: any = document.querySelector('#file');
+    constructor(navCtrl: NavController) {
+    }
 
-		if (typeof (FileReader) !== 'undefined') {
-				let reader = new FileReader();
+    /*onFileSelected() {
+        let $img: any = document.querySelector('#file');
 
-				reader.onload = (e: any) => {
-				this.pdfSrc = e.target.result;
-				};
+        if (typeof (FileReader) !== 'undefined') {
+                let reader = new FileReader();
 
-		reader.readAsArrayBuffer($img.files[0]);
-		}
-	};*/
+                reader.onload = (e: any) => {
+                this.pdfSrc = e.target.result;
+                };
+
+        reader.readAsArrayBuffer($img.files[0]);
+        }
+    };*/
 }

@@ -6,7 +6,7 @@
     <ion-card-content>
         <ion-slides autoplay="3000" loop="true" speed="1400">
             <ion-slide *ngFor="let event of slideData">
-              <img src="{{event}}"/>
+                <img src="{{event}}"/>
             </ion-slide>
             <ion-slide *ngIf="slideData.length == 0">
                 <span id="eventError">No photo currently available. Check again tomorrow!</span>

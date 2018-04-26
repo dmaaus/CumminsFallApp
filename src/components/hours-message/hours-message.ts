@@ -10,8 +10,10 @@ import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 })
 export class HoursMessageComponent implements ClosingListener {
 
-    static closingTime: moment.Moment = HoursMessageComponent.normalClosingTime();
-    static openingTime: moment.Moment = HoursMessageComponent.normalOpeningTime();
+    static gorgeClosingTime: moment.Moment = HoursMessageComponent.normalGorgeClosingTime();
+    static gorgeOpeningTime: moment.Moment = HoursMessageComponent.normalGorgeOpeningTime();
+    static parkClosingTime: moment.Moment = HoursMessageComponent.normalParkClosingTime();
+    static parkOpeningTime: moment.Moment = HoursMessageComponent.normalParkOpeningTime();
 
     static cachedClosings: Closing[] = null;
 
@@ -31,37 +33,52 @@ export class HoursMessageComponent implements ClosingListener {
     }
 
     // today at 8 is default opening time.
-    static normalOpeningTime(): moment.Moment {
+    static normalGorgeOpeningTime(): moment.Moment {
+        return this.normalParkOpeningTime();
+    }
+
+    // today at 6 is default closing time.
+    static normalGorgeClosingTime(): moment.Moment {
+        let result = moment('17', 'hh');
+        if (result < moment()) {
+            this.changeDay(result, 1);
+        }
+        return result;
+    }
+
+    // today at 8 is default opening time.
+    static normalParkOpeningTime(): moment.Moment {
         let result = moment('8', 'hh');
         if (result < moment()) {
             this.changeDay(result, 1);
         }
-        return result
+        return result;
     }
 
     // today at 6 is default closing time.
-    static normalClosingTime(): moment.Moment {
+    static normalParkClosingTime(): moment.Moment {
         let result = moment('18', 'hh');
         if (result < moment()) {
             this.changeDay(result, 1);
         }
-        return result
+        return result;
     }
 
-    static calculateNextClosing(closings: Closing[]) {
+    static calculateNextGorgeClosing(closings: Closing[]) {
         let now = moment();
-        let nextClosing = this.normalClosingTime();
+        let nextClosing = this.normalGorgeClosingTime();
+
         closings.some(closing => {
+            if (!closing.justGorge()) return false;
             if (closing.start >= now) {
                 if (closing.start >= nextClosing) {
                     return true;
                 }
-                if (closing.start.hours() < 18) {
+                if (closing.start.hours() < 17) {
                     let minTime = moment(closing.start);
                     minTime.hours(8);
-                    minTime.minutes(0);
-                    minTime.seconds(59);
-                    minTime.millisecond(999);
+                    minTime.minutes(1);
+                    minTime.millisecond(minTime.millisecond() - 1);
                     if (closing.start > minTime) {
                         nextClosing = moment(closing.start);
                         return true;
@@ -74,13 +91,69 @@ export class HoursMessageComponent implements ClosingListener {
             return false;
         });
 
-        this.closingTime = nextClosing;
+        this.gorgeClosingTime = nextClosing;
+    }
+
+    static calculateNextClosing(closings: Closing[]) {
+        let now = moment();
+        let nextClosing = this.normalParkClosingTime();
+
+        closings.some(closing => {
+            if (closing.justGorge()) return false;
+            if (closing.start >= now) {
+                if (closing.start >= nextClosing) {
+                    return true;
+                }
+                if (closing.start.hours() < 18) {
+                    let minTime = moment(closing.start);
+                    minTime.hours(8);
+                    minTime.minutes(1);
+                    minTime.millisecond(minTime.millisecond() - 1);
+                    if (closing.start > minTime) {
+                        nextClosing = moment(closing.start);
+                        return true;
+                    }
+                }
+            }
+            while (closing.end >= nextClosing) {
+                this.changeDay(nextClosing, 1);
+            }
+            return false;
+        });
+
+        this.parkClosingTime = nextClosing;
+    }
+
+    static calculateNextGorgeOpening(closings: Closing[]) {
+        let now = moment();
+        let nextOpening = this.normalGorgeOpeningTime();
+        closings.forEach(closing => {
+            if (!closing.justGorge()) return;
+            if (closing.start <= now && closing.end >= now) {
+                nextOpening = now;
+            }
+            if (closing.start <= nextOpening && closing.end >= nextOpening) {
+                nextOpening = moment(closing.end);
+                if (nextOpening.hours() < 8) {
+                    this.resetToHour(nextOpening, 8);
+                }
+                else if (nextOpening.hours() > 16) {
+                    this.resetToHour(nextOpening, 8);
+                    this.changeDay(nextOpening, 1);
+                }
+            }
+        });
+        this.gorgeOpeningTime = nextOpening;
     }
 
     static calculateNextOpening(closings: Closing[]) {
         let now = moment();
-        let nextOpening = now;
+        let nextOpening = this.normalParkOpeningTime();
         closings.forEach(closing => {
+            if (closing.justGorge()) return;
+            if (closing.start <= now && closing.end >= now) {
+                nextOpening = now;
+            }
             if (closing.start <= nextOpening && closing.end >= nextOpening) {
                 nextOpening = moment(closing.end);
                 if (nextOpening.hours() < 8) {
@@ -92,16 +165,7 @@ export class HoursMessageComponent implements ClosingListener {
                 }
             }
         });
-        if (nextOpening === now) {
-            if (nextOpening.hours() < 8) {
-                this.resetToHour(nextOpening, 8);
-            }
-            else {
-                this.resetToHour(nextOpening, 8);
-                this.changeDay(nextOpening, 1);
-            }
-        }
-        this.openingTime = nextOpening;
+        this.parkOpeningTime = nextOpening;
     }
 
     static changeDay(time: moment.Moment, by: number) {
@@ -123,8 +187,14 @@ export class HoursMessageComponent implements ClosingListener {
         if (closings === null) {
             closings = this.cachedClosings;
         }
+        this.calculateNextGorgeClosing(closings);
         this.calculateNextClosing(closings);
+        this.calculateNextGorgeOpening(closings);
         this.calculateNextOpening(closings);
+        this.gorgeClosingTime = this.gorgeClosingTime < this.parkClosingTime
+            ? this.gorgeClosingTime : this.parkClosingTime;
+        this.gorgeOpeningTime = this.gorgeOpeningTime > this.parkOpeningTime
+            ? this.gorgeOpeningTime : this.parkOpeningTime;
     }
 
     static pluralS(quantity: number) {
@@ -202,10 +272,11 @@ export class HoursMessageComponent implements ClosingListener {
     }
 
     calculateText() {
-        let openingTime = HoursMessageComponent.openingTime;
-        let closingTime = HoursMessageComponent.closingTime;
+        let openingTime = HoursMessageComponent.parkOpeningTime;
+        let gorgeOpeningTime = HoursMessageComponent.gorgeOpeningTime;
+        let closingTime = HoursMessageComponent.parkClosingTime;
+        let gorgeClosingTime = HoursMessageComponent.gorgeClosingTime;
         let now = moment();
-
         if (closingTime < now || openingTime < now) {
             if (!this.loading) {
                 this.getClosingsAndCalculateTimes();
@@ -213,10 +284,20 @@ export class HoursMessageComponent implements ClosingListener {
             return;
         }
         if (closingTime < openingTime) {
-            this.text = `The park closes ${HoursMessageComponent.timeTillMessage(closingTime)}`;
+            if (closingTime <= gorgeClosingTime) {
+                this.text = `The park closes ${HoursMessageComponent.timeTillMessage(closingTime)}.`;
+            }
+            else {
+                this.text =
+                    `The gorge closes ${HoursMessageComponent.timeTillMessage(gorgeClosingTime)}.` +
+                    `The park will be closed ${HoursMessageComponent.timeTillMessage(closingTime)}.`;
+            }
         }
         else {
-            this.text = `The park is closed and will open again ${HoursMessageComponent.timeTillMessage(openingTime)}`;
+            this.text = `The park is closed and will open again ${HoursMessageComponent.timeTillMessage(openingTime)}.`;
+            if (openingTime < gorgeOpeningTime) {
+                this.text += ` The gorge will open ${HoursMessageComponent.timeTillMessage(gorgeOpeningTime)}`;
+            }
         }
     }
 }

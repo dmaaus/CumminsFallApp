@@ -16,13 +16,24 @@ export class NotificationSettingsPage {
     static readonly OPT_OUT_FLOOD_TAG = 'opt_out_of_flood_warnings';
     static readonly OPT_OUT_PARK_TAG = 'opt_out_of_park_closings';
     static readonly OPT_OUT_OTHER = 'opt_out_of_other';
+    static id: string = '';
     locationAllowed: boolean = false;
     optInPark: boolean = true;
     optInFlood: boolean = true;
     optInOther: boolean = true;
     timer: any;
     loaded: boolean = false;
-    static id: string = '';
+
+    constructor(public navCtrl: NavController,
+                public navParams: NavParams,
+                private http: HttpClient,
+                private notification: NotificationProvider,
+                private loading: LoadingProvider,
+                private alertError: AlertErrorProvider,
+                private oneSignal: OneSignal) {
+        this.getTags();
+        this.updateLocationAllowed();
+    }
 
     getId(): Promise<string> {
         return new Promise<string>((resolve, reject) => {
@@ -34,17 +45,6 @@ export class NotificationSettingsPage {
                 resolve(NotificationSettingsPage.id);
             }).catch(reject);
         })
-    }
-
-    constructor(public navCtrl: NavController,
-                public navParams: NavParams,
-                private http: HttpClient,
-                private notification: NotificationProvider,
-                private loading: LoadingProvider,
-                private alertError: AlertErrorProvider,
-                private oneSignal: OneSignal) {
-        this.getTags();
-        this.updateLocationAllowed();
     }
 
     allowLocationMessage() {

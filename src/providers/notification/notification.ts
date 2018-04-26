@@ -5,6 +5,7 @@ import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {Storage} from '@ionic/storage'
 import {Closing} from "../../pages/schedule-closing/schedule-closing";
 import {OneSignal} from "@ionic-native/onesignal";
+import * as config from '../../assets/config.json';
 
 @Injectable()
 export class NotificationProvider {
@@ -21,13 +22,11 @@ export class NotificationProvider {
     static readonly PARK_CLOSING: string = 'Opt_Out_Of_Park_Closings';
     static readonly FLOOD_WARNING: string = 'Opt_Out_Of_Flood_Warnings';
     static readonly OTHER: string = 'Opt_Out_Of_Other';
-
+    public static appId: string = (config['Notification'])['appId'];
+    public static googleProjectNumber: string = (config['Notification'])['googleProjectNumber'];
     private static readonly LOCATION_KNOWN: string = 'Location_Allowed';
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = 'times_asked_for_location';
-
-   public static appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
-    apiKey: string = '';
-    public static googleProjectNumber: string = '386934932788';
+    apiKey: string = (config['Notification'])['apiKey'];
 
     constructor(public http: HttpClient,
                 private  alertCtrl: AlertController,
@@ -48,8 +47,8 @@ export class NotificationProvider {
 
     /**
      * @param  notification
-      the notification
-      to be sentout. If notification is null,
+     the notification
+     to be sentout. If notification is null,
      *  the extraParams will  be used as a silent notification.
      * @param {Object} extraParams parameters that will be passed directly to the API call
      */
@@ -57,7 +56,8 @@ export class NotificationProvider {
         return new Promise<boolean>((resolve, reject) => {
             if (this.apiKey === '') {
                 reject('apiKey has not been set, so how was post called?');
-                return;}
+                return;
+            }
             let silent = notification === null;
             if (silent) {
                 notification = new Notification('', '', '', NotificationProvider.ALL);
@@ -80,7 +80,8 @@ export class NotificationProvider {
                 else {
                     Object.assign(extraParams['data'], contentAvailable);
                 }
-            }Object.assign(body, extraParams);
+            }
+            Object.assign(body, extraParams);
 
             let headers = new HttpHeaders()
                 .append('Content-Type', 'application/json; charset=utf-8')
@@ -112,14 +113,14 @@ export class NotificationProvider {
 
     _post(body, headers: HttpHeaders): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            let url = 'https://onesignal.com:443/api/v1/notifications';
+            let url = (config['OneSignal'])['url'];
             this.http.post(
                 url, body, {headers: headers})
                 .subscribe(() => {
                     resolve(true);
                 }, (error: HttpErrorResponse) => {
                     let message = 'Unknown error. Are you connected to the internet?';
-                    console.log('error',error);
+                    console.log('error', error);
                     if (typeof error.error.errors[0] === 'string') {
                         message = error.error.errors[0];
                     }
@@ -146,7 +147,8 @@ export class NotificationProvider {
 
 
     requestLocation() {
-        let self = this;this.alertCtrl.create({
+        let self = this;
+        this.alertCtrl.create({
                 title: 'Location',
                 message: 'Cummins Falls sends notifications through this app about park closings and flash floods. We would like permission to access your location so we can avoid sending you these notifications when you are not near the park. ',
                 buttons: [{
@@ -204,6 +206,7 @@ export class NotificationProvider {
         });
     }
 }
+
 export class Notification {
     static readonly DEFAULT_KIND: string = 'Other';
     static readonly DEFAULT_AREA: string = 'Everyone';
