@@ -4,6 +4,7 @@ import {HttpClient} from "@angular/common/http";
 import {AlertErrorProvider} from "../../providers/alert-error/alert-error";
 import {LoadingProvider} from "../../providers/loading/loading";
 import {Closing, ClosingListener} from "../schedule-closing/schedule-closing";
+import * as moment from 'moment';
 
 @IonicPage()
 @Component({
@@ -20,7 +21,11 @@ export class ViewClosingsPage implements ClosingListener {
                 private loading: LoadingProvider,
                 private detector: ChangeDetectorRef) {
         Closing.register(this);
-        this.getClosings();
+        let useCached = false;
+        if (moment().diff(Closing.lastUpdate, 'hours') < 24) {
+            useCached = true;
+        }
+        this.getClosings(useCached);
     }
 
     ngOnDestroy() {
@@ -32,10 +37,10 @@ export class ViewClosingsPage implements ClosingListener {
         this.detector.detectChanges();
     }
 
-    getClosings() {
+    getClosings(useCached: boolean = true) {
         let self = this;
         self.loading.present(true, true);
-        Closing.getClosings(this.http, true, this).then(closings => {
+        Closing.getClosings(this.http, useCached, this).then(closings => {
             self.closings = closings;
             self.loading.dismiss();
         }).catch(self.alertError.showCallback(self.loading));

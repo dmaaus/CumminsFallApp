@@ -194,6 +194,8 @@ export interface ClosingListener {
 
 export class Closing {
 
+    static lastUpdate: moment.Moment = moment(0);
+
     static listeners: ClosingListener[] = [];
     static cachedClosings: Closing[] = null;
 
@@ -249,6 +251,7 @@ export class Closing {
             DatabaseProvider.api(http, 'closings', 'get')
                 .then((results: Object[]) => {
                     self.cachedClosings = results.map(Closing.fromObject);
+                    self.lastUpdate = moment();
                     self.notifyListeners(listenerWhoRequested);
                     resolve(self.cachedClosings);
                 })
