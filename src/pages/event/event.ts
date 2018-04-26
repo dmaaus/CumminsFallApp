@@ -2,7 +2,7 @@ import {Component} from "@angular/core";
 import {NavController, NavParams} from "ionic-angular";
 import {CumminsFallsEvent} from "../../providers/events/events";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
-
+import * as config from '../../assets/config.json';
 @Component({
     selector: 'page-event',
     templateUrl: 'event.html',
@@ -23,7 +23,7 @@ export class EventPage {
 
     goToPage() {
         console.log("Url to load: " + this.event.EventURL);
-        this.iab.create('https://tnstateparks.itinio.com/register/' + this.event.EventURL, '_system', {
+        this.iab.create((config['EventRegister'])['url'] + this.event.EventURL, '_system', {
             hidden: 'no',
             location: 'yes'
         });

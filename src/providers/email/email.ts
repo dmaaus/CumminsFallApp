@@ -1,11 +1,12 @@
 import {HttpClient, HttpErrorResponse} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import * as querystring from 'query-string';
+import * as config from '../../assets/config.json';
 
 @Injectable()
 export class EmailProvider {
-    domain: string = 'sandbox8fd351ad785b4e0287aeb59146fc88f6.mailgun.org';
-    apiKey: string = '';
+    domain: string = (config['Email'])['url'];
+    apiKey: string = (config['Email'])['apiKey'];
 
     constructor(public http: HttpClient) {
     }
