@@ -26,6 +26,7 @@ div.scroll.padding {
 #errorString:empty {
   display: none;
 }
+
 .toolbar-background {
   background-color: #3AB15D;
 }
@@ -43,7 +44,7 @@ ion-title .toolbar-title-md {
   color: #222 !important;
 }
 
-.button{
+.button {
   background-color: #3AB15D;
   color: #222;
 }
@@ -60,8 +61,8 @@ ion-card-header {
   font-size: 2em;
   font-weight: bold;
 }
-//$img-placeholder-background : #9da6b5;
 
+//$img-placeholder-background : #9da6b5;
 
 //Maybe send back to trail-page.scss
 .tabbar .show-tabbar {

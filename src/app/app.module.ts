@@ -33,8 +33,8 @@ import {ManageRangerPage} from "../pages/manage-ranger/manage-ranger";
 import {RangerInfoPage} from "../pages/ranger-info/ranger-info";
 import {EmailProvider} from "../providers/email/email";
 import {LoadingProvider} from '../providers/loading/loading';
-import { VisitorAnalyticsProvider } from '../providers/visitor-analytics/visitor-analytics';
-import { CumminsFallsEventsProvider } from '../providers/events/events';
+import {VisitorAnalyticsProvider} from '../providers/visitor-analytics/visitor-analytics';
+import {CumminsFallsEventsProvider} from '../providers/events/events';
 import {DatePicker} from "@ionic-native/date-picker";
 import {ScheduleClosingPage} from "../pages/schedule-closing/schedule-closing";
 import {ViewClosingsPage} from "../pages/view-closings/view-closings";
@@ -48,7 +48,7 @@ import {MakeNotificationPage} from "../pages/make-notification/make-notification
 import {ContactPage} from "../pages/about/contact-page/contact-page";
 import {HistoryPage} from "../pages/about/history-page/history-page";
 import {TrailsInfoPage} from "../pages/about/trails-info-page/trails-info-page";
-import { WeatherProvider } from '../providers/weather/weather';
+import {WeatherProvider} from '../providers/weather/weather';
 
 // import { PdfViewerModule } from 'ng2-pdf-viewer';
 
@@ -82,7 +82,7 @@ import { WeatherProvider } from '../providers/weather/weather';
     imports: [
         BrowserModule,
         IonicModule.forRoot(App),
-		// PdfViewerModule,
+        // PdfViewerModule,
         HttpClientModule,
         IonicStorageModule.forRoot(),
         ComponentsModule
@@ -133,8 +133,8 @@ import { WeatherProvider } from '../providers/weather/weather';
         CumminsFallsEventsProvider,
         InAppBrowser,
         PlacePicProvider,
-    VisitorAnalyticsProvider,
-    WeatherProvider
+        VisitorAnalyticsProvider,
+        WeatherProvider
     ]
 })
 export class AppModule {

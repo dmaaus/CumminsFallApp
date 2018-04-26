@@ -22,10 +22,6 @@ export class ScheduleClosingPage {
         title: 'Area Closed'
     };
 
-    areas(): string[] {
-        return [Closing.JUST_GORGE, Closing.WHOLE_PARK];
-    }
-
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
                 private datePicker: DatePicker,
@@ -107,6 +103,10 @@ export class ScheduleClosingPage {
                 callback(closing.getSendTime(), closing.getMessage(), closing);
             });
         }).catch(alertError.showCallback(loading));
+    }
+
+    areas(): string[] {
+        return [Closing.JUST_GORGE, Closing.WHOLE_PARK];
     }
 
     getMessage() {
@@ -198,6 +198,8 @@ export class Closing {
 
     static listeners: ClosingListener[] = [];
     static cachedClosings: Closing[] = null;
+    static readonly JUST_GORGE: string = 'Just the gorge';
+    static readonly WHOLE_PARK: string = 'The whole park.';
 
     constructor(public start: moment.Moment,
                 public end: moment.Moment,
@@ -405,9 +407,6 @@ export class Closing {
         }
         return moment(0);
     }
-
-    static readonly JUST_GORGE: string = 'Just the gorge';
-    static readonly WHOLE_PARK: string = 'The whole park.';
 
     justGorge() {
         return this.area === Closing.JUST_GORGE;

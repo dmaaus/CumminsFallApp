@@ -6,6 +6,7 @@ import {Storage} from '@ionic/storage'
 import {Closing} from "../../pages/schedule-closing/schedule-closing";
 import {OneSignal} from "@ionic-native/onesignal";
 import * as config from '../../assets/config.json';
+
 @Injectable()
 export class NotificationProvider {
 
@@ -21,13 +22,11 @@ export class NotificationProvider {
     static readonly PARK_CLOSING: string = 'Opt_Out_Of_Park_Closings';
     static readonly FLOOD_WARNING: string = 'Opt_Out_Of_Flood_Warnings';
     static readonly OTHER: string = 'Opt_Out_Of_Other';
-
+    public static appId: string = (config['Notification'])['appId'];
+    public static googleProjectNumber: string = (config['Notification'])['googleProjectNumber'];
     private static readonly LOCATION_KNOWN: string = 'Location_Allowed';
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = 'times_asked_for_location';
-
-   public static appId: string = (config['Notification'])['appId'];
     apiKey: string = (config['Notification'])['apiKey'];
-    public static googleProjectNumber: string = (config['Notification'])['googleProjectNumber'];
 
     constructor(public http: HttpClient,
                 private  alertCtrl: AlertController,
@@ -48,8 +47,8 @@ export class NotificationProvider {
 
     /**
      * @param  notification
-      the notification
-      to be sentout. If notification is null,
+     the notification
+     to be sentout. If notification is null,
      *  the extraParams will  be used as a silent notification.
      * @param {Object} extraParams parameters that will be passed directly to the API call
      */

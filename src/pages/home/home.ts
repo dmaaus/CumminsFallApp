@@ -1,9 +1,9 @@
-import {Component, ViewChild, NgModule} from '@angular/core';
-import {NavController, DateTime} from 'ionic-angular';
+import {Component, ViewChild} from '@angular/core';
+import {NavController} from 'ionic-angular';
 import {Chart} from 'chart.js';
 
-import { HttpClient } from '@angular/common/http';
-import { VisitorAnalyticsProvider } from '../../providers/visitor-analytics/visitor-analytics';
+import {HttpClient} from '@angular/common/http';
+import {VisitorAnalyticsProvider} from '../../providers/visitor-analytics/visitor-analytics';
 
 
 @Component({
@@ -11,321 +11,321 @@ import { VisitorAnalyticsProvider } from '../../providers/visitor-analytics/visi
     templateUrl: 'home.html',
 })
 export class HomePage {
-	@ViewChild('chart') chartCanvas: any;
+    @ViewChild('chart') chartCanvas: any;
 
-	chart: Chart;
+    chart: Chart;
 
     public chartOptions: any = {
-		responsive: true,
-		scales: {
-			yAxes: [{
-				ticks: {
-					beginAtZero: true
-				}
-			}]
-		}
-	};
+        responsive: true,
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    };
 
-	public chartLabels: Array<any>;
-	public chartType: string = 'bar';
-	public chartLegend: boolean = false;
-	public chartDatasets: Array<any>;
-	public chartColors: Array<any>;
+    public chartLabels: Array<any>;
+    public chartType: string = 'bar';
+    public chartLegend: boolean = false;
+    public chartDatasets: Array<any>;
+    public chartColors: Array<any>;
 
-	yearRange = [
-		2016,
-		2017,
-		2018
-	]
+    yearRange = [
+        2016,
+        2017,
+        2018
+    ]
 
-	selectedYear: number = this.yearRange[0];
+    selectedYear: number = this.yearRange[0];
 
-	week_labels: Array<string> = ["S", "M", "T", "W", "R", "F", "S"];
-	time_labels: Array<string> = ["8a", "9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p"];
-	background_colors: Array<string> = ['rgba(54,162,235,0.3)'];
-	borderColors: Array<string> = ['rgba(54,162,255,1)'];
+    week_labels: Array<string> = ["S", "M", "T", "W", "R", "F", "S"];
+    time_labels: Array<string> = ["8a", "9a", "10a", "11a", "12p", "1p", "2p", "3p", "4p", "5p", "6p"];
+    background_colors: Array<string> = ['rgba(54,162,235,0.3)'];
+    borderColors: Array<string> = ['rgba(54,162,255,1)'];
 
 
-	selectedDate: string;
-	selectedMonth: string;
+    selectedDate: string;
+    selectedMonth: string;
 
     constructor(public navCtrl: NavController, public http: HttpClient, private visitorAnalytic: VisitorAnalyticsProvider) {
-	}
-
-    ionViewDidLoad() {
-		this.chart = new Chart(this.chartCanvas.nativeElement, {
-			type: this.chartType,
-			data: {
-				labels: [],
-				datasets: [],
-				options: this.chartOptions
-			}
-		});
-
-		this.visitorAnalytic.getCountsForBusiestHours()
-				.then(res => {
-					const dataSet: DataSet = {
-						label: 'Busiest Hours',
-						data: [
-							res['8am'],
-							res['9am'],
-							res['10am'],
-							res['11am'],
-							res['12pm'],
-							res['1pm'],
-							res['2pm'],
-							res['3pm'],
-							res['4pm'],
-							res['5pm'],
-							res['6pm']
-						],
-						backgroundColor: [
-							'rgba(58, 177, 93, 0.3)',
-							'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)'
-
-
-						],
-						borderColor: [
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)'
-						],
-						borderWidth: 1
-					};
-					this.updateChart(this.chart, this.time_labels, [dataSet]);
-				})
-				.catch(err => alert(err));
     }
 
-	btnClicked(btn){
-		var day_data = [1, 5, 23, 30, 59, 87, 77, 43, 38, 24, 9];
-		var total = 0;
-		var temp = [0];
-		var tempTot = [0];
-		var temp2 = [5, 10, 15, 20, 25, 30, 35];
+    ionViewDidLoad() {
+        this.chart = new Chart(this.chartCanvas.nativeElement, {
+            type: this.chartType,
+            data: {
+                labels: [],
+                datasets: [],
+                options: this.chartOptions
+            }
+        });
 
-		for (let i = 0; i < day_data.length; i++){
-		total += day_data[i];
-		}
-
-		tempTot = [total, 124, 234, 115, 167, 255, 111];
-
-		if (btn == '0') {
-			/** Busiest hour */
-			this.visitorAnalytic.getCountsForBusiestHours()
-				.then(res => {
-					const dataSet: DataSet = {
-						label: 'Busiest Hours',
-						data: [
-							res['8am'],
-							res['9am'],
-							res['10am'],
-							res['11am'],
-							res['12pm'],
-							res['1pm'],
-							res['2pm'],
-							res['3pm'],
-							res['4pm'],
-							res['5pm'],
-							res['6pm']
-						],
-						backgroundColor: [
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)',
-              'rgba(58, 177, 93, 0.3)'
-
-						],
-						borderColor: [
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)',
-              'rgba(58, 177, 93, 1)'
-						],
-						borderWidth: 1
-					};
-					this.updateChart(this.chart, this.time_labels, [dataSet]);
-				})
-				.catch(err => alert(err));
-		}
-		else if (btn == '1') {
-		/** Busiest Day */
-		this.visitorAnalytic.getCountsForBusiestDay()
-			.then(res => {
-				const dataSet: DataSet = {
-					label: 'Busiest Days',
-					data: [
-						res['Sun'] ? res['Sun'] : 0,
-						res['Mon'] ? res['Mon'] : 0,
-						res['Tues'] ? res['Tues'] : 0,
-						res['Wed'] ? res['Wed'] : 0,
-						res['Thur'] ? res['Thur'] : 0,
-						res['Fri'] ? res['Fri'] : 0,
-						res['Sat'] ? res['Sat'] : 0
-					],
-					backgroundColor: [
-            'rgba(58, 177, 93, 0.3)',
-            'rgba(58, 177, 93, 0.3)',
-            'rgba(58, 177, 93, 0.3)',
-            'rgba(58, 177, 93, 0.3)',
-            'rgba(58, 177, 93, 0.3)',
-            'rgba(58, 177, 93, 0.3)',
-            'rgba(58, 177, 93, 0.3)'
-					],
-					borderColor: [
-            'rgba(58, 177, 93, 1)',
-            'rgba(58, 177, 93, 1)',
-            'rgba(58, 177, 93, 1)',
-            'rgba(58, 177, 93, 1)',
-            'rgba(58, 177, 93, 1)',
-            'rgba(58, 177, 93, 1)',
-            'rgba(58, 177, 93, 1)'
-
-					],
-					borderWidth: 1
-				};
-				this.updateChart(this.chart, this.week_labels, [dataSet]);
-			})
-			.catch(reason => {
-				alert(reason);
-			});
-		}
-
-		else if (btn == '2') {
-			/** Specific Year Count */
-			this.visitorAnalytic.getCountByYear(this.selectedYear)
-				.then(res => {
-					let dataSet: DataSet = {
-						label: `${this.selectedYear} Count`,
-						data: [res],
-						backgroundColor: [
-              'rgba(58, 177, 93, 0.3)'
-
-						],
-						borderColor: [
-              'rgba(58, 177, 93, 1)'
-
-						],
-						borderWidth: 1
-					};
-
-					this.updateChart(this.chart, [`${this.selectedYear}`], [dataSet]);
-				})
-				.catch(res => {
-					alert(res);
-				});
-		}
-
-		else if (btn == '3') {
-		/** Specific Day */
-		const date = new Date(this.selectedDate);
-		date.setDate(date.getDate() + 1);
-		this.visitorAnalytic.getCountForSelectedDate(date)
-			.then(res => {
-				const dataSet : DataSet = {
-					label: `${this.selectedDate}`,
-					data: [res],
-					backgroundColor: [
-            'rgba(58, 177, 93, 0.3)'
-
-					],
-					borderColor: [
-            'rgba(58, 177, 93, 1)'
-
-					],
-					borderWidth: 1
-				};
-
-				this.updateChart(this.chart, ['Specified Date Count'], [dataSet]);
-			})
-			.catch(err => alert(err));
-		}
-
-		else if (btn == '4') {
-			console.log(new Date(this.selectedMonth).toDateString());
-			const date = new Date(this.selectedMonth);
-			date.setMonth(date.getMonth() + 1);
-			date.setDate(1);
-		/** Specific Month */
-
-		this.visitorAnalytic.getCountForSelectedMonth(date)
-			.then(res => {
-				const dataSet : DataSet = {
-					label : `${this.selectedMonth}`,
-					data: [res],
-					backgroundColor: [
-            'rgba(58, 177, 93, 0.3)'
-
-					],
-					borderColor: [
-            'rgba(58, 177, 93, 1)',
-
-					],
-					borderWidth: 1
-				};
+        this.visitorAnalytic.getCountsForBusiestHours()
+            .then(res => {
+                const dataSet: DataSet = {
+                    label: 'Busiest Hours',
+                    data: [
+                        res['8am'],
+                        res['9am'],
+                        res['10am'],
+                        res['11am'],
+                        res['12pm'],
+                        res['1pm'],
+                        res['2pm'],
+                        res['3pm'],
+                        res['4pm'],
+                        res['5pm'],
+                        res['6pm']
+                    ],
+                    backgroundColor: [
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)',
+                        'rgba(58, 177, 93, 0.3)'
 
 
-				this.updateChart(this.chart, ['Specified Month Count'], [dataSet]);
-			})
-			.catch(err => alert(err));
-		}
+                    ],
+                    borderColor: [
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)',
+                        'rgba(58, 177, 93, 1)'
+                    ],
+                    borderWidth: 1
+                };
+                this.updateChart(this.chart, this.time_labels, [dataSet]);
+            })
+            .catch(err => alert(err));
+    }
 
-		else {
-		// this.barChart.config.data.datasets[0].data = temp2;
-		// this.barChart.config.data.labels = week_labels;
-		// this.barChart.update();
-		}
+    btnClicked(btn) {
+        var day_data = [1, 5, 23, 30, 59, 87, 77, 43, 38, 24, 9];
+        var total = 0;
+        var temp = [0];
+        var tempTot = [0];
+        var temp2 = [5, 10, 15, 20, 25, 30, 35];
 
-	}
+        for (let i = 0; i < day_data.length; i++) {
+            total += day_data[i];
+        }
 
-	updateChart(chart: Chart, dataLabels : string[], dataSets: DataSet[]) {
-		chart.data.labels = [];
-		chart.data.datasets = [];
-		chart.update();
+        tempTot = [total, 124, 234, 115, 167, 255, 111];
+
+        if (btn == '0') {
+            /** Busiest hour */
+            this.visitorAnalytic.getCountsForBusiestHours()
+                .then(res => {
+                    const dataSet: DataSet = {
+                        label: 'Busiest Hours',
+                        data: [
+                            res['8am'],
+                            res['9am'],
+                            res['10am'],
+                            res['11am'],
+                            res['12pm'],
+                            res['1pm'],
+                            res['2pm'],
+                            res['3pm'],
+                            res['4pm'],
+                            res['5pm'],
+                            res['6pm']
+                        ],
+                        backgroundColor: [
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)'
+
+                        ],
+                        borderColor: [
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)'
+                        ],
+                        borderWidth: 1
+                    };
+                    this.updateChart(this.chart, this.time_labels, [dataSet]);
+                })
+                .catch(err => alert(err));
+        }
+        else if (btn == '1') {
+            /** Busiest Day */
+            this.visitorAnalytic.getCountsForBusiestDay()
+                .then(res => {
+                    const dataSet: DataSet = {
+                        label: 'Busiest Days',
+                        data: [
+                            res['Sun'] ? res['Sun'] : 0,
+                            res['Mon'] ? res['Mon'] : 0,
+                            res['Tues'] ? res['Tues'] : 0,
+                            res['Wed'] ? res['Wed'] : 0,
+                            res['Thur'] ? res['Thur'] : 0,
+                            res['Fri'] ? res['Fri'] : 0,
+                            res['Sat'] ? res['Sat'] : 0
+                        ],
+                        backgroundColor: [
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)',
+                            'rgba(58, 177, 93, 0.3)'
+                        ],
+                        borderColor: [
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)',
+                            'rgba(58, 177, 93, 1)'
+
+                        ],
+                        borderWidth: 1
+                    };
+                    this.updateChart(this.chart, this.week_labels, [dataSet]);
+                })
+                .catch(reason => {
+                    alert(reason);
+                });
+        }
+
+        else if (btn == '2') {
+            /** Specific Year Count */
+            this.visitorAnalytic.getCountByYear(this.selectedYear)
+                .then(res => {
+                    let dataSet: DataSet = {
+                        label: `${this.selectedYear} Count`,
+                        data: [res],
+                        backgroundColor: [
+                            'rgba(58, 177, 93, 0.3)'
+
+                        ],
+                        borderColor: [
+                            'rgba(58, 177, 93, 1)'
+
+                        ],
+                        borderWidth: 1
+                    };
+
+                    this.updateChart(this.chart, [`${this.selectedYear}`], [dataSet]);
+                })
+                .catch(res => {
+                    alert(res);
+                });
+        }
+
+        else if (btn == '3') {
+            /** Specific Day */
+            const date = new Date(this.selectedDate);
+            date.setDate(date.getDate() + 1);
+            this.visitorAnalytic.getCountForSelectedDate(date)
+                .then(res => {
+                    const dataSet: DataSet = {
+                        label: `${this.selectedDate}`,
+                        data: [res],
+                        backgroundColor: [
+                            'rgba(58, 177, 93, 0.3)'
+
+                        ],
+                        borderColor: [
+                            'rgba(58, 177, 93, 1)'
+
+                        ],
+                        borderWidth: 1
+                    };
+
+                    this.updateChart(this.chart, ['Specified Date Count'], [dataSet]);
+                })
+                .catch(err => alert(err));
+        }
+
+        else if (btn == '4') {
+            console.log(new Date(this.selectedMonth).toDateString());
+            const date = new Date(this.selectedMonth);
+            date.setMonth(date.getMonth() + 1);
+            date.setDate(1);
+            /** Specific Month */
+
+            this.visitorAnalytic.getCountForSelectedMonth(date)
+                .then(res => {
+                    const dataSet: DataSet = {
+                        label: `${this.selectedMonth}`,
+                        data: [res],
+                        backgroundColor: [
+                            'rgba(58, 177, 93, 0.3)'
+
+                        ],
+                        borderColor: [
+                            'rgba(58, 177, 93, 1)',
+
+                        ],
+                        borderWidth: 1
+                    };
 
 
-		//Add data to chart
-		chart.data.labels = dataLabels;
-		chart.data.datasets = dataSets;
-		chart.update();
-	}
+                    this.updateChart(this.chart, ['Specified Month Count'], [dataSet]);
+                })
+                .catch(err => alert(err));
+        }
+
+        else {
+            // this.barChart.config.data.datasets[0].data = temp2;
+            // this.barChart.config.data.labels = week_labels;
+            // this.barChart.update();
+        }
+
+    }
+
+    updateChart(chart: Chart, dataLabels: string[], dataSets: DataSet[]) {
+        chart.data.labels = [];
+        chart.data.datasets = [];
+        chart.update();
+
+
+        //Add data to chart
+        chart.data.labels = dataLabels;
+        chart.data.datasets = dataSets;
+        chart.update();
+    }
 }
 
 interface DataSet {
-	label: string;
-	data: number[];
-	backgroundColor: string[];
-	borderColor: string[];
-	borderWidth: number;
+    label: string;
+    data: number[];
+    backgroundColor: string[];
+    borderColor: string[];
+    borderWidth: number;
 }

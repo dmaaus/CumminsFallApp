@@ -3,6 +3,7 @@ import {NavController, NavParams} from "ionic-angular";
 import {CumminsFallsEvent} from "../../providers/events/events";
 import {InAppBrowser} from "@ionic-native/in-app-browser";
 import * as config from '../../assets/config.json';
+
 @Component({
     selector: 'page-event',
     templateUrl: 'event.html',

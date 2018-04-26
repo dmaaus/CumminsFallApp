@@ -5,5 +5,6 @@ import {NavController} from 'ionic-angular';
     templateUrl: 'history-page.html',
 })
 export class HistoryPage {
-    constructor(navCtrl: NavController){}
+    constructor(navCtrl: NavController) {
+    }
 }
