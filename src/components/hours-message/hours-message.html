@@ -1,7 +1,7 @@
 <ion-card>
   <ion-card-header>
   <ion-grid>
-    <ion-row *ngIf="!loading"><ion-col>{{text}}</ion-col></ion-row>
+    <ion-row *ngIf="!loading"><ion-col text-wrap>{{text}}</ion-col></ion-row>
     <ion-row *ngIf="loading">
         <ion-col col-10><h6>Retrieving park closures...</h6></ion-col>
         <ion-col col-2>

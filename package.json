@@ -35,7 +35,7 @@
     "StatusBar": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "chart.js": "^2.7.1",
-    "cordova-android": "7.0.0",
+    "cordova-android": "^7.0.0",
     "cordova-browser": "5.0.3",
     "cordova-custom-config": "^5.0.2",
     "cordova-plugin-android-permissions": "^1.0.0",
@@ -76,8 +76,7 @@
       "onesignal-silent-cordova-plugin": {}
     },
     "platforms": [
-      "browser",
-      "android"
+      "browser"
     ]
   }
 }

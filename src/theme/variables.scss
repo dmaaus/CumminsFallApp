@@ -29,11 +29,18 @@ $app-direction: ltr;
 
 $colors: (
         primary: #ffffff,
-        secondary: #3AB15D,
+        secondary: #6eac3f,
         danger: #f53d3d,
         light: #f4f4f4,
         dark: #222
 );
+
+
+$toggle-ios-background-color-off: #f4f4f4;
+
+$toggle-ios-border-color-off: #f4f4f4;
+
+$toggle-ios-background-color-on: #6eac3f;
 
 $fab-content-margin: 20px;
 
