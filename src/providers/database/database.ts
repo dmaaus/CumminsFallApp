@@ -2,12 +2,12 @@ import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Injectable} from '@angular/core';
 import {EmailProvider} from "../email/email";
 import {NotificationProvider} from "../notification/notification";
-
+import * as config from '../../assets/config.json';
 
 @Injectable()
 export class DatabaseProvider {
-    static readonly AWS_URL: string = 'https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/';
-    static readonly API_KEY: string = 'cdIRFxmAYK3JctGIHCyQE82XM3Nv5cwT9gJXzqiU';
+    static readonly AWS_URL: string = (config['Ranger'])['url'];
+    static readonly API_KEY: string = (config['Ranger'])['apiKey'];
 
     db: any = null;
     credentials: Credentials = null;

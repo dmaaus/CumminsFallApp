@@ -1,0 +1,15 @@
+<ion-card>
+    <ion-card-header>
+        {{header}}
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-grid>
+        <ion-row><ion-col id='weather-icon'><img src='http://openweathermap.org/img/w/{{this.weatherInfo.icon_id}}.png'/></ion-col></ion-row>
+        <ion-row><ion-col align-self-center id='weather-temp'>{{this.weatherInfo.min_temp}}&deg;F/{{this.weatherInfo.max_temp}}&deg;F</ion-col></ion-row>
+        <ion-row><ion-col id='weather-description' class='capitalize'>{{this.weatherInfo.weather_desc}}</ion-col></ion-row>
+        <ion-row><ion-col id='weather-humid'>Humidity: {{this.weatherInfo.humidity}}%</ion-col></ion-row>
+      </ion-grid>
+
+    </ion-card-content>
+</ion-card>

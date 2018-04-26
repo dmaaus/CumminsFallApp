@@ -90,7 +90,7 @@
   "onesignal-silent-cordova-plugin": {
     "source": {
       "type": "registry",
-      "id": "onesignal-silent-cordova-plugin"
+      "id": "onesignal-silent-cordova-plugin@^2.3.1"
     },
     "is_top_level": true,
     "variables": {}

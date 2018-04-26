@@ -6,82 +6,87 @@
 
 <ion-content padding>
     <hours-message></hours-message>
-    <h2>Cummins Falls Visitor Statistics</h2>
+    <weather-card></weather-card>
     <ion-card>
-
-        <ion-card-header>
-            Popular Times
-        </ion-card-header>
-
+        <ion-card-header>Cummins Falls Visitor Statistics</ion-card-header>
         <ion-card-content>
-            <canvas #barCanvas></canvas>
+            <canvas #chart></canvas>
+            <ion-grid>
+              <ion-row>
+                <ion-col>
+                  <ion-card>
+                      <ion-card-content>
+                          Busiest Times:
+                          <ion-list>
+                              <button ion-button round small id="0" type="button" (click)="btnClicked('0')">Busiest Hour(s)
+                              </button>
+                              <button ion-button round small id="1" type="button" (click)="btnClicked('1')">Busiest Day(s)
+                              </button>
+                          </ion-list>
+                      </ion-card-content>
+                  </ion-card>
+                </ion-col>
+                <ion-col>
+                  <ion-card>
+                      <ion-card-content>
+                          Specific Day Count:
+                          <ion-list>
 
-            <ion-card>
-                <ion-card-content>
-                    Busiest Times:
-                    <ion-list>
+                              <button ion-button round small id="1" type="button">
+                                  <ion-datetime displayFormat="MMM-DD-YYYY" placeholder="Choose Date" [(ngModel)]="selectedDate">
+                                  </ion-datetime>
+                              </button>
 
-                        <button ion-button round small id="0" type="button" (click)="btnClicked('0')">Busiest Hour(s)
-                        </button>
+                              <button ion-button color="dark" clear small id="1" (click)="btnClicked('3')">Submit Day</button>
 
-                        <button ion-button round small id="1" type="button" (click)="btnClicked('1')">Busiest Day(s)
-                        </button>
+                          </ion-list>
+                      </ion-card-content>
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+              <ion-row>
+                <ion-col>
+                  <ion-card>
+                      <ion-card-content>
+                          Specific Month Count:
+                          <ion-list>
 
-                    </ion-list>
-                </ion-card-content>
-            </ion-card>
+                              <button ion-button round small id="1" type="button">
+                                  <ion-datetime displayFormat="MMM-YYYY" placeholder="Choose Month" [(ngModel)]="selectedMonth">
+                                  </ion-datetime>
+                              </button>
 
+                              <button ion-button color="dark" clear small id="1" (click)="btnClicked('4')">Submit Month
+                              </button>
 
-            <ion-card>
-                <ion-card-content>
-                    Specific Day Count:
-                    <ion-list>
+                          </ion-list>
+                      </ion-card-content>
+                  </ion-card>
+                </ion-col>
+                <ion-col>
+                  <ion-card>
+                      <ion-card-content>
+                          Specific Year Count:
+                          <ion-list>
+                              <ion-item>
+                                <ion-label>Year</ion-label>
+                                <ion-select [(ngModel)]="selectedYear">
+                                  <ion-option *ngFor="let year of yearRange">{{year}}</ion-option>
+                                </ion-select>
 
-                        <button ion-button round small id="1" type="button">
-                            <ion-datetime displayFormat="MMM-DD-YYYY" placeholder="Choose Date">
-                            </ion-datetime>
-                        </button>
+                              </ion-item>
+                              <button ion-button round small id="3" type="button" (click)="btnClicked('2')">Choose Year
+                              </button>
 
-                        <button ion-button color="dark" clear small id="1" (click)="btnClicked('3')">Submit Day</button>
-
-                    </ion-list>
-                </ion-card-content>
-            </ion-card>
-
-
-            <ion-card>
-                <ion-card-content>
-                    Specific Month Count:
-                    <ion-list>
-
-                        <button ion-button round small id="1" type="button">
-                            <ion-datetime displayFormat="MMM-YYYY" placeholder="Choose Month">
-                            </ion-datetime>
-                        </button>
-
-                        <button ion-button color="dark" clear small id="1" (click)="btnClicked('4')">Submit Month
-                        </button>
-
-                    </ion-list>
-                </ion-card-content>
-            </ion-card>
-
-
-            <ion-card>
-                <ion-card-content>
-                    Specific Year Count:
-                    <ion-list>
-
-                        <button ion-button round small id="3" type="button" (click)="btnClicked('2')">Choose Year
-                        </button>
-
-                    </ion-list>
-                </ion-card-content>
-            </ion-card>
-
-
+                          </ion-list>
+                      </ion-card-content>
+                  </ion-card>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
         </ion-card-content>
     </ion-card>
 
     <event-card></event-card>
+    <place-pic-card></place-pic-card>
 </ion-content>

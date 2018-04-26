@@ -5,7 +5,7 @@ import {AndroidPermissions} from '@ionic-native/android-permissions';
 import {Storage} from '@ionic/storage'
 import {Closing} from "../../pages/schedule-closing/schedule-closing";
 import {OneSignal} from "@ionic-native/onesignal";
-
+import * as config from '../../assets/config.json';
 @Injectable()
 export class NotificationProvider {
 
@@ -25,9 +25,9 @@ export class NotificationProvider {
     private static readonly LOCATION_KNOWN: string = 'Location_Allowed';
     private static readonly TIMES_CONSIDERED_ASKING_FOR_LOCATION: string = 'times_asked_for_location';
 
-    public static appId: string = '44279501-70f1-4ee1-90a8-d98ef73f3ce1';
-    apiKey: string = '';
-    public static googleProjectNumber: string = '386934932788';
+   public static appId: string = (config['Notification'])['appId'];
+    apiKey: string = (config['Notification'])['apiKey'];
+    public static googleProjectNumber: string = (config['Notification'])['googleProjectNumber'];
 
     constructor(public http: HttpClient,
                 private  alertCtrl: AlertController,
@@ -41,7 +41,6 @@ export class NotificationProvider {
             .handleNotificationReceived(jsonData => {
                 let data = jsonData['payload']['additionalData'];
                 let closing = Closing.fromObject(data);
-                console.log('got closing: ' + closing);
                 Closing.cacheClosing(closing);
             })
             .endInit();
@@ -49,8 +48,8 @@ export class NotificationProvider {
 
     /**
      * @param  notification
-     the notification
-     to be sentout. If notification is null,
+      the notification
+      to be sentout. If notification is null,
      *  the extraParams will  be used as a silent notification.
      * @param {Object} extraParams parameters that will be passed directly to the API call
      */
@@ -115,7 +114,7 @@ export class NotificationProvider {
 
     _post(body, headers: HttpHeaders): Promise<boolean> {
         return new Promise<boolean>((resolve, reject) => {
-            let url = 'https://onesignal.com:443/api/v1/notifications';
+            let url = (config['OneSignal'])['url'];
             this.http.post(
                 url, body, {headers: headers})
                 .subscribe(() => {
