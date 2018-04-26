@@ -42,7 +42,7 @@ Example of event object
 //This module will also use caching to minimize requests to the
 //web for a list of events
 // const STORAGE_KEY = 'cumminsFallsEvents';
-const EVENTURL = 'https://tsp.itinio.com/events/events.html';
+const EVENT_URL = 'https://tsp.itinio.com/events/events.html';
 
 @Injectable()
 export class CumminsFallsEventsProvider {
@@ -51,7 +51,7 @@ export class CumminsFallsEventsProvider {
     }
 
     getEventsFromUrl(): Observable<CumminsFallsHttpEvent> {
-        return this.http.get<CumminsFallsHttpEvent>(EVENTURL, {responseType: 'json'});
+        return this.http.get<CumminsFallsHttpEvent>(EVENT_URL, {responseType: 'json'});
     }
 }
 

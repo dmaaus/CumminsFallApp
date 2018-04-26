@@ -50,6 +50,8 @@ import {HistoryPage} from "../pages/about/history-page/history-page";
 import {TrailsInfoPage} from "../pages/about/trails-info-page/trails-info-page";
 import { WeatherProvider } from '../providers/weather/weather';
 
+// import { PdfViewerModule } from 'ng2-pdf-viewer';
+
 @NgModule({
     declarations: [
         App,
@@ -80,6 +82,7 @@ import { WeatherProvider } from '../providers/weather/weather';
     imports: [
         BrowserModule,
         IonicModule.forRoot(App),
+		// PdfViewerModule,
         HttpClientModule,
         IonicStorageModule.forRoot(),
         ComponentsModule
