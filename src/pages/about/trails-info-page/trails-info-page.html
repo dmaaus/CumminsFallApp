@@ -5,37 +5,39 @@
         </ion-title>
     </ion-navbar>
 </ion-header>
-<ion-content padding>
-    <h3>Trails Information</h3>
-    <ion-col>
-        <ion-row>
+<ion-content>
+    <ion-card>
+      <ion-card-header>Trails Information</ion-card-header>
+      <ion-card-content>
+        <ion-grid>
+          <ion-row class='distance-row'>
             <ion-col>
-                <h5>Distance</h5>
-                <p>Trail 1: 1.1 miles (~1 hour)</p>
-                <p>Trail 2: 1.5 miles (~1 hour)</p>
-                <p>Route to the Overlook: ~5 minute walk</p>
+              <h5>Distance</h5>
+              <p>Trail 1: 1.1 miles (~1 hour)</p>
+              <p>Trail 2: 1.5 miles (~1 hour)</p>
+              <p>Route to the Overlook: ~5 minute walk</p>
             </ion-col>
-        </ion-row>
-        <ion-row>
-            <ion-col col-4>
-                <h5>Elevation Gain</h5>
-                <p>255 feet</p>
+          </ion-row>
+          <ion-row>
+            <ion-col>
+              <h5>Elevation Gain</h5>
+              <p>255 feet</p>
             </ion-col>
-            <ion-col col-4>
-                <h5>Route Type</h5>
-                <p>Loop</p>
+            <ion-col>
+              <h5>Route Type</h5>
+              <p>Loop</p>
             </ion-col>
-            <ion-col col-4>
-                <h5>Difficulty</h5>
-                <p>Moderate</p>
+            <ion-col>
+              <h5>Difficulty</h5>
+              <p>Moderate</p>
             </ion-col>
-        </ion-row>
-    </ion-col>
-
-    <br/>
-
-    <h3>Rules and Regulations</h3>
-    <div padding>
+          </ion-row>
+        </ion-grid>
+      </ion-card-content>
+    </ion-card>
+    <ion-card>
+      <ion-card-header>Rules and Regulations</ion-card-header>
+      <ion-card-content>
         <ion-segment [(ngModel)]="rules">
             <ion-segment-button value="allowed">
                 Allowed
@@ -46,128 +48,119 @@
             <ion-segment-button value="advised">
                 Advised
             </ion-segment-button>
-
         </ion-segment>
 
-        <!--<ion-segment [(ngModel)]="rules">
-            <ion-segment-button value="AllRules">
-                TN Park Rules
-            </ion-segment-button>
-            <ion-segment-button value="SS">
-                Swim Safe Tips
-            </ion-segment-button>
-        </ion-segment>-->
-    </div>
+        <ion-scroll  class="scroll" scrollY="true" zoom="true" overflow-scroll="false">
+            <div [ngSwitch]="rules">
+                <ion-list *ngSwitchCase="'allowed'">
+                    <ion-item text-wrap>
+                        <p>Pets are allowed, but must
+                            be on a leash and under control.
+                            Please remember to clean up after
+                            your pet.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>Have fun!</p>
+                    </ion-item>
+                </ion-list>
 
-    <ion-scroll  class="scroll" scrollY="true" zoom="true" overflow-scroll="false">
-        <div [ngSwitch]="rules">
-            <ion-list *ngSwitchCase="'allowed'">
-                <ion-item text-wrap>
-                    <p>Pets are allowed, but must
-                        be on a leash and under control.
-                        Please remember to clean up after
-                        your pet.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>Have fun!</p>
-                </ion-item>
-            </ion-list>
+                <ion-list *ngSwitchCase="'prohibited'">
+                    <ion-item text-wrap>
+                        <p>Alcoholic beverages are not
+                            allowed in the park.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>Coolers are not allowed in the gorge.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>Pool floats are not allowed in
+                            the plunge pool.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>No camping is allowed at Cummins
+                            Falls.</p>
+                    </ion-item>
+                </ion-list>
 
-            <ion-list *ngSwitchCase="'prohibited'">
-                <ion-item text-wrap>
-                    <p>Alcoholic beverages are not
-                        allowed in the park.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>Coolers are not allowed in the gorge.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>Pool floats are not allowed in
-                        the plunge pool.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>No camping is allowed at Cummins
-                        Falls.</p>
-                </ion-item>
-            </ion-list>
+                <ion-list *ngSwitchCase="'advised'">
+                    <ion-item text-wrap>
+                        <p>Use good judgment and common
+                            sense.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>The hike to the gorge is not an
+                            improved trail. This is an
+                            adventurous hike and is not suitable
+                            for small children.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>USCG approved life jackets are
+                            advised if you plan to get in the
+                            water below the falls. While some
+                            life jackets are available at the park,
+                            we recommend bringing your own.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>The less you take to the bottom of
+                            the waterfall the better. It is best to
+                            limit belongings to items that will fit
+                            in a small back pack.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>Keep your hands free.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>Wear sturdy shoes. Flipflops are
+                            not recommended.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>Rather than try to take a picnic
+                            to the gorge area, plan to eat in the
+                            designated picnic area and just take
+                            snacks and water to the gorge.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>Wadding in knee deep water while
+                            crossing the stream to get to the
+                            bottom of the waterfall may be okay,
+                            as long as the water is no higher than
+                            your knee. But getting in water where
+                            most of body is immersed is dangerous.
+                            Swimming in cold water can be fatal. To
+                            learn more, click <a href="http://www.coldwatersafety.org/nccwsRules3.html">here</a>.</p>
+                    </ion-item>
+                    <ion-item text-wrap>
+                        <p>Keep in mind the weather when
+                            planning your visit. Sudden heavy rainfalls
+                            can result in flash floods and streams
+                            can become very dangerous.</p>
+                    </ion-item>
+                </ion-list>
 
-            <ion-list *ngSwitchCase="'advised'">
-                <ion-item text-wrap>
-                    <p>Use good judgment and common
-                        sense.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>The hike to the gorge is not an
-                        improved trail. This is an
-                        adventurous hike and is not suitable
-                        for small children.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>USCG approved life jackets are
-                        advised if you plan to get in the
-                        water below the falls. While some
-                        life jackets are available at the park,
-                        we recommend bringing your own.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>The less you take to the bottom of
-                        the waterfall the better. It is best to
-                        limit belongings to items that will fit
-                        in a small back pack.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>Keep your hands free.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>Wear sturdy shoes. Flipflops are
-                        not recommended.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>Rather than try to take a picnic
-                        to the gorge area, plan to eat in the
-                        designated picnic area and just take
-                        snacks and water to the gorge.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>Wadding in knee deep water while
-                        crossing the stream to get to the
-                        bottom of the waterfall may be okay,
-                        as long as the water is no higher than
-                        your knee. But getting in water where
-                        most of body is immersed is dangerous.
-                        Swimming in cold water can be fatal. To
-                        learn more, click <a href="http://www.coldwatersafety.org/nccwsRules3.html">here</a>.</p>
-                </ion-item>
-                <ion-item text-wrap>
-                    <p>Keep in mind the weather when
-                        planning your visit. Sudden heavy rainfalls
-                        can result in flash floods and streams
-                        can become very dangerous.</p>
-                </ion-item>
-            </ion-list>
+                <!--<ion-list *ngSwitchCase="'AllRules'">
+                    <pdf-viewer [src]="pdfSrc1"
+                              [render-text]="true"
+                              [zoom]="1.3"
+                              [fit-to-page]="true"
+                              [show-all]="true"
+                              style="display: block;"
+                    ></pdf-viewer>
+                </ion-list>
 
-            <!--<ion-list *ngSwitchCase="'AllRules'">
-                <pdf-viewer [src]="pdfSrc1"
-                          [render-text]="true"
-                          [zoom]="1.3"
-                          [fit-to-page]="true"
-                          [show-all]="true"
-                          style="display: block;"
-                ></pdf-viewer>
-            </ion-list>
+                <ion-list *ngSwitchCase="'SS'">
+                    <pdf-viewer [src]="pdfSrc2"
+                              [render-text]="true"
+                              [zoom]="1.3"
+                              [fit-to-page]="true"
+                              [show-all]="true"
+                              style="display: block;"
+                    ></pdf-viewer>
+                </ion-list>-->
+            </div>
+        </ion-scroll>
 
-            <ion-list *ngSwitchCase="'SS'">
-                <pdf-viewer [src]="pdfSrc2"
-                          [render-text]="true"
-                          [zoom]="1.3"
-                          [fit-to-page]="true"
-                          [show-all]="true"
-                          style="display: block;"
-                ></pdf-viewer>
-            </ion-list>-->
-        </div>
 
-    </ion-scroll>
 
-    <br/>
+      </ion-card-content>
+    </ion-card>
 </ion-content>

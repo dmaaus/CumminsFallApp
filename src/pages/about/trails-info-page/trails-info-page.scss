@@ -1,11 +1,6 @@
 trails-info-page {
-  ion-content .category h5 {
-    font-size: 1.1em;
-  }
   ion-content div .category {
     display: inline-block;
-    border: 3em;
-    padding: 1em;
     float: left;
     align-items: center;
   }
@@ -13,16 +8,19 @@ trails-info-page {
     width: 95vw;
     height: 60vh;
   }
-
-  .scroll-content {
-    background-color: map-get($colors, light);
-  }
-
-  ion-card-header {
-    font-weight: bold;
-  }
-
   ion-scroll {
     white-space: nowrap;
+  }
+
+  ion-item {
+    padding-left: 0px !important;
+  }
+
+  .distance-row {
+    margin-bottom: 1.5em;
+  }
+
+  h5 {
+    font-weight: bold !important;
   }
 }
