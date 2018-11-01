@@ -1,0 +1,39 @@
+{
+  "OneSignal": {
+    "url": "https://onesignal.com:443/api/v1/notifications"
+  },
+  "Notification": {
+    "appId": "44279501-70f1-4ee1-90a8-d98ef73f3ce1",
+    "apiKey": "",
+    "googleProjectNumber": "386934932788"
+  },
+  "Events": {
+    "url": "https://tsp.itinio.com/events/events.html"
+  },
+  "Email": {
+    "url": "sandbox8fd351ad785b4e0287aeb59146fc88f6.mailgun.org",
+    "apiKey": ""
+  },
+  "Ranger": {
+    "url": "https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/",
+    "apiKey": ""
+  },
+  "EventRegister": {
+    "url": "https://tnstateparks.itinio.com/register/"
+  },
+  "GooglePhotos": {
+    "apiKey": "",
+    "placeId": "ChIJuwY422ceZ4gRZEApMTbzZ-I",
+    "url": "https://maps.googleapis.com/maps/api/place/details"
+  },
+  "VisitorAnalytics": {
+    "url": "https://3ujc77b01b.execute-api.us-east-2.amazonaws.com/prod/visitorinfo",
+    "apiKey": ""
+  },
+  "Weather": {
+    "UNITS": "imperial",
+    "apiKey": "",
+    "placeId": "4618507",
+    "url": "http://api.openweathermap.org/data/2.5"
+  }
+}
