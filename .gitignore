@@ -60,3 +60,5 @@ resources/signing
 #Mac
 .DS_Store
 
+
+src/assets/config\.json
